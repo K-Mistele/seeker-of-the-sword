@@ -1,0 +1,8 @@
+### MOVEMENT ###
+w - forward
+a - left
+d - right
+s - back
+
+### MISCELLANEOUS ###
+z - exit program

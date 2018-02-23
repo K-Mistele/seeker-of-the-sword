@@ -1,5 +1,5 @@
-# initial version
 from os import system
+
 # creating empty world and loop end
 world = []
 game_break = False
@@ -68,6 +68,8 @@ def player_move(motion):
             print(" ")
             reset_pos()
             player_pos[x] += 1
+    else:
+        print("Invalid key entry.")
 
 # actually running the game here
 # constantly getting user input

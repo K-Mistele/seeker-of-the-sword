@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="b1cf7cb9-d804-4f81-8e79-360ec90622a2" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/adventure.py" afterPath="$PROJECT_DIR$/adventure.py" />
+      <change beforePath="$PROJECT_DIR$/controls and commands.txt" afterPath="$PROJECT_DIR$/controls and commands.txt" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -16,8 +17,22 @@
       <file leaf-file-name="adventure.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/adventure.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2001">
-              <caret line="87" column="23" lean-forward="true" selection-start-line="87" selection-start-column="23" selection-end-line="87" selection-end-column="23" />
+            <state relative-caret-position="-853">
+              <caret line="3" column="2" lean-forward="true" selection-start-line="3" selection-start-column="2" selection-end-line="3" selection-end-column="2" />
+              <folding>
+                <element signature="e#769#810#0" expanded="false" />
+                <element signature="e#858#899#0" expanded="false" />
+                <element signature="e#1023#2070#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="controls and commands.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/controls and commands.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="161">
+              <caret line="7" column="16" lean-forward="false" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -31,6 +46,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/controls and commands.txt" />
         <option value="$PROJECT_DIR$/adventure.py" />
       </list>
     </option>
@@ -149,15 +165,29 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/controls and commands.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="7" column="16" lean-forward="false" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/adventure.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2001">
-          <caret line="87" column="23" lean-forward="true" selection-start-line="87" selection-start-column="23" selection-end-line="87" selection-end-column="23" />
-          <folding />
+        <state relative-caret-position="-853">
+          <caret line="3" column="2" lean-forward="true" selection-start-line="3" selection-start-column="2" selection-end-line="3" selection-end-column="2" />
+          <folding>
+            <element signature="e#769#810#0" expanded="false" />
+            <element signature="e#858#899#0" expanded="false" />
+            <element signature="e#1023#2070#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
