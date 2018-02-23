@@ -14,7 +14,7 @@ class create_table:
             self.tile.append([" "] * self.tile_dim)
 
         ### RANDOMIZE SOME ELEMENTS IN TABLE ###
-        tile_elements = ["M",".","f"]
+        tile_elements = ["M",".","^"]
         for item in tile_elements:
             for number in range(int(sqrt(self.tile_dim)), self.tile_dim+(int(ceil(sqrt(self.tile_dim))/2))): # replace with self.time_dim
                 x = randint(1,self.tile_dim)
