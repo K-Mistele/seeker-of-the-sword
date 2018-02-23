@@ -2,6 +2,7 @@ from os import system
 
 # creating empty world and loop end
 world = []
+inventory = {"speed potion": False, "sword":True}
 game_break = False
 
 # change to increase square dimensions (edge lengths) of the world
@@ -79,11 +80,28 @@ while True:
     # printing game board with player on it
     print_board(world)
     # moving player
-    motion = input()
-    if motion == "z":
+    p_input = input()
+    if p_input == "z":
         break
+    elif p_input == "e":
+        system("clear")
+        print("Inventory: {}".format(inventory.keys()))
+        while True:
+            e_input = input("Enter inventory command: \n")
+            if e_input == "e":
+                break
+            elif e_input in inventory:
+                inventory[e_input] = not inventory[e_input]
+                if inventory[e_input] == True:
+                    item_state = "active"
+                else:
+                    item_state = "inactive"
+                print("{} is now {}!\n".format(e_input,item_state))
+            else:
+                print("Unrecognized command")
+        system("clear")
     else:
-        player_move(motion)
+        player_move(p_input)
     # print indices of player location
     print("abs position")
     print(player_pos)
