@@ -28,9 +28,18 @@
       <file leaf-file-name="class_definitions.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/class_definitions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="297">
-              <caret line="64" column="27" lean-forward="false" selection-start-line="64" selection-start-column="27" selection-end-line="64" selection-end-column="27" />
-              <folding />
+            <state relative-caret-position="322">
+              <caret line="32" column="0" lean-forward="true" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#21#0" expanded="true" />
+                <element signature="e#1297#1371#0" expanded="false" />
+                <element signature="e#1524#1594#0" expanded="false" />
+                <element signature="e#1680#1810#0" expanded="false" />
+                <element signature="e#1922#2042#0" expanded="false" />
+                <element signature="e#2213#2351#0" expanded="false" />
+                <element signature="e#2455#2575#0" expanded="false" />
+                <element signature="e#2701#2826#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -56,9 +65,9 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="10" />
-    <option name="y" value="20" />
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="x" value="8" />
+    <option name="y" value="37" />
     <option name="width" value="1346" />
     <option name="height" value="688" />
   </component>
@@ -169,7 +178,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="10" y="20" width="1346" height="688" extended-state="0" />
+    <frame x="8" y="37" width="1346" height="688" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24962406" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -239,9 +248,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/class_definitions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="64" column="27" lean-forward="false" selection-start-line="64" selection-start-column="27" selection-end-line="64" selection-end-column="27" />
-          <folding />
+        <state relative-caret-position="322">
+          <caret line="32" column="0" lean-forward="true" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#1297#1371#0" expanded="false" />
+            <element signature="e#1524#1594#0" expanded="false" />
+            <element signature="e#1680#1810#0" expanded="false" />
+            <element signature="e#1922#2042#0" expanded="false" />
+            <element signature="e#2213#2351#0" expanded="false" />
+            <element signature="e#2455#2575#0" expanded="false" />
+            <element signature="e#2701#2826#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

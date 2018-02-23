@@ -1,5 +1,6 @@
 from os import system
-
+from random import randint
+from math import sqrt
 dim = int(input("Tile dimension?\n"))
 system("clear")
 
@@ -11,6 +12,24 @@ class create_table:
         self.tile = []  # the actual tile that will be created
         for i in range(self.tile_dim): # create the table
             self.tile.append(["."] * self.tile_dim)
+
+        ### RANDOMIZE SOME ELEMENTS IN TABLE ###
+        tile_elements = ["M","O"]
+
+        for item in tile_elements:
+            for number in range(int(sqrt(self.tile_dim))):
+                x = randint(1,self.tile_dim)
+                y = randint(1, self.tile_dim)
+                self.mod_char(x,y,item)
+                ### GROUP RANDOMIZED ELEMENTS TOGETHER SOMEWHAT
+                for num in range(int(sqrt(self.tile_dim))):
+                    if (x != 1 and x!= self.tile_dim) and  (y != 1 and y!= self.tile_dim):
+                        if randint(0,1) == True:
+                            x += 1
+                            self.mod_char(x, y, item)
+                        else:
+                            y+=1
+                            self.mod_char(x, y, item)
 
     def print_tile(self,): # printing the tile
         for row in self.tile:
@@ -59,10 +78,6 @@ class create_table:
         self.tile[y_index][x_index-1] = character
 
 world = create_table() # creating "world" object in "table" class
-
-world.mod_char(1,1,"1,1")
-world.mod_char(dim,dim,"X")
-world.mod_char(1,dim/2,"Y")
 
 world.print_tile()
 
