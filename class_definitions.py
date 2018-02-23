@@ -3,7 +3,7 @@ from os import system
 dim = int(input("Tile dimension?\n"))
 system("clear")
 
-class table:
+class create_table:
     tile_dim = dim # change me to change world dimensions
 
     def __init__(self,): #creating the table
@@ -38,7 +38,7 @@ class table:
             i += 1
 
 
-world = table() # creating "world" object in "table" class
+world = create_table() # creating "world" object in "table" class
 print(world.tile)
 world.print_tile()
 
