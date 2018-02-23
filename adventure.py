@@ -1,5 +1,5 @@
 # initial version
-
+from os import system
 # creating empty world and loop end
 world = []
 game_break = False
@@ -18,7 +18,7 @@ y = 1
 # creating the world
 for i in range(world_dim):
     world.append(["."]*world_dim)
-world[world_dim-1][world_dim-1] = "O"
+world[0][0] = "O"
 
 # call function to print current tile
 def print_board(tile):
@@ -31,6 +31,7 @@ def reset_pos():
 
 # gets input to move player via editing player_pos and updating that location with reset_pos
 def player_move(motion):
+    system("clear")
     if motion == "w":
         reset_pos()
         player_pos[y] -= 1
