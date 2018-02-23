@@ -31,10 +31,10 @@ class table:
             self.tile[index-1][i] = character
             i += 1
 
-    def mod_col(self, index, character):
+    def mod_col(self, index, character): # modify all items in a world column to the character
         i = 0
         while i < dim:
-            self.tile[i][index] = character
+            self.tile[i][index-1] = character
             i += 1
 
 
