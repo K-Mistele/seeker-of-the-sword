@@ -132,8 +132,9 @@ while True:
         system("cls")
         print(f"Inventory: \n")
         for item in player_inventory: # display inventory
-            print(f"   {item['name']}: ")
-            print(f"      Effect: {item['effect_readable']}\n      Duration: {item['duration']}\n      Quantity: {item['quantity']}\n")
+            if item["quantity"] > 0:
+                print(f"   {item['name']}: ")
+                print(f"      Effect: {item['effect_readable']}\n      Duration: {item['duration']}\n      Quantity: {item['quantity']}\n")
         while True: # inventory system
             e_input = input("Enter inventory command: ('e' to exit)\n")
             if e_input == "e":
