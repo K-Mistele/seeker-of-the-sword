@@ -64,13 +64,13 @@ class create_table:
         index = int(index)
         i = 0
         index *= -1
-        while i < dim:
+        while i < self.tile_dim:
             self.tile[index][i] = character
             i += 1
     def mod_col(self, index, character): # modify all items in a world column to the character
         index = int(index)
         i = 0
-        while i < dim:
+        while i < self.tile_dim:
             self.tile[i][index-1] = character
             i += 1
     def mod_char(self, x_index, y_index, character): # modify character at (x_position, y_position) to the character

@@ -7,6 +7,9 @@ game_break = False # creating end condition for game screen loop
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 world = create_table(dim) # creating "world" object in "table" class with user input
+world.mod_col(1, "#")   #
+world.mod_col(dim, "#") # defining map boundaries
+world.mod_row(dim,"#")  #
 system("clear") # clearing screen to prepare for game
 
 
@@ -15,54 +18,52 @@ player_pos = [1,1] # creating player coordinate storage
 x = 0 # easy access to player position indices
 y = 1
 spawn_row = world.row(1)
-print("/n", spawn_row)
 i = 1
 for item in spawn_row: # finding empty space in first row for player to spawn
     if item == " ":
         player_pos[x] = i
         break
     i += 1
-world.mod_char(player_pos[x],y,"0") # marking origin on map
+world.mod_char(player_pos[x],y,"@") # marking origin on map
 world.print_tile() # printing the world for the first time
 
-
-
-
 """
-# creating empty world and loop end
-world = []
-inventory = {"speed potion": False, "sword":True}
-game_break = False
+functions for motion
+"""
+stored_tile = ["O"] # stores the tile the player is currently on (initial value will mark origin
 
-# change to increase square dimensions (edge lengths) of the world
-# world 0-indexed, so world_dim is length but max dim is world_dim-1
-world_dim = int(input("World dimension?"))
+def reset_pos(): # resets after motion the tile that the player was on
+    world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
 
-# setting up initial board print so that location does'nt shift as commands are input
+accepted_motions = ["w","a","s","d","2w","2a","2s","2d"]
+def player_move(motion):
+    if motion == "w":
+        if player_pos[y]+1 > dim or player_pos[y]+1 < 0:
+            print("You cannot leave the map!")
+        else:
+            reset_pos() # clears character position and replaces with previous tile
+            stored_tile.append(world.char(player_pos[x],player_pos[y+1])) # stores tile that is about to be moved onto
+            print(" ")
+            player_pos[y] += 1 # moves character location on virtual map
 
-system("clear")
-print("\n")
-print("\n")
-print(" ")
-# tracking player position
-# player_pos[0] = horizontal coordinate = x
-# player_pos[1] = vertical coordinate = y
-player_pos = [int(world_dim/2),int(world_dim/2)]
-x = 0
-y = 1
+while True:
 
-# creating the world
-for i in range(world_dim):
-    world.append(["."]*world_dim)
+    player_input = input()
+    if player_input in accepted_motions: # get player input to move on virtual map
+        player_move(player_input)
+    elif player_input == "z":
+        break # loop kill switch
+    else:
+        print("Invalid key input!")
+    world.mod_char(player_pos[x], player_pos[y],"@") # stores character location to virtual map
 
-# marking the ORIGIN
-world[0][0] = "O"
+    system("cls") # clears existing map
+    world.print_tile() #prints world (and new character location)
+    print("\n Coordinates:")
+    print(player_pos)
 
-# call function to print current tile
-def print_board(tile):
-  for row in tile:
-    print(" ".join(row))
-
+########################################################################################################################
+"""
 # resets player position
 def reset_pos():
     world[player_pos[1]][player_pos[0]] = "."
@@ -100,6 +101,8 @@ def player_move(motion):
             player_pos[x] += 1
     else:
         print("Invalid key entry.")
+
+
 
 # actually running the game here
 # constantly getting user input
