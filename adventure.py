@@ -43,9 +43,9 @@ def player_move(motion):
             print("You cannot leave the map!")
         else:
             reset_pos() # clears character position and replaces with previous tile
-            stored_tile.append(world.char(player_pos[x],player_pos[y-1])) # stores tile that is about to be moved onto
-            print(" ")
+            del stored_tile[0]
             player_pos[y] += 1 # moves character location on virtual map
+            stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
 
 while True:
 
@@ -54,6 +54,7 @@ while True:
     if player_input in accepted_motions: # get player input to move on virtual map
         player_move(player_input)
     elif player_input == "z":
+        print(stored_tile)
         break # loop kill switch
     else:
         print("Invalid key input!")
@@ -61,7 +62,7 @@ while True:
 
     system("cls") # clears existing map
     world.print_tile() #prints world (and new character location)
-    print("\n Coordinates:")
+    print("Coordinates:")
     print(player_pos)
 
 ########################################################################################################################
