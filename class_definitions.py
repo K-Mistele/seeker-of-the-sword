@@ -9,7 +9,7 @@ class create_table:
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
         if tile_type == "world":
-            self.tile_elements = [{"name": "lake", "character":"o", "is_viable": False},
+            self.tile_elements = [{"name": "lake", "character":"o" if platform.system() == "Windows" else ".", "is_viable": False},
                                   {"name": "mountain", "character":"M", "is_viable": False},
                                   {"name": "forest", "character":"^", "is_viable": True}
                                   ]
