@@ -4,6 +4,7 @@ from local_modules.keyboard_master import keyboard # event listeners for keyboar
 from time import sleep
 from math import ceil
 
+
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 # inventory system
 def speed_potion_effect():
@@ -22,6 +23,7 @@ speed_potion = {
     "effect": speed_potion_effect,
     "effect_readable": "Speed x2"
 }
+
 
 # global-scope variables
 game_break = False # creating end condition for game screen loop
