@@ -1,5 +1,8 @@
 from random import randint
 from math import sqrt, ceil
+from os import system
+import platform
+from local_modules.colorama_master import colorama
 
 class create_table:
     def __init__(self,dim,tile_type): #creating the table
@@ -39,13 +42,24 @@ class create_table:
                                     y -= 1
                                     self.mod_char(x, y, item["character"])
     def print_tile(self,): # printing the tile
-        """
-        for row in self.tile:
-            print(" ".join(row))
-        """
-        for row in self.tile:
-            for item in row:
-
+        if platform.system() == "Windows":
+            system("color 07")
+            colorama.init()
+            for row in self.tile:
+                for item in row:
+                    if item == "M":
+                        print(colorama.Fore.MAGENTA + item, end=" ")
+                    elif item == "^":
+                        print(colorama.Fore.GREEN + item, end=" ")
+                    elif item == ".":
+                        print(colorama.Fore.BLUE + item,end=" ")
+                    else:
+                        print(colorama.Fore.WHITE + item, end=" ")
+                print(" ")
+            colorama.deinit()
+        else:
+            for row in self.tile:
+                print(" ".join(row))
         print("\n")
 
     """
