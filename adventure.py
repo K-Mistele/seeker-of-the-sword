@@ -2,8 +2,9 @@ from os import system
 from class_definitions import create_table
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from time import sleep
+from math import ceil
 
-
+dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 # inventory system
 def speed_potion_effect():
     global speed_potion
@@ -15,13 +16,11 @@ def speed_potion_effect():
 
 speed_potion = {
     "name": "Speed Potion",
-    "duration": 12, # might have to be tweaked a bit
+    "duration": int(ceil(dim/3)), # might have to be tweaked a bit
     "item_id": "100",
     "quantity": 1,
     "effect": speed_potion_effect,
     "effect_readable": "Speed x2"
-
-
 }
 
 # global-scope variables
@@ -34,7 +33,7 @@ moves_until_effect_expires = {
 }
 
 
-dim = int(input("Tile dimension?\n")) # getting world dimensions from user
+
 world = create_table(dim,"world") # creating "world" object in "table" class with user input
 world.mod_col(1, "#")   #
 world.mod_col(dim, "#") # defining map boundaries
@@ -134,7 +133,7 @@ while True:
             print(f"   {item['name']}: ")
             print(f"      Effect: {item['effect_readable']}\n      Duration: {item['duration']}\n      Quantity: {item['quantity']}\n")
         while True: # inventory system
-            e_input = input("Enter inventory command: \n")
+            e_input = input("Enter inventory command: ('e' to exit)\n")
             if e_input == "e":
                 break
             elif any (item["name"] == e_input for item in player_inventory): # if there is an item object in player inventory with name input by user
