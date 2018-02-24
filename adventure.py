@@ -147,7 +147,7 @@ while True:
         system("cls")
     else:
         print("Invalid key input!")
-    world.mod_char(player_pos[x], player_pos[y],"@") # stores character location to virtual map
+    world.mod_char(player_pos[x], player_pos[y],"+") # stores character location to virtual map
 
     system("cls") # clears existing map
     world.print_tile() #prints world (and new character location)
