@@ -6,6 +6,7 @@ from local_modules.keyboard_master import keyboard # event listeners for keyboar
 from time import sleep
 
 game_break = False # creating end condition for game screen loop
+player_inventory = {}
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 world = create_table(dim) # creating "world" object in "table" class with user input
@@ -57,6 +58,23 @@ while True:
     elif player_input == "z":
         print(stored_tile)
         break # loop kill switch
+    elif player_input == "e":
+        system("cls")
+        print(f"Inventory: {player_inventory}")
+        while True:
+            e_input = input("Enter inventory command: \n")
+            if e_input == "e":
+                break
+            elif e_input in player_inventory:
+                player_inventory[e_input] = not player_inventory[e_input]
+                if player_inventory[e_input] == True:
+                    item_state = "active"
+                else:
+                    item_state = "inactive"
+                print("{} is now {}!\n".format(e_input, item_state))
+            else:
+                print("Unrecognized command")
+        system("cls")
     else:
         print("Invalid key input!")
     world.mod_char(player_pos[x], player_pos[y],"@") # stores character location to virtual map
