@@ -11,12 +11,30 @@ name = input("Please enter your name:  ")
 player = character(name, 20, 2, 1) # name, health, damage, base speed
 # inventory system
 def speed_potion_effect():
-    global speed_potion
-
     readout_text = "You used a speed potion!"
     player.speed += 1
     moves_until_effect_expires["speed"] += speed_potion["duration"]
     print(readout_text)
+
+def lesser_health_effect():
+    readout_text = "You used a lesser health potion!"
+    if player.health < 20:
+        i = 0
+        while i < 5:
+            if player.health < 20:
+                player.health += 1
+                i += 1
+    print(f"{readout_text} \n Health restored to {player.health}!")
+
+def greater_health_effect():
+    readout_text = "You used a greater health potion!"
+    if player.health < 20:
+        i = 0
+        while i < 10:
+            if player.health < 20:
+                player.health += 1
+                i += 1
+    print(f"{readout_text} \n Health restored to {player.health}!")
 
 speed_potion = {
     "name": "Speed Potion",
@@ -25,6 +43,24 @@ speed_potion = {
     "quantity": 1,
     "effect": speed_potion_effect,
     "effect_readable": "Speed x2"
+}
+lesser_health_potion = {
+    "name": "Lesser Health Potion",
+    "duration": "instant",
+    "item_id": "101",
+    "quantity": "1",
+    "effect": lesser_health_effect,
+    "effect_readable": "Restores 5 health"
+
+}
+lesser_health_potion = {
+    "name": "Greater Health Potion",
+    "duration": "instant",
+    "item_id": "102",
+    "quantity": "1",
+    "effect": greater_health_effect,
+    "effect_readable": "Restores 10 health"
+
 }
 
 
