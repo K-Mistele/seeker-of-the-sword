@@ -2,6 +2,7 @@ from os import system
 from random import randint
 from math import sqrt, ceil
 from class_definitions import create_table
+from local_modules.keyboard_master import keyboard # event listeners for keyboard
 
 game_break = False # creating end condition for game screen loop
 
@@ -10,7 +11,7 @@ world = create_table(dim) # creating "world" object in "table" class with user i
 world.mod_col(1, "#")   #
 world.mod_col(dim, "#") # defining map boundaries
 world.mod_row(dim,"#")  #
-system("clear") # clearing screen to prepare for game
+system("cls") # clearing screen to prepare for game
 
 
 ### FINDING PLAYER SPAWN POINT ###
@@ -48,7 +49,8 @@ def player_move(motion):
 
 while True:
 
-    player_input = input()
+    player_input = keyboard.read_key()
+
     if player_input in accepted_motions: # get player input to move on virtual map
         player_move(player_input)
     elif player_input == "z":

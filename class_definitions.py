@@ -1,4 +1,3 @@
-from os import system
 from random import randint
 from math import sqrt, ceil
 
