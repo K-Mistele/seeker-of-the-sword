@@ -3,12 +3,12 @@ from class_definitions import create_table
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from time import sleep
 from math import ceil
-import character_class
+from character_class import character, wraith, wyvern, goblin, cyclops
 
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
-player = character_class.character(name, 10, 2, 1) # name, health, damage, base speed
+player = character(name, 20, 2, 1) # name, health, damage, base speed
 # inventory system
 def speed_potion_effect():
     global speed_potion
@@ -199,6 +199,13 @@ while True:
 
     system("cls") # clears existing map
     world.print_tile() #prints world (and new character location)
+    healthString = ""
+    for i in range(0, player.health):
+        if i == 10:
+            healthString = healthString + "\n        O"
+        else:
+            healthString = healthString + "O"
+    print(f"Health: {healthString}")
     print("Coordinates:")
     print(player_pos)
 
