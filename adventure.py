@@ -43,7 +43,7 @@ def player_move(motion):
             print("You cannot leave the map!")
         else:
             reset_pos() # clears character position and replaces with previous tile
-            stored_tile.append(world.char(player_pos[x],player_pos[y+1])) # stores tile that is about to be moved onto
+            stored_tile.append(world.char(player_pos[x],player_pos[y-1])) # stores tile that is about to be moved onto
             print(" ")
             player_pos[y] += 1 # moves character location on virtual map
 
