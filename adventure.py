@@ -3,6 +3,7 @@ from random import randint
 from math import sqrt, ceil
 from class_definitions import create_table
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
+from time import sleep
 
 game_break = False # creating end condition for game screen loop
 
@@ -48,7 +49,7 @@ def player_move(motion):
             stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
 
 while True:
-
+    sleep(0.1)
     player_input = keyboard.read_key()
 
     if player_input in accepted_motions: # get player input to move on virtual map
