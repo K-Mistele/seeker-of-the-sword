@@ -1,6 +1,4 @@
 from os import system
-from random import randint
-from math import sqrt, ceil
 from class_definitions import create_table
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from time import sleep
