@@ -34,7 +34,7 @@ moves_until_effect_expires = {
 
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
-world = create_table(dim) # creating "world" object in "table" class with user input
+world = create_table(dim,"world") # creating "world" object in "table" class with user input
 world.mod_col(1, "#")   #
 world.mod_col(dim, "#") # defining map boundaries
 world.mod_row(dim,"#")  #
@@ -62,6 +62,8 @@ stored_tile = ["O"] # stores the tile the player is currently on (initial value 
 
 def reset_pos(): # resets after motion the tile that the player was on
     world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
+
+
 
 accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
 def player_move(motion):
@@ -123,13 +125,12 @@ while True:
     if player_input in accepted_motions[0]: # get player input to move on virtual map
         player_move(player_input)
     elif player_input == "z":
-        print(stored_tile)
         break # loop kill switch
     elif player_input == "e":
         system("cls")
         print(f"Inventory: \n")
         pprint(player_inventory) # display inventory
-        while True:
+        while True: # inventory system
             e_input = input("Enter inventory command: \n")
             if e_input == "e":
                 break

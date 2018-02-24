@@ -2,37 +2,41 @@ from random import randint
 from math import sqrt, ceil
 
 class create_table:
-    def __init__(self,dim): #creating the table
+    def __init__(self,dim,tile_type): #creating the table
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
-        self.tile_elements = ["M",".","^"]
-        for i in range(self.tile_dim): # create the table
-            self.tile.append([" "] * self.tile_dim)
+        if tile_type == "world":
+            self.tile_elements = [{"name": "mountain", "character":"M", "is_viable": False},
+                                  {"name": "forest", "character":"^", "is_viable": True},
+                                  {"name": "water", "character":".", "is_viable": True}]
+            # self.tile_elements = ["M",".","^"]
+            for i in range(self.tile_dim): # create the table
+                self.tile.append([" "] * self.tile_dim)
 
-        ### RANDOMIZE SOME ELEMENTS IN TABLE ###
-        #tile_elements = ["M",".","^"]
-        for item in self.tile_elements:
-            for number in range(int(sqrt(self.tile_dim)), self.tile_dim+(int(ceil(sqrt(self.tile_dim))/2))): # replace with self.time_dim
-                x = randint(1,self.tile_dim)
-                y = randint(1, self.tile_dim)
-                self.mod_char(x,y,item)
-                ### GROUP RANDOMIZED ELEMENTS TOGETHER SOMEWHAT
-                for num in range(int(sqrt(self.tile_dim))):
-                    if (x != 1 and x!= self.tile_dim) and  (y != 1 and y!= self.tile_dim):
-                        if randint(0,1) == True:
+            ### RANDOMIZE SOME ELEMENTS IN TABLE ###
+            #tile_elements = ["M",".","^"]
+            for item in self.tile_elements:
+                for number in range(int(sqrt(self.tile_dim)), self.tile_dim+(int(ceil(sqrt(self.tile_dim))/2))): # replace with self.time_dim
+                    x = randint(1,self.tile_dim)
+                    y = randint(1, self.tile_dim)
+                    self.mod_char(x,y,item["character"])
+                    ### GROUP RANDOMIZED ELEMENTS TOGETHER SOMEWHAT
+                    for num in range(int(sqrt(self.tile_dim))):
+                        if (x != 1 and x!= self.tile_dim) and  (y != 1 and y!= self.tile_dim):
                             if randint(0,1) == True:
-                                x += 1
-                                self.mod_char(x, y, item)
+                                if randint(0,1) == True:
+                                    x += 1
+                                    self.mod_char(x, y, item["character"])
+                                else:
+                                    x -= 1
+                                    self.mod_char(x, y, item["character"])
                             else:
-                                x -= 1
-                                self.mod_char(x, y, item)
-                        else:
-                            if randint(0,1) == True:
-                                y += 1
-                                self.mod_char(x, y, item)
-                            else:
-                                y -= 1
-                                self.mod_char(x, y, item)
+                                if randint(0,1) == True:
+                                    y += 1
+                                    self.mod_char(x, y, item["character"])
+                                else:
+                                    y -= 1
+                                    self.mod_char(x, y, item["character"])
     def print_tile(self,): # printing the tile
         for row in self.tile:
             print(" ".join(row))
