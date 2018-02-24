@@ -35,22 +35,37 @@ stored_tile = ["O"] # stores the tile the player is currently on (initial value 
 def reset_pos(): # resets after motion the tile that the player was on
     world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
 
-accepted_motions = ["w","a","s","d","2w","2a","2s","2d"]
+accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
 def player_move(motion):
     if motion == "w":
-        if player_pos[y]+1 > dim or player_pos[y]+1 < 0:
+        if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
             print("You cannot leave the map!")
         else:
             reset_pos() # clears character position and replaces with previous tile
             del stored_tile[0]
             player_pos[y] += 1 # moves character location on virtual map
             stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
-
+    elif motion == "s":
+        if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
+            print("You cannot leave the map!")
+        else:
+            reset_pos()
+            del stored_tile[0]
+            player_pos[y] -= 1
+            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+    elif motion == "a":
+        if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 1:
+            print("You cannot leave the map!")
+        else:
+            reset_pos()
+            del stored_tile[0]
+            player_pos[x] -= 1
+            stored_tile.append(world.char(player_pos[x], player_pos[y]))
 while True:
     sleep(0.1)
     player_input = keyboard.read_key()
 
-    if player_input in accepted_motions: # get player input to move on virtual map
+    if player_input in accepted_motions[0]: # get player input to move on virtual map
         player_move(player_input)
     elif player_input == "z":
         print(stored_tile)
