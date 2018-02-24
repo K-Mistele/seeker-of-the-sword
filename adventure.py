@@ -65,6 +65,30 @@ stored_tile = ["O"] # stores the tile the player is currently on (initial value 
 def reset_pos(): # resets after motion the tile that the player was on
     world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
 
+def detect_collision(coordinate,direction):
+    collision_output = []
+    if coordinate == "x":
+        for dict_element in world.tile_elements:
+            if world.char(player_pos[x]+direction,player_pos[y]) == dict_element["character"] and dict_element["is_viable"] == False:
+                collision_output.append(True)
+                collision_output.append(dict_element["name"])
+                return collision_output
+                #return True
+
+        collision_output.append(False)
+        return collision_output
+                #return False
+    elif coordinate == "y":
+        for dict_element in world.tile_elements:
+            if world.char(player_pos[x],player_pos[y]+direction) == dict_element["character"] and dict_element["is_viable"] == False:
+                collision_output.append(True)
+                collision_output.append(dict_element["name"])
+                return collision_output
+                #return True
+
+        collision_output.append(False)
+        return collision_output
+                #return False
 
 
 accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
@@ -84,7 +108,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("y",1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("y",1)[1]))
+                sleep(0.5)
             else:
                 reset_pos() # clears character position and replaces with previous tile
                 del stored_tile[0]
@@ -94,7 +122,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("y",-1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("y",-1)[1]))
+                sleep(0.5)
             else:
                 reset_pos()
                 del stored_tile[0]
@@ -104,7 +136,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("x",-1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("x",-1)[1]))
+                sleep(0.5)
             else:
                 reset_pos()
                 del stored_tile[0]
@@ -114,7 +150,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("x",1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("x",1)[1]))
+                sleep(0.5)
             else:
                 reset_pos()
                 del stored_tile[0]
@@ -160,4 +200,4 @@ while True:
     print("Coordinates:")
     print(player_pos)
 
-########################################################################################################################
+

@@ -6,9 +6,10 @@ class create_table:
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
         if tile_type == "world":
-            self.tile_elements = [{"name": "mountain", "character":"M", "is_viable": False},
-                                  {"name": "forest", "character":"^", "is_viable": True},
-                                  {"name": "water", "character":".", "is_viable": True}]
+            self.tile_elements = [{"name": "lake", "character":".", "is_viable": False},
+                                  {"name": "mountain", "character":"M", "is_viable": False},
+                                  {"name": "forest", "character":"^", "is_viable": True}
+                                  ]
             # self.tile_elements = ["M",".","^"]
             for i in range(self.tile_dim): # create the table
                 self.tile.append([" "] * self.tile_dim)
