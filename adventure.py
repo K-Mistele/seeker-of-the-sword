@@ -3,15 +3,18 @@ from class_definitions import create_table
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from time import sleep
 from math import ceil
+import character_class
 
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
+name = input("Please enter your name:  ")
+player = character_class.character(name, 10, 2, 1) # name, health, damage, base speed
 # inventory system
 def speed_potion_effect():
     global speed_potion
-    global speed
+
     readout_text = "You used a speed potion!"
-    speed += 1
+    player.speed += 1
     moves_until_effect_expires["speed"] += speed_potion["duration"]
     print(readout_text)
 
@@ -28,7 +31,7 @@ speed_potion = {
 # global-scope variables
 game_break = False # creating end condition for game screen loop
 player_inventory = [speed_potion] # hard-coding a speed potion into the inventory for now
-speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
+#speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
 number_of_player_moves = 0 # count of player moves for effect duration
 moves_until_effect_expires = {
     "speed": 0
@@ -93,19 +96,18 @@ def detect_collision(coordinate,direction):
 
 accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
 def player_move(motion):
-    global speed
     global number_of_player_moves
     global moves_until_effect_expires
     number_of_player_moves += 1 # upping the count of player moves by one
 
     # making speed timer count down
-    if speed > 1:
+    if player.speed > 1:
         if moves_until_effect_expires["speed"] == 0:
-            speed -= 1
+            player.speed -= 1
         else:
             moves_until_effect_expires["speed"] -= 1
     if motion == "w":
-        for i in range(0, speed):
+        for i in range(0, player.speed):
             if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
                 print("You cannot leave the map!")
                 sleep(0.5)
@@ -119,7 +121,7 @@ def player_move(motion):
                 player_pos[y] += 1 # moves character location on virtual map
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
     elif motion == "s":
-        for i in range(0, speed):
+        for i in range(0, player.speed):
             if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
                 print("You cannot leave the map!")
                 sleep(0.5)
@@ -133,7 +135,7 @@ def player_move(motion):
                 player_pos[y] -= 1
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
     elif motion == "a":
-        for i in range(0, speed):
+        for i in range(0, player.speed):
             if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
                 print("You cannot leave the map!")
                 sleep(0.5)
@@ -147,7 +149,7 @@ def player_move(motion):
                 player_pos[x] -= 1
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
     elif motion == "d":
-        for i in range(0, speed):
+        for i in range(0, player.speed):
             if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
                 print("You cannot leave the map!")
                 sleep(0.5)
