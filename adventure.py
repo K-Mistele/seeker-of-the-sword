@@ -37,9 +37,7 @@ moves_until_effect_expires = {
 
 
 world = create_table(dim,"world") # creating "world" object in "table" class with user input
-world.mod_col(1, "#")   #
-world.mod_col(dim, "#") # defining map boundaries
-world.mod_row(dim,"#")  #
+world.mod_row(dim,"M")  # defining top edge of map on initial world tile as a boundary
 system("cls") # clearing screen to prepare for game
 
 
@@ -48,7 +46,7 @@ player_pos = [1,1] # creating player coordinate storage
 x = 0 # easy access to player position indices
 y = 1
 spawn_row = world.row(1)
-i = 1
+i = int(ceil(dim/3))
 for item in spawn_row: # finding empty space in first row for player to spawn
     if item == " ":
         player_pos[x] = i

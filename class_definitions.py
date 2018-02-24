@@ -9,7 +9,7 @@ class create_table:
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
         if tile_type == "world":
-            self.tile_elements = [{"name": "lake", "character":".", "is_viable": False},
+            self.tile_elements = [{"name": "lake", "character":"o", "is_viable": False},
                                   {"name": "mountain", "character":"M", "is_viable": False},
                                   {"name": "forest", "character":"^", "is_viable": True}
                                   ]
@@ -41,22 +41,28 @@ class create_table:
                                 else:
                                     y -= 1
                                     self.mod_char(x, y, item["character"])
+            self.mod_col(1, self.tile_elements[1]["character"]) # creating vertical edges of mountains on the world
+            self.mod_col(dim, self.tile_elements[1]["character"])
     def print_tile(self,): # printing the tile
         if platform.system() == "Windows":
             system("color 07")
             colorama.init()
             for row in self.tile:
                 for item in row:
-                    if item == "M":
+                    if item == self.tile_elements[0]["character"]:
+                        print(colorama.Fore.BLUE + item, end=" ")
+                    elif item == self.tile_elements[1]["character"]:
                         print(colorama.Fore.MAGENTA + item, end=" ")
-                    elif item == "^":
-                        print(colorama.Fore.GREEN + item, end=" ")
-                    elif item == ".":
-                        print(colorama.Fore.BLUE + item,end=" ")
+                    elif item == self.tile_elements[2]["character"]:
+                        print(colorama.Fore.GREEN + item,end=" ")
+                    elif item == "O":
+                        print(colorama.Fore.BLACK + item,end=" ")
+                    elif item == "+":
+                        print(colorama.Fore.RED + item,end=" ")
                     else:
                         print(colorama.Fore.WHITE + item, end=" ")
                 print(" ")
-            colorama.deinit()
+            #colorama.deinit()
         else:
             for row in self.tile:
                 print(" ".join(row))
