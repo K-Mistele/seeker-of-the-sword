@@ -5,12 +5,13 @@ class create_table:
     def __init__(self,dim): #creating the table
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
+        self.tile_elements = ["M",".","^"]
         for i in range(self.tile_dim): # create the table
             self.tile.append([" "] * self.tile_dim)
 
         ### RANDOMIZE SOME ELEMENTS IN TABLE ###
-        tile_elements = ["M",".","^"]
-        for item in tile_elements:
+        #tile_elements = ["M",".","^"]
+        for item in self.tile_elements:
             for number in range(int(sqrt(self.tile_dim)), self.tile_dim+(int(ceil(sqrt(self.tile_dim))/2))): # replace with self.time_dim
                 x = randint(1,self.tile_dim)
                 y = randint(1, self.tile_dim)
