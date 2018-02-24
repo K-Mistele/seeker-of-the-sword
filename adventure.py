@@ -2,10 +2,35 @@ from os import system
 from class_definitions import create_table
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from time import sleep
+from pprint import pprint
+
+# inventory system
+def speed_potion_effect():
+    global speed_potion
+    global speed
+    readout_text = "You used a speed potion!"
+    speed += 1
+    moves_until_effect_expires["speed"] += speed_potion["duration"]
+    print(readout_text)
+
+speed_potion = {
+    "name": "speed potion",
+    "duration": 12, # might have to be tweaked a bit
+    "item_id": "100",
+    "quantity": 1,
+    "effect": speed_potion_effect
+
+
+}
 
 # global-scope variables
 game_break = False # creating end condition for game screen loop
-player_inventory = []
+player_inventory = [speed_potion] # hard-coding a speed potion into the inventory for now
+speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
+number_of_player_moves = 0 # count of player moves for effect duration
+moves_until_effect_expires = {
+    "speed": 0
+}
 
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
@@ -40,42 +65,57 @@ def reset_pos(): # resets after motion the tile that the player was on
 
 accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
 def player_move(motion):
+    global speed
+    global number_of_player_moves
+    global moves_until_effect_expires
+    number_of_player_moves += 1 # upping the count of player moves by one
+
+    # making speed timer count down
+    if speed > 1:
+        if moves_until_effect_expires["speed"] == 0:
+            speed -= 1
+        else:
+            moves_until_effect_expires["speed"] -= 1
     if motion == "w":
-        if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
-            print("You cannot leave the map!")
-            sleep(0.25)
-        else:
-            reset_pos() # clears character position and replaces with previous tile
-            del stored_tile[0]
-            player_pos[y] += 1 # moves character location on virtual map
-            stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
+        for i in range(0, speed):
+            if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
+                print("You cannot leave the map!")
+                sleep(0.25)
+            else:
+                reset_pos() # clears character position and replaces with previous tile
+                del stored_tile[0]
+                player_pos[y] += 1 # moves character location on virtual map
+                stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
     elif motion == "s":
-        if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
-            print("You cannot leave the map!")
-            sleep(0.25)
-        else:
-            reset_pos()
-            del stored_tile[0]
-            player_pos[y] -= 1
-            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+        for i in range(0, speed):
+            if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
+                print("You cannot leave the map!")
+                sleep(0.25)
+            else:
+                reset_pos()
+                del stored_tile[0]
+                player_pos[y] -= 1
+                stored_tile.append(world.char(player_pos[x], player_pos[y]))
     elif motion == "a":
-        if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
-            print("You cannot leave the map!")
-            sleep(0.25)
-        else:
-            reset_pos()
-            del stored_tile[0]
-            player_pos[x] -= 1
-            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+        for i in range(0, speed):
+            if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
+                print("You cannot leave the map!")
+                sleep(0.25)
+            else:
+                reset_pos()
+                del stored_tile[0]
+                player_pos[x] -= 1
+                stored_tile.append(world.char(player_pos[x], player_pos[y]))
     elif motion == "d":
-        if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
-            print("You cannot leave the map!")
-            sleep(0.25)
-        else:
-            reset_pos()
-            del stored_tile[0]
-            player_pos[x] += 1
-            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+        for i in range(0, speed):
+            if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
+                print("You cannot leave the map!")
+                sleep(0.25)
+            else:
+                reset_pos()
+                del stored_tile[0]
+                player_pos[x] += 1
+                stored_tile.append(world.char(player_pos[x], player_pos[y]))
 while True:
     sleep(0.1)
     player_input = keyboard.read_key()
@@ -87,18 +127,21 @@ while True:
         break # loop kill switch
     elif player_input == "e":
         system("cls")
-        print(f"Inventory: {player_inventory}")
+        print(f"Inventory: \n")
+        pprint(player_inventory) # display inventory
         while True:
             e_input = input("Enter inventory command: \n")
             if e_input == "e":
                 break
-            elif e_input in player_inventory:
-                player_inventory[e_input] = not player_inventory[e_input]
-                if player_inventory[e_input] == True:
-                    item_state = "active"
-                else:
-                    item_state = "inactive"
-                print("{} is now {}!\n".format(e_input, item_state))
+            elif any (item["name"] == e_input for item in player_inventory): # if there is an item object in player inventory with name input by user
+                for item in player_inventory: # iterate through and find it
+                    if e_input == item["name"]:
+                        if item["quantity"] == 0: # if no more of this item in inventory
+                            print("You are out of this item. ")
+                            break
+                        else:
+                            item["quantity"] -=1 # remove one of the item from inventory
+                            item["effect"]() # and use its effect
             else:
                 print("Unrecognized command")
         system("cls")
