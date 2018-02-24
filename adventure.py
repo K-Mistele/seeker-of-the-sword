@@ -5,8 +5,10 @@ from class_definitions import create_table
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from time import sleep
 
+# global-scope variables
 game_break = False # creating end condition for game screen loop
-player_inventory = {}
+player_inventory = []
+
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 world = create_table(dim) # creating "world" object in "table" class with user input
