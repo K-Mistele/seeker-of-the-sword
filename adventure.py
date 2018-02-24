@@ -24,7 +24,7 @@ for item in spawn_row: # finding empty space in first row for player to spawn
         player_pos[x] = i
         break
     i += 1
-world.mod_char(player_pos[x],y,"@") # marking origin on map
+world.mod_char(player_pos[x],y,"+") # marking origin on map
 world.print_tile() # printing the world for the first time
 
 """
@@ -40,6 +40,7 @@ def player_move(motion):
     if motion == "w":
         if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
             print("You cannot leave the map!")
+            sleep(0.25)
         else:
             reset_pos() # clears character position and replaces with previous tile
             del stored_tile[0]
@@ -48,18 +49,29 @@ def player_move(motion):
     elif motion == "s":
         if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
             print("You cannot leave the map!")
+            sleep(0.25)
         else:
             reset_pos()
             del stored_tile[0]
             player_pos[y] -= 1
             stored_tile.append(world.char(player_pos[x], player_pos[y]))
     elif motion == "a":
-        if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 1:
+        if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
             print("You cannot leave the map!")
+            sleep(0.25)
         else:
             reset_pos()
             del stored_tile[0]
             player_pos[x] -= 1
+            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+    elif motion == "d":
+        if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
+            print("You cannot leave the map!")
+            sleep(0.25)
+        else:
+            reset_pos()
+            del stored_tile[0]
+            player_pos[x] += 1
             stored_tile.append(world.char(player_pos[x], player_pos[y]))
 while True:
     sleep(0.1)
