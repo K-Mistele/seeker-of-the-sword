@@ -1,5 +1,34 @@
 from os import system
+from random import randint
+from math import sqrt, ceil
+from class_definitions import create_table
 
+game_break = False # creating end condition for game screen loop
+
+dim = int(input("Tile dimension?\n")) # getting world dimensions from user
+world = create_table(dim) # creating "world" object in "table" class with user input
+system("clear") # clearing screen to prepare for game
+
+
+### FINDING PLAYER SPAWN POINT ###
+player_pos = [1,1] # creating player coordinate storage
+x = 0 # easy access to player position indices
+y = 1
+spawn_row = world.row(1)
+print("/n", spawn_row)
+i = 1
+for item in spawn_row: # finding empty space in first row for player to spawn
+    if item == " ":
+        player_pos[x] = i
+        break
+    i += 1
+world.mod_char(player_pos[x],y,"0") # marking origin on map
+world.print_tile() # printing the world for the first time
+
+
+
+
+"""
 # creating empty world and loop end
 world = []
 inventory = {"speed potion": False, "sword":True}
@@ -108,3 +137,4 @@ while True:
     # print coordinates
     print("coordinates")
     print("({},{})".format(player_pos[x]+1,player_pos[y]+1))
+"""
