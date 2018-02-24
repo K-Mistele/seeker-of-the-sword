@@ -63,6 +63,30 @@ stored_tile = ["O"] # stores the tile the player is currently on (initial value 
 def reset_pos(): # resets after motion the tile that the player was on
     world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
 
+def detect_collision(coordinate,direction):
+    collision_output = []
+    if coordinate == "x":
+        for dict_element in world.tile_elements:
+            if world.char(player_pos[x]+direction,player_pos[y]) == dict_element["character"] and dict_element["is_viable"] == False:
+                collision_output.append(True)
+                collision_output.append(dict_element["name"])
+                return collision_output
+                #return True
+
+        collision_output.append(False)
+        return collision_output
+                #return False
+    elif coordinate == "y":
+        for dict_element in world.tile_elements:
+            if world.char(player_pos[x],player_pos[y]+direction) == dict_element["character"] and dict_element["is_viable"] == False:
+                collision_output.append(True)
+                collision_output.append(dict_element["name"])
+                return collision_output
+                #return True
+
+        collision_output.append(False)
+        return collision_output
+                #return False
 
 
 accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
@@ -82,7 +106,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("y",1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("y",1)[1]))
+                sleep(0.5)
             else:
                 reset_pos() # clears character position and replaces with previous tile
                 del stored_tile[0]
@@ -92,7 +120,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("y",-1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("y",-1)[1]))
+                sleep(0.5)
             else:
                 reset_pos()
                 del stored_tile[0]
@@ -102,7 +134,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("x",-1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("x",-1)[1]))
+                sleep(0.5)
             else:
                 reset_pos()
                 del stored_tile[0]
@@ -112,7 +148,11 @@ def player_move(motion):
         for i in range(0, speed):
             if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
                 print("You cannot leave the map!")
-                sleep(0.25)
+                sleep(0.5)
+            elif detect_collision("x",1)[0] == True:
+                print("Collision detected:")
+                print("You cannot traverse a {}".format(detect_collision("x",1)[1]))
+                sleep(0.5)
             else:
                 reset_pos()
                 del stored_tile[0]
@@ -156,81 +196,3 @@ while True:
     print(player_pos)
 
 ########################################################################################################################
-"""
-# resets player position
-def reset_pos():
-    world[player_pos[1]][player_pos[0]] = "."
-
-# gets input to move player via editing player_pos and updating that location with reset_pos
-def player_move(motion):
-    system("clear")
-    if motion == "w":
-        if (player_pos[y]-1) > (world_dim-1) or (player_pos[y]-1) < 0:
-            print("You cannot leave the world boundaries!")
-        else:
-            print(" ")
-            reset_pos()
-            player_pos[y] -= 1
-    elif motion == "s":
-        if (player_pos[y]+1) > (world_dim-1) or (player_pos[y]+1) < 0:
-            print("You cannot leave the world boundaries!")
-        else:
-            print(" ")
-            reset_pos()
-            player_pos[y] += 1
-    elif motion == "a":
-        if (player_pos[x]-1) > (world_dim-1) or (player_pos[x]-1) < 0:
-            print("You cannot leave the world boundaries!")
-        else:
-            print(" ")
-            reset_pos()
-            player_pos[x] -= 1
-    elif motion == "d":
-        if (player_pos[x]+1) > (world_dim-1) or (player_pos[x]+1) < 0:
-            print("You cannot leave the world boundaries!")
-        else:
-            print(" ")
-            reset_pos()
-            player_pos[x] += 1
-    else:
-        print("Invalid key entry.")
-
-
-
-# actually running the game here
-# constantly getting user input
-while True:
-    # defining player on world map as "X" based on player cords
-    world[player_pos[1]][player_pos[0]] = "X"
-    # printing game board with player on it
-    print_board(world)
-    # moving player
-    p_input = input()
-    if p_input == "z":
-        break
-    elif p_input == "e":
-        system("clear")
-        print("Inventory: {}".format(inventory.keys()))
-        while True:
-            e_input = input("Enter inventory command: \n")
-            if e_input == "e":
-                break
-            elif e_input in inventory:
-                inventory[e_input] = not inventory[e_input]
-                if inventory[e_input] == True:
-                    item_state = "active"
-                else:
-                    item_state = "inactive"
-                print("{} is now {}!\n".format(e_input,item_state))
-            else:
-                print("Unrecognized command")
-        system("clear")
-    else:
-        player_move(p_input)
-    # print indices of player location
-    print("abs position")
-    print(player_pos)
-    # print coordinates
-    print("coordinates")
-    print("({},{})".format(player_pos[x]+1,player_pos[y]+1))
-"""
