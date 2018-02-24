@@ -39,8 +39,13 @@ class create_table:
                                     y -= 1
                                     self.mod_char(x, y, item["character"])
     def print_tile(self,): # printing the tile
+        """
         for row in self.tile:
             print(" ".join(row))
+        """
+        for row in self.tile:
+            for item in row:
+
         print("\n")
 
     """
