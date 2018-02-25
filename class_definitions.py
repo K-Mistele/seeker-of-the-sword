@@ -5,7 +5,8 @@ import platform
 from local_modules.colorama_master import colorama
 
 class create_table:
-    def __init__(self,dim,tile_type): #creating the table
+    def __init__(self,dim,tile_type,with_colors): #creating the table
+        self.with_colors = with_colors
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
         if tile_type == "world":
@@ -44,7 +45,7 @@ class create_table:
             self.mod_col(1, self.tile_elements[1]["character"]) # creating vertical edges of mountains on the world
             self.mod_col(dim, self.tile_elements[1]["character"])
     def print_tile(self,): # printing the tile
-        if platform.system() == "Windows":
+        if self.with_colors == True:
             system("color 07")
             colorama.init()
             for row in self.tile:

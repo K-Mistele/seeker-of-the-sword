@@ -5,10 +5,21 @@ from time import sleep
 from math import ceil
 from entity_classes import character, wraith, wyvern, goblin, cyclops
 from inventory_classes import potion, melee_weapon
+import platform
 
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
+
+if platform.system() == "Windows":  # option to turn off colors to improve performance
+    with_colors = input("Initiate with colors? ")
+    if "Y" in with_colors or "y" in with_colors:
+        with_colors = True
+    else:
+        with_colors = False
+else:
+    with_colors = False
+
 player = character(name, 20, 2, 1) # name, health, damage, base speed
 # inventory system
 def speed_potion_effect():
@@ -52,7 +63,7 @@ moves_until_effect_expires = {
 
 
 
-world = create_table(dim,"world") # creating "world" object in "table" class with user input
+world = create_table(dim,"world",with_colors) # creating "world" object in "table" class with user input
 world.mod_row(dim,"M")  # defining top edge of map on initial world tile as a boundary
 system("cls") # clearing screen to prepare for game
 
