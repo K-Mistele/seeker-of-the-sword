@@ -35,7 +35,7 @@ def greater_health_effect():
                 i += 1
     print("You used a greater health potion! \n Health restored to {}!".format( player.health))
 
-speed_potion = potion("Lesser Health Potion", int(ceil(dim/3)), "100", 1, speed_potion_effect, "Speed x2")
+speed_potion = potion("Speed Potion", int(ceil(dim/2)), "100", 1, speed_potion_effect, "Speed x2")
 lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
 greater_health_potion = potion("Greater Health Potion", "instant", "101", 1, greater_health_effect, "Restores 10 health")
 
@@ -43,7 +43,7 @@ greater_health_potion = potion("Greater Health Potion", "instant", "101", 1, gre
 
 # global-scope variables
 game_break = False # creating end condition for game screen loop
-player_inventory = [speed_potion] # hard-coding a speed potion into the inventory for now
+player_inventory = [speed_potion, lesser_health_potion, greater_health_potion] # hard-coding a speed potion into the inventory for now
 #speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
 number_of_player_moves = 0 # count of player moves for effect duration
 moves_until_effect_expires = {
@@ -192,7 +192,7 @@ while True:
             e_input = input("Enter inventory command: ('e' to exit)\n")
             if e_input == "e":
                 break
-            elif any (item["name"] == e_input for item in player_inventory): # if there is an item object in player inventory with name input by user
+            elif any (item.name == e_input for item in player_inventory): # if there is an item object in player inventory with name input by user
                 for item in player_inventory: # iterate through and find it
                     if e_input == item.name:
                         if item.quantity == 0: # if no more of this item in inventory
