@@ -12,6 +12,7 @@ class wraith:
         self.health = 1000000 # large enough that they're functionally invincible
         self.damage = 15 # better not let a wraith get near you, then
         self.speed = 1
+        self.stored_tile = []
     symbol = "?" # shared by all wraiths
     name = "~~Wraith~~"
 
@@ -21,6 +22,7 @@ class wyvern:
         self.health = 2
         self.damage = 3
         self.speed = 2
+        self.stored_tile = []
     symbol = "%"
     name = "Wyvern"
 
@@ -30,6 +32,7 @@ class goblin:
         self.health = 4
         self.damage = 4
         self.speed = 1
+        self.stored_tile = []
     symbol = "$"
     name = "Goblin"
 
@@ -39,5 +42,6 @@ class cyclops:
         self.health = 8
         self.damage = 2
         self.speed = 1
+        self.stored_tile = []
     symbol = "&"
     name = "Cyclops"

@@ -24,7 +24,7 @@ def lesser_health_effect():
             if player.health < 20:
                 player.health += 1
                 i += 1
-    print(f"{readout_text} \n Health restored to {player.health}!")
+    print("{} \n Health restored to {}!".format(readout_text, player.health))
 
 def greater_health_effect():
     readout_text = "You used a greater health potion!"
@@ -34,7 +34,7 @@ def greater_health_effect():
             if player.health < 20:
                 player.health += 1
                 i += 1
-    print(f"{readout_text} \n Health restored to {player.health}!")
+    print("{} \n Health restored to {}!".format(readout_text, player.health))
 
 speed_potion = {
     "name": "Speed Potion",
@@ -208,11 +208,11 @@ while True:
         break # loop kill switch
     elif player_input == "e":
         system("cls")
-        print(f"Inventory: \n")
+        print("Inventory: \n")
         for item in player_inventory: # display inventory
             if item["quantity"] > 0:
-                print(f"   {item['name']}: ")
-                print(f"      Effect: {item['effect_readable']}\n      Duration: {item['duration']}\n      Quantity: {item['quantity']}\n")
+                print("   {}: ".format(item['name']))
+                print("      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item['effect_readable'], item['duration'], item['quantity']))
         while True: # inventory system
             e_input = input("Enter inventory command: ('e' to exit)\n")
             if e_input == "e":
@@ -238,10 +238,10 @@ while True:
     healthString = ""
     for i in range(0, player.health):
         if i == 10:
-            healthString = healthString + "\n        O"
+            healthString = healthString + "\n        O" # start a second, aligned row of "hearts" if more than ten health
         else:
             healthString = healthString + "O"
-    print(f"Health: {healthString}")
+    print("Health: {}".format(healthString))
     print("Coordinates:")
     print(player_pos)
 
