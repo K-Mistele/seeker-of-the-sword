@@ -4,7 +4,7 @@ from os import system
 import platform
 from local_modules.colorama_master import colorama
 
-class create_table:
+class world_tile:
     def __init__(self,dim,tile_type,with_colors): #creating the table
         self.with_colors = with_colors
         self.tile_dim = dim

@@ -1,5 +1,5 @@
 from os import system
-from class_definitions import create_table
+from tile_classes import world_tile
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from time import sleep
 from math import ceil
@@ -63,7 +63,7 @@ moves_until_effect_expires = {
 
 
 
-world = create_table(dim,"world",with_colors) # creating "world" object in "table" class with user input
+world = world_tile(dim, "world", with_colors) # creating "world" object in "table" class with user input
 world.mod_row(dim,"M")  # defining top edge of map on initial world tile as a boundary
 system("cls") # clearing screen to prepare for game
 
