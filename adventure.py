@@ -1,11 +1,13 @@
 from os import system
+import sys
 from tile_classes import world_tile
-from local_modules.keyboard_master import keyboard # event listeners for keyboard
+import platform
+if "Darwin" not in platform.system(): from local_modules.keyboard_master import keyboard # event listeners for keyboard, if not on OS X
 from time import sleep
 from math import ceil
 from entity_classes import character, wraith, wyvern, goblin, cyclops
 from inventory_classes import potion, melee_weapon
-import platform
+
 
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
@@ -186,7 +188,10 @@ def player_move(motion):
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
 while True:
     sleep(0.1)
-    player_input = keyboard.read_key()
+    if "keyboard" in sys.modules:
+        player_input = keyboard.read_key()
+    else:
+        player_input = input()
 
     if player_input in accepted_motions[0]: # get player input to move on virtual map
         player_move(player_input)
