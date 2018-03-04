@@ -222,13 +222,23 @@ while True:
     system("cls") # clears existing map
     world.print_tile() #prints world (and new character location)
     healthString = ""
+    if with_colors:
+        heartString = colorama.Fore.RED + "O"
+    else:
+        heartString = "O"
+
     for i in range(0, player.health):
         if i == 10:
-            healthString = healthString + "\n        O" # start a second, aligned row of "hearts" if more than ten health
+            healthString = healthString + "\n        {}".format(heartString) # start a second, aligned row of "hearts" if more than ten health
         else:
-            healthString = healthString + "O"
-    print("Health: {}".format(healthString))
-    print("Coordinates:")
-    print(player_pos)
+            healthString = healthString + "{}".format(heartString)
+    if with_colors:
+        print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
+        print(colorama.Fore.WHITE + "Coordinates:")
+        print(colorama.Fore.WHITE + str(player_pos))
+    else:
+        print("Health: {}".format(healthString))
+        print("Coordinates:")
+        print(player_pos)
 
 
