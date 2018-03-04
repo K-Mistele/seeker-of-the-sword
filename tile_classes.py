@@ -46,6 +46,8 @@ class world_tile:
                                     self.mod_char(x, y, item["character"])
             self.mod_col(1, self.tile_elements[1]["character"]) # creating vertical edges of mountains on the world
             self.mod_col(dim, self.tile_elements[1]["character"])
+            self.mod_row(dim, self.tile_elements[1]["character"])
+            self.mod_row(1, self.tile_elements[1]["character"])
     def print_tile(self,): # printing the tile
         """
         if self.with_colors == True:
