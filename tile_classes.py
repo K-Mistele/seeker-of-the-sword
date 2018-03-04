@@ -9,12 +9,10 @@ class world_tile:
         self.with_colors = with_colors
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
-        if with_colors:
-            colorama.init()
         if tile_type == "world":
-            self.tile_elements = [{"name": "lake", "character": colorama.Fore.BLUE +"o" if self.with_colors else ".", "is_viable": False},
-                                  {"name": "mountain", "character":colorama.Fore.MAGENTA + "M" if self.with_colors else "M", "is_viable": False},
-                                  {"name": "forest", "character": colorama.Fore.GREEN + "^" if self.with_colors else "^", "is_viable": True}
+            self.tile_elements = [{"name": "lake", "character":"o" if with_colors else ".", "is_viable": False},
+                                  {"name": "mountain", "character":"M", "is_viable": False},
+                                  {"name": "forest", "character":"^", "is_viable": True}
                                   ]
             # self.tile_elements = ["M",".","^"]
             for i in range(self.tile_dim): # create the table
@@ -46,10 +44,7 @@ class world_tile:
                                     self.mod_char(x, y, item["character"])
             self.mod_col(1, self.tile_elements[1]["character"]) # creating vertical edges of mountains on the world
             self.mod_col(dim, self.tile_elements[1]["character"])
-            self.mod_row(dim, self.tile_elements[1]["character"])
-            self.mod_row(1, self.tile_elements[1]["character"])
     def print_tile(self,): # printing the tile
-        """
         if self.with_colors == True:
             system("color 07")
             colorama.init()
@@ -72,10 +67,6 @@ class world_tile:
         else:
             for row in self.tile:
                 print(" ".join(row))
-        print("\n")
-        """
-        for row in self.tile:
-            print(" ".join(row))
         print("\n")
 
     """
