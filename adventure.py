@@ -11,7 +11,7 @@ import platform
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
 
-if platform.system() == "Windows":  # option to turn off colors to improve performance
+if platform.system() == "Windows"or platform.system() == "Linux":  # option to turn off colors to improve performance
     with_colors = input("Initiate with colors? ")
     if "Y" in with_colors or "y" in with_colors:
         with_colors = True
