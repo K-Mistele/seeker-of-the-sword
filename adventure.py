@@ -121,7 +121,29 @@ def detect_collision(coordinate,direction):
         collision_output.append(False)
         return collision_output
                 #return False
+def detect_mob_collision(coordinate,direction):
+    mob_collision_output = []
+    if coordinate == "x":
+        for mob in world.monsters:
+            if world.char(player_pos[x]+direction,player_pos[y]) == mob.symbol:
+                mob_collision_output.append(True)
+                mob_collision_output.append(mob.name)
+                return mob_collision_output
+                #return True
 
+        mob_collision_output.append(False)
+        return mob_collision_output
+                #return False
+    elif coordinate == "y":
+        for mob in world.monsters:
+            if world.char(player_pos[x],player_pos[y]+direction) == mob.symbol:
+                mob_collision_output.append(True)
+                mob_collision_output.append(mob.name)
+                return mob_collision_output
+                #return True
+
+        mob_collision_output.append(False)
+        return mob_collision_output
 
 accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
 def player_move(motion):
@@ -144,6 +166,9 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("y",1)[1]))
                 sleep(0.5)
+            elif detect_mob_collision("y", 1)[0]:
+                print("You attacked a {}!".format(detect_mob_collision("y", 1)[1]))
+                sleep(0.5)
             else:
                 reset_pos() # clears character position and replaces with previous tile
                 del stored_tile[0]
@@ -157,6 +182,9 @@ def player_move(motion):
             elif detect_collision("y",-1)[0] == True:
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("y",-1)[1]))
+                sleep(0.5)
+            elif detect_mob_collision("y", -1)[0]:
+                print("You attacked a {}!".format(detect_mob_collision("y", -1)[1]))
                 sleep(0.5)
             else:
                 reset_pos()
@@ -172,6 +200,9 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("x",-1)[1]))
                 sleep(0.5)
+            elif detect_mob_collision("x", -1)[0]:
+                print("You attacked a {}!".format(detect_mob_collision("x", -1)[1]))
+                sleep(0.5)
             else:
                 reset_pos()
                 del stored_tile[0]
@@ -185,6 +216,9 @@ def player_move(motion):
             elif detect_collision("x",1)[0] == True:
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("x",1)[1]))
+                sleep(0.5)
+            elif detect_mob_collision("x", 1)[0]:
+                print("You attacked a {}!".format(detect_mob_collision("x", 1)[1]))
                 sleep(0.5)
             else:
                 reset_pos()
