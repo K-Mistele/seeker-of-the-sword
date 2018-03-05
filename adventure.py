@@ -121,13 +121,21 @@ def detect_collision(coordinate,direction):
         collision_output.append(False)
         return collision_output
                 #return False
+
 def detect_mob_collision(coordinate,direction):
     mob_collision_output = []
     if coordinate == "x":
-        for mob in world.monsters:
+        for mob in list(world.monsters): # iterate over a copy of monsters list
             if world.char(player_pos[x]+direction,player_pos[y]) == mob.symbol:
                 mob_collision_output.append(True)
-                mob_collision_output.append(mob.name)
+                name = mob.name
+                mob_collision_output.append(name)
+                mob.health -= player.damage
+                health = mob.health
+                mob_collision_output.append(health)
+                if mob.health <= 0:
+                    world.mod_char(mob.x_index, mob.y_index, mob.stored_char)# reset where mob was
+                    world.monsters.remove(mob) # remove mob from original list
                 return mob_collision_output
                 #return True
 
@@ -135,10 +143,17 @@ def detect_mob_collision(coordinate,direction):
         return mob_collision_output
                 #return False
     elif coordinate == "y":
-        for mob in world.monsters:
+        for mob in list(world.monsters): # iterate over a copy of monsters list
             if world.char(player_pos[x],player_pos[y]+direction) == mob.symbol:
                 mob_collision_output.append(True)
-                mob_collision_output.append(mob.name)
+                name = mob.name
+                mob_collision_output.append(name)
+                mob.health -= player.damage
+                health = mob.health
+                mob_collision_output.append(health)
+                if mob.health <= 0:
+                    world.mod_char(mob.x_index, mob.y_index, mob.stored_char)# reset where mob was
+                    world.monsters.remove(mob) # remove mob from original list
                 return mob_collision_output
                 #return True
 
@@ -166,7 +181,7 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("y",1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("y", 1)[0]:
+            elif detect_mob_collision("y", 1)[0] and len(detect_mob_collision("y", 1)) >= 2:
                 print("You attacked a {}!".format(detect_mob_collision("y", 1)[1]))
                 sleep(0.5)
             else:
@@ -183,7 +198,7 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("y",-1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("y", -1)[0]:
+            elif detect_mob_collision("y", -1)[0] and len(detect_mob_collision("y", -1)) >= 2:
                 print("You attacked a {}!".format(detect_mob_collision("y", -1)[1]))
                 sleep(0.5)
             else:
@@ -200,7 +215,7 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("x",-1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("x", -1)[0]:
+            elif detect_mob_collision("x", -1)[0] and len(detect_mob_collision("x", -1)) >= 2:
                 print("You attacked a {}!".format(detect_mob_collision("x", -1)[1]))
                 sleep(0.5)
             else:
@@ -217,7 +232,7 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("x",1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("x", 1)[0]:
+            elif detect_mob_collision("x", 1)[0] and len(detect_mob_collision("x", 1)) >= 2:
                 print("You attacked a {}!".format(detect_mob_collision("x", 1)[1]))
                 sleep(0.5)
             else:

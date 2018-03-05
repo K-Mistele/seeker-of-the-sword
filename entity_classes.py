@@ -16,7 +16,7 @@ class character:
 
 class monster: # for other monsters to inherit
 
-    def __init__(self, world, dim, viable_tiles, symbol):
+    def __init__(self, world, dim, viable_tiles, symbol, m_range):
 
         """
         if platform.system() == 'Windows' or platform.system() == "Linux":
@@ -30,7 +30,7 @@ class monster: # for other monsters to inherit
         self.occupied_tile = world
         self.viable_tiles = viable_tiles # default
         # random generation for mob
-        self.range = 1 # default range
+        self.range = m_range # default range
         while True:
             self.x_index = randint(2, dim - 1) # so mobs don't spawn on world borders
             self.y_index = randint(4, dim - 1) # so mobs don't spawn on world borders, or too close to player
@@ -173,12 +173,13 @@ class wraith(monster):
                              " "]
         self.with_colors = with_colors
         self.symbol = colorama.Fore.RED + "?" if with_colors else "?"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol)
+        self.range = 10000 # functionally unlimited range
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
         self.moves_this_turn = False, # should only move once every other turn --> use a `not` toggle
         self.health = 1000000 # large enough that they're functionally invincible
         self.damage = 20 # better not let a wraith get near you, then
         self.speed = 1
-        self.range = 10000 # functionally unlimited range
+
 
 """
 Wyvern Class
@@ -193,12 +194,13 @@ class wyvern(monster):
                              world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"],
                              " "]
+        self.range = ceil((1/2)*dim) # range is 1/2 the dimension
         self.symbol = colorama.Fore.RED + "%" if with_colors else "%"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
         self.health = 2
         self.damage = 2
         self.speed = 1
-        self.range = ceil((1/2)*dim) # range is 1/2 the dimension
+
 
 """
 Goblin Class
@@ -212,11 +214,12 @@ class goblin(monster):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              " "]
         self.symbol = colorama.Fore.RED + "$" if with_colors else "$"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol)
+        self.range = ceil((1/4)*dim)  # tracking range 1/4 dim
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
         self.health = 3
         self.damage = 3
         self.speed = 1
-        self.range = ceil((1/4)*dim)  # tracking range 1/4 dim
+
 
 # high health, low damage
 """
@@ -229,9 +232,9 @@ class cyclops(monster):
     def __init__(self, world, dim, with_colors):
         self.viable_tiles = [world.tile_elements[2]["character"],
                              " "]
+        self.range = ceil((1/5)*dim) # 1/5 tile dimension
         self.symbol = colorama.Fore.RED + "&" if with_colors else "="
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
         self.health = 8
         self.damage = 2
         self.speed = 1
-        self.range = ceil((1/5)*dim) # 1/5 tile dimension
