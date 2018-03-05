@@ -7,11 +7,11 @@ from entity_classes import character, wraith, wyvern, goblin, cyclops
 from inventory_classes import potion, melee_weapon
 
 
-if platform.system != "Darwin": # determining whether system is a mac for compatible modules
+if platform.system() == "Darwin": # determining whether system is a mac for compatible modules
+    is_mac = True
+else:
     is_mac = False
     from local_modules.keyboard_master import keyboard
-else:
-    is_mac = True
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
