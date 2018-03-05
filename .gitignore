@@ -1,2 +1,7 @@
+#PyCHarm
+.idea/
+venv1/
 .idea/workspace.xml
+
+#Python
 __pycache__/
