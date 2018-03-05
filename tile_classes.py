@@ -3,9 +3,14 @@ from math import sqrt, ceil
 from os import system
 import platform
 from local_modules.colorama_master import colorama
+import platform
 
 class world_tile:
-    def __init__(self,dim,tile_type,with_colors): #creating the table
+    def __init__(self,dim,tile_type,with_colors): # creating the table
+        if platform.system() != "Windows":
+            self.clear_command = "clear"
+        else:
+            self.clear_command = "cls"
         self.with_colors = with_colors
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
