@@ -9,6 +9,7 @@ class world_tile:
         self.with_colors = with_colors
         self.tile_dim = dim
         self.tile = []  # the actual tile that will be created
+        self.monsters = []
         if with_colors:
             colorama.init()
         if tile_type == "world":

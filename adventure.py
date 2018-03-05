@@ -3,7 +3,7 @@ from tile_classes import world_tile
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from local_modules.colorama_master import colorama
 from time import sleep
-from math import ceil
+from math import ceil, floor
 from entity_classes import character, wraith, wyvern, goblin, cyclops
 from inventory_classes import potion, melee_weapon
 import platform
@@ -65,6 +65,13 @@ moves_until_effect_expires = {
 
 
 world = world_tile(dim, "world", with_colors) # creating "world" object in "table" class with user input
+difficulty = "normal"
+if difficulty == "normal":
+    world.monsters.append(wraith(world, dim, with_colors))
+    for i in range(0, int(floor(dim/5))):  world.monsters.append(goblin(world, dim, with_colors))
+    for i in range(0, int(floor(dim/6))):  world.monsters.append(wyvern(world, dim, with_colors))
+    for i in range(0, int(floor(dim/10))): world.monsters.append(cyclops(world, dim, with_colors))
+
 system("cls") # clearing screen to prepare for game
 
 
