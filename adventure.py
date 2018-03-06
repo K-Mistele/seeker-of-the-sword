@@ -1,13 +1,18 @@
 from os import system
 from tile_classes import world_tile
-from local_modules.keyboard_master import keyboard # event listeners for keyboard
+import platform
 from local_modules.colorama_master import colorama
 from time import sleep
 from math import ceil
 from entity_classes import character, wraith, wyvern, goblin, cyclops
 from inventory_classes import potion, melee_weapon
-import platform
 
+
+if platform.system() == "Darwin": # determining whether system is a mac for compatible modules
+    is_mac = True
+else:
+    is_mac = False
+    from local_modules.keyboard_master import keyboard
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
@@ -21,6 +26,10 @@ if platform.system() == "Windows"or platform.system() == "Linux":  # option to t
 else:
     with_colors = False
 
+if platform.system() != "Windows":
+    clear_command = "clear"
+else:
+    clear_command = "cls"
 player = character(name, 20, 2, 1) # name, health, damage, base speed
 # inventory system
 def speed_potion_effect():
@@ -65,7 +74,8 @@ moves_until_effect_expires = {
 
 
 world = world_tile(dim, "world", with_colors) # creating "world" object in "table" class with user input
-system("cls") # clearing screen to prepare for game
+system(clear_command) # clearing screen to prepare for game
+
 
 
 ### FINDING PLAYER SPAWN POINT ###
@@ -186,14 +196,17 @@ def player_move(motion):
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
 while True:
     sleep(0.1)
-    player_input = keyboard.read_key()
+    if is_mac:
+        player_input = input()
+    else:
+        player_input = keyboard.read_key()
 
     if player_input in accepted_motions[0]: # get player input to move on virtual map
         player_move(player_input)
     elif player_input == "z":
         break # loop kill switch
     elif player_input == "e":
-        system("cls")
+        system(clear_command)
         print("Inventory: \n")
         for item in player_inventory: # display inventory
             if item.quantity > 0:
@@ -214,12 +227,12 @@ while True:
                             item.effect() # and use its effect
             else:
                 print("Unrecognized command")
-        system("cls")
+        system(clear_command)
     else:
         print("Invalid key input!")
     world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+"if with_colors else "+") # stores character location to virtual map
 
-    system("cls") # clears existing map
+    system(clear_command) # clears existing map
     world.print_tile() #prints world (and new character location)
     healthString = ""
     if with_colors:
