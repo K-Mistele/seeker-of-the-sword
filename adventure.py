@@ -9,7 +9,7 @@ from inventory_classes import potion, melee_weapon
 import platform
 
 
-dim = int(input("Tile dimension?\n")) # getting world dimensions from user
+
 name = input("Please enter your name:  ")
 
 
@@ -26,9 +26,11 @@ else:
 
 with_custom = input("Generate map or use custom?")
 if with_custom.lower() in "generate":
+    dim = int(input("Tile dimension?\n"))  # getting world dimensions from user
     world = world_tile(dim, "world", with_colors, False,"") # creating "world" object in "table" class with user input
     system("cls") # clearing screen to prepare for game
 else:
+    dim = 5
     filename = input("Input name of file to be imported (including file extension):\n")
     world = world_tile(dim, "world", with_colors, True, filename)
     system("cls")
