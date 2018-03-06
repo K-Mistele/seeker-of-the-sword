@@ -3,6 +3,7 @@ from math import sqrt, ceil
 from os import system
 import platform
 from local_modules.colorama_master import colorama
+import platform
 
 class world_tile:
     def __init__(self,dim,tile_type,with_colors,is_custom, filename): #creating the table
@@ -84,31 +85,6 @@ class world_tile:
 
 
     def print_tile(self,): # printing the tile
-        """
-        if self.with_colors == True:
-            system("color 07")
-            colorama.init()
-            for row in self.tile:
-                for item in row:
-                    if item == self.tile_elements[0]["character"]:
-                        print(colorama.Fore.BLUE + item, end=" ")
-                    elif item == self.tile_elements[1]["character"]:
-                        print(colorama.Fore.MAGENTA + item, end=" ")
-                    elif item == self.tile_elements[2]["character"]:
-                        print(colorama.Fore.GREEN + item,end=" ")
-                    elif item == "O":
-                        print(colorama.Fore.BLACK + item,end=" ")
-                    elif item == "+":
-                        print(colorama.Fore.RED + item,end=" ")
-                    else:
-                        print(colorama.Fore.WHITE + item, end=" ")
-                print(" ")
-            #colorama.deinit()
-        else:
-            for row in self.tile:
-                print(" ".join(row))
-        print("\n")
-        """
         for row in self.tile:
             print(" ".join(row))
         print("\n")
