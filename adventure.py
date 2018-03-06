@@ -1,6 +1,7 @@
 from os import system
 from tile_classes import world_tile
 import platform
+from local_modules.colorama_master import colorama
 from time import sleep
 from math import ceil
 from entity_classes import character, wraith, wyvern, goblin, cyclops
@@ -16,7 +17,7 @@ else:
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
 
-if platform.system() == "Windows":  # option to turn off colors to improve performance, or ignore colors in unsupporting platforms
+if platform.system() == "Windows"or platform.system() == "Linux":  # option to turn off colors to improve performance
     with_colors = input("Initiate with colors? ")
     if "Y" in with_colors or "y" in with_colors:
         with_colors = True
@@ -73,28 +74,28 @@ moves_until_effect_expires = {
 
 
 world = world_tile(dim, "world", with_colors) # creating "world" object in "table" class with user input
-world.mod_row(dim,"M")  # defining top edge of map on initial world tile as a boundary
 system(clear_command) # clearing screen to prepare for game
 
 
+
 ### FINDING PLAYER SPAWN POINT ###
-player_pos = [1,1] # creating player coordinate storage
+player_pos = [1,2] # creating player coordinate storage
 x = 0 # easy access to player position indices
 y = 1
-spawn_row = world.row(1)
+spawn_row = world.row(2)
 i = int(ceil(dim/3))
 for item in spawn_row: # finding empty space in first row for player to spawn
     if item == " ":
         player_pos[x] = i
         break
     i += 1
-world.mod_char(player_pos[x],y,"+") # marking origin on map
+world.mod_char(player_pos[x],2,colorama.Fore.WHITE + "+" if with_colors else "+") # marking origin on map
 world.print_tile() # printing the world for the first time
 
 """
 functions for motion
 """
-stored_tile = ["O"] # stores the tile the player is currently on (initial value will mark origin
+stored_tile = [colorama.Fore.WHITE + "O" if with_colors else "O"] # stores the tile the player is currently on (initial value will mark origin
 
 def reset_pos(): # resets after motion the tile that the player was on
     world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
@@ -229,18 +230,28 @@ while True:
         system(clear_command)
     else:
         print("Invalid key input!")
-    world.mod_char(player_pos[x], player_pos[y],"+") # stores character location to virtual map
+    world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+"if with_colors else "+") # stores character location to virtual map
 
     system(clear_command) # clears existing map
     world.print_tile() #prints world (and new character location)
     healthString = ""
+    if with_colors:
+        heartString = colorama.Fore.RED + "O"
+    else:
+        heartString = "O"
+
     for i in range(0, player.health):
         if i == 10:
-            healthString = healthString + "\n        O" # start a second, aligned row of "hearts" if more than ten health
+            healthString = healthString + "\n        {}".format(heartString) # start a second, aligned row of "hearts" if more than ten health
         else:
-            healthString = healthString + "O"
-    print("Health: {}".format(healthString))
-    print("Coordinates:")
-    print(player_pos)
+            healthString = healthString + "{}".format(heartString)
+    if with_colors:
+        print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
+        print(colorama.Fore.WHITE + "Coordinates:")
+        print(colorama.Fore.WHITE + str(player_pos))
+    else:
+        print("Health: {}".format(healthString))
+        print("Coordinates:")
+        print(player_pos)
 
 
