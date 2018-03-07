@@ -126,7 +126,10 @@ def detect_mob_collision(coordinate,direction):
     mob_collision_output = []
     if coordinate == "x":
         for mob in list(world.monsters): # iterate over a copy of monsters list
-            if world.char(player_pos[x]+direction,player_pos[y]) == mob.symbol:
+            #if world.char(player_pos[x]+direction,player_pos[y]) == mob.symbol:
+            if (mob.x_index == player_pos[x] + direction and
+                mob.y_index == player_pos[y]):
+
                 mob_collision_output.append(True)
                 name = mob.name
                 mob_collision_output.append(name)
@@ -144,7 +147,10 @@ def detect_mob_collision(coordinate,direction):
                 #return False
     elif coordinate == "y":
         for mob in list(world.monsters): # iterate over a copy of monsters list
-            if world.char(player_pos[x],player_pos[y]+direction) == mob.symbol:
+            #if world.char(player_pos[x],player_pos[y]+direction) == mob.symbol:
+            if (mob.x_index == player_pos[x] and # check based on mob locations not character at that location
+                mob.y_index == player_pos[y] + direction):
+
                 mob_collision_output.append(True)
                 name = mob.name
                 mob_collision_output.append(name)
@@ -173,6 +179,7 @@ def player_move(motion):
         else:
             moves_until_effect_expires["speed"] -= 1
     if motion == "w":
+        mob_collision_w = detect_mob_collision("y", 1)
         for i in range(0, player.speed):
             if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
                 print("You cannot leave the map!")
@@ -181,8 +188,8 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("y",1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("y", 1)[0] and len(detect_mob_collision("y", 1)) >= 2:
-                print("You attacked a {}!".format(detect_mob_collision("y", 1)[1]))
+            elif mob_collision_w[0] and len(mob_collision_w) >= 2:
+                print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
                 sleep(0.5)
             else:
                 reset_pos() # clears character position and replaces with previous tile
@@ -190,6 +197,7 @@ def player_move(motion):
                 player_pos[y] += 1 # moves character location on virtual map
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
     elif motion == "s":
+        mob_collision_s = detect_mob_collision("y", -1)
         for i in range(0, player.speed):
             if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
                 print("You cannot leave the map!")
@@ -198,8 +206,8 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("y",-1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("y", -1)[0] and len(detect_mob_collision("y", -1)) >= 2:
-                print("You attacked a {}!".format(detect_mob_collision("y", -1)[1]))
+            elif mob_collision_s[0] and len(mob_collision_s) >= 2:
+                print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
                 sleep(0.5)
             else:
                 reset_pos()
@@ -207,6 +215,7 @@ def player_move(motion):
                 player_pos[y] -= 1
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
     elif motion == "a":
+        mob_collision_a = detect_mob_collision("x", -1)
         for i in range(0, player.speed):
             if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
                 print("You cannot leave the map!")
@@ -215,8 +224,8 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("x",-1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("x", -1)[0] and len(detect_mob_collision("x", -1)) >= 2:
-                print("You attacked a {}!".format(detect_mob_collision("x", -1)[1]))
+            elif mob_collision_a[0] and len(mob_collision_a) >= 2:
+                print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
                 sleep(0.5)
             else:
                 reset_pos()
@@ -224,6 +233,7 @@ def player_move(motion):
                 player_pos[x] -= 1
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
     elif motion == "d":
+        mob_collision_d = detect_mob_collision("x", 1)
         for i in range(0, player.speed):
             if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
                 print("You cannot leave the map!")
@@ -232,8 +242,8 @@ def player_move(motion):
                 print("Collision detected:")
                 print("You cannot traverse a {}".format(detect_collision("x",1)[1]))
                 sleep(0.5)
-            elif detect_mob_collision("x", 1)[0] and len(detect_mob_collision("x", 1)) >= 2:
-                print("You attacked a {}!".format(detect_mob_collision("x", 1)[1]))
+            elif mob_collision_d[0] and len(mob_collision_d) >= 2:
+                print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
                 sleep(0.5)
             else:
                 reset_pos()
