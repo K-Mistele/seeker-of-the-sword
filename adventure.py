@@ -250,6 +250,30 @@ def player_move(motion):
                 del stored_tile[0]
                 player_pos[x] += 1
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
+
+def print_health():
+    global with_colors
+    healthString = ""
+    if with_colors:
+        heartString = colorama.Fore.RED + "O"
+    else:
+        heartString = "O"
+    for i in range(0, player.health):
+        if i == 10:
+            healthString = healthString + "\n        {}".format(
+                heartString)  # start a second, aligned row of "hearts" if more than ten health
+        else:
+            healthString = healthString + "{}".format(heartString)
+    if with_colors:
+        print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
+        print(colorama.Fore.WHITE + "Coordinates:")
+        print(colorama.Fore.WHITE + str(player_pos))
+    else:
+        print("Health: {}".format(healthString))
+        print("Coordinates:")
+        print(player_pos)
+
+
 while True:
     sleep(0.1)
     player_input = keyboard.read_key()
@@ -284,27 +308,16 @@ while True:
     else:
         print("Invalid key input!")
     world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+"if with_colors else "+") # stores character location to virtual map
-
     system("cls") # clears existing map
     world.print_tile() #prints world (and new character location)
-    healthString = ""
-    if with_colors:
-        heartString = colorama.Fore.RED + "O"
-    else:
-        heartString = "O"
+    print_health()
+    sleep(0.2)
+    for mob in world.monsters:
+        mob.move(player_pos, player)
+        world.mod_char(mob.x_index, mob.y_index, mob.symbol)
+    system("cls")
+    world.print_tile()
+    print_health()
 
-    for i in range(0, player.health):
-        if i == 10:
-            healthString = healthString + "\n        {}".format(heartString) # start a second, aligned row of "hearts" if more than ten health
-        else:
-            healthString = healthString + "{}".format(heartString)
-    if with_colors:
-        print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
-        print(colorama.Fore.WHITE + "Coordinates:")
-        print(colorama.Fore.WHITE + str(player_pos))
-    else:
-        print("Health: {}".format(healthString))
-        print("Coordinates:")
-        print(player_pos)
 
 

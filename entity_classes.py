@@ -1,9 +1,8 @@
 from tile_classes import world_tile
 from random import randint
-import platform
 from local_modules.colorama_master import colorama
 
-from math import floor, ceil
+from math import ceil
 
 class character:
     def __init__(self, name, health, damage, speed):
@@ -40,17 +39,30 @@ class monster: # for other monsters to inherit
                 break  # mob has been spawned
             else:
                 continue # keep trying until you get a valid x/y combo
-
+    """Detects if will cause mob to collide with another mob"""
+    def does_mob_overlap(self, world, x_coord, y_coord): # coordinates should be a pair [x, y]
+        mob_overlap_output = []
+        for mob in world.monsters:
+            if (mob.x_index == x_coord or
+                mob.y_index == y_coord):
+                mob_overlap_output.append(True)
+                mob_overlap_output.append("Target: {} at coordinates [{}, {}]".format(mob.name, mob.x_index, mob.y_index))
+                return mob_overlap_output
+        mob_overlap_output.append(False)
+        return mob_overlap_output
 
     def reset_monster_pos(self): # reset the tile where the monster was
         world_tile.mod_char(self.occupied_tile, self.x_index, self.y_index, self.stored_char)
 
-    def detect_monster_collision(self, coordinate, direction):
+    def detect_monster_collision_with_world(self, coordinate, direction, target):
         monster_collision = []
         if coordinate == "x":
             if self.occupied_tile.char(self.x_index+direction, self.y_index) not in self.viable_tiles:
                     monster_collision.append(True) # collision detected
                     monster_collision.append(self.occupied_tile.char(self.x_index+direction, self.y_index)) # char collided with
+                    if monster_collision[1] == "+": # if monster collides with player
+                        target.health -= self.damage
+                        print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
@@ -58,103 +70,130 @@ class monster: # for other monsters to inherit
             if self.occupied_tile.char(self.x_index, self.y_index+direction) not in self.viable_tiles:
                     monster_collision.append(True) # collision detected
                     monster_collision.append(self.occupied_tile.char(self.x_index, self.y_index+direction)) # char collided with
+                    if monster_collision[1] == "+": # if monster collides with player
+                        target.health -= self.damage
+                        print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
 
-    def attack_target(self, target):
-        target.health -= self.damage
-        print("A {} is attacking you!".format(self.name)) # self.name not defined in monster, but is defined in all children
+    def move(self, player_coords, player):
+        if not(self.name == "~~Wraith~~"): # if not a wraith
+            self.chase(player_coords, player)
+        else: # if a wraith
+            self.moves_this_turn = not(self.moves_this_turn) # toggle switch so wraith moves every OTHER turn
+            if self.moves_this_turn:
+                self.chase(player_coords, player)
 
     """
     Chase() makes monsters move towards player
     """
-    def move(self, player_coords):
-        if not(self.name == "~~Wraith~~"): # if not a wraith
-            self.chase(player_coords)
-        else: # if a wraith
-            self.moves_this_turn = not(self.moves_this_turn) # toggle switch so wraith moves every OTHER turn
-            if self.moves_this_turn:
-                self.chase(player_coords)
 
-    def chase(self, player_coords): # equivalent of player move function for monsters
+    def chase(self, player_coords, player): # equivalent of player move function for monsters
         player_x = player_coords[0]
         player_y = player_coords[1]
         if abs(self.x_index - player_x) < self.range or abs(self.y_index - player_y) < self.range: # if player within range
-            """If player is in range, chase after it."""
-            if not(abs(self.x_index - player_x) == 1 and abs(self.y_index - player_y)): # it not diagonal from player one away
-
-                if abs(self.x_index - player_x) > abs(self.y_index - player_y): # if farther apart in x than y
-                    # move towards player in x
-                    if self.x_index > player_x: # if monster is to the right of player
-                        if self.detect_monster_collision("x", -1)[0] == False and not(self.x_index-1 > self.occupied_tile.tile_dim-1 or self.x_index-1 < 2):
-                            self.reset_monster_pos()
-                            self.x_index -= 1
-                            self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                    else: # if monster is to the left of player
-                        if self.detect_monster_collision("x", 1)[0] == False and not (self.x_index+1 > self.occupied_tile.tile_dim-1 or self.x_index+1 < 2):
-                            self.reset_monster_pos()
-                            self.x_index += 1
-                            self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                elif abs(self.x_index - player_x) < abs(self.y_index - player_y): # if farther apart in y than x
-                    if self.y_index > player_y: # if monster is above player
-                        if self.detect_monster_collision("y", -1)[0] == False and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1):
-                            self.reset_monster_pos()
-                            self.y_index -= 1
-                            self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                    else: # if monster is below
-                        if self.detect_monster_collision("y", 1)[0] == False and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1):
-                            self.reset_monster_pos()
-                            self.y_index += 1
-                            self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                else: # default
-                    # move towards player in y
-                    if self.y_index > player_y: # if monster is above player
-                        if self.detect_monster_collision("y", -1)[0] == False and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1):
-                            self.reset_monster_pos()
-                            self.y_index -= 1
-                            self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                    else: # if monster is below
-                        if self.detect_monster_collision("y", 1)[0] == False and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1):
-                            self.reset_monster_pos()
-                            self.y_index += 1
-                            self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+            """If farther apart in x than y"""
+            if abs(self.x_index - player_x) > abs(self.y_index - player_y):
+                # move towards player in x
+                if self.x_index > player_x: # if monster is to the right of player
+                    if (self.detect_monster_collision_with_world("x", -1, player)[0] == False # if mob does not collide with world
+                        and self.does_mob_overlap(self.occupied_tile, self.x_index - 1, self.y_index)[0] == False
+                        and not(self.x_index-1 > self.occupied_tile.tile_dim-1 or self.x_index-1 < 2)): # and if mob isn't trying to move onto world boundary
+                        self.reset_monster_pos()
+                        self.x_index -= 1
+                        self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+                else: # if monster is to the left of player
+                    if (self.detect_monster_collision_with_world("x", 1, player)[0] == False
+                        and self.does_mob_overlap(self.occupied_tile, self.x_index + 1, self.y_index)[0] == False
+                        and not (self.x_index+1 > self.occupied_tile.tile_dim-1 or self.x_index+1 < 2)):
+                        self.reset_monster_pos()
+                        self.x_index += 1
+                        self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+                """If farther apart in y than x"""
+            elif abs(self.x_index - player_x) < abs(self.y_index - player_y): # if farther apart in y than x
+                if self.y_index > player_y: # if monster is above player
+                    if (self.detect_monster_collision_with_world("y", -1, player)[0] == False
+                        and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index - 1)[0] == False
+                        and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1)):
+                        self.reset_monster_pos()
+                        self.y_index -= 1
+                        self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+                else: # if monster is below
+                    if (self.detect_monster_collision_with_world("y", 1, player)[0] == False
+                        and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index + 1)[0] == False
+                        and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1)):
+                        self.reset_monster_pos()
+                        self.y_index += 1
+                        self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+            else: # default, when is equidistant from player in x and y
+                # move towards player in y
+                if self.y_index > player_y: # if monster is above player
+                    if (self.detect_monster_collision_with_world("y", -1, player)[0] == False
+                        and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index - 1)[0] == False
+                        and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1)):
+                        self.reset_monster_pos()
+                        self.y_index -= 1
+                        self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+                else: # if monster is below
+                     if (self.detect_monster_collision_with_world("y", 1, player)[0] == False
+                        and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index + 1)[0] == False
+                        and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1)):
+                        self.reset_monster_pos()
+                        self.y_index += 1
+                        self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
 
         else: # if player not in range
             """If player isn't in range, this should produce a side-to-side, up-and-down motion where able"""
             # move side to side repeatedly
             if self.x_index % 2 == 0: # move left
-                if self.detect_monster_collision("x", -1)[0] == False and not (self.x_index - 1 > self.occupied_tile.tile_dim - 1 or self.x_index - 1 < 2):
+                if (self.detect_monster_collision_with_world("x", -1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index - 1, self.y_index)[0] == False
+                    and not (self.x_index - 1 > self.occupied_tile.tile_dim - 1 or self.x_index - 1 < 2)):
                     self.reset_monster_pos()
                     self.x_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                elif self.detect_monster_collision("x", 1)[0] == False and not (self.x_index - 1 > self.occupied_tile.tile_dim - 1 or self.x_index - 1 < 2):
+                elif (self.detect_monster_collision_with_world("x", 1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index + 1, self.y_index)[0] == False
+                    and not (self.x_index + 1 > self.occupied_tile.tile_dim - 1 or self.x_index + 1 < 2)):
                     self.reset_monster_pos()
                     self.x_index += 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                elif self.detect_monster_collision("y", -1)[0] == False and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1):
+                elif (self.detect_monster_collision_with_world("y", -1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index - 1)[0] == False
+                    and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1)):
                     self.reset_monster_pos()
                     self.y_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                elif self.detect_monster_collision("y", 1)[0] == False and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1):
+                elif (self.detect_monster_collision_with_world("y", 1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index + 1)[0] == False
+                    and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1)):
                     self.reset_monster_pos()
                     self.y_index += 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
                 # otherwise, monster can't move
             else: # try moving right, doing everything in opposite order
-                if self.detect_monster_collision("x", 1)[0] == False and not (self.x_index - 1 > self.occupied_tile.tile_dim - 1 or self.x_index - 1 < 2):
+                if (self.detect_monster_collision_with_world("x", 1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index + 1, self.y_index)[0] == False
+                    and not (self.x_index + 1 > self.occupied_tile.tile_dim - 1 or self.x_index + 1 < 2)):
                     self.reset_monster_pos()
                     self.x_index += 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                elif self.detect_monster_collision("x", -1)[0] == False and not (self.x_index - 1 > self.occupied_tile.tile_dim - 1 or self.x_index - 1 < 2):
+                elif (self.detect_monster_collision_with_world("x", -1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index - 1, self.y_index)[0] == False
+                    and not (self.x_index - 1 > self.occupied_tile.tile_dim - 1 or self.x_index - 1 < 2)):
                     self.reset_monster_pos()
                     self.x_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                elif self.detect_monster_collision("y", 1)[0] == False and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1):
+                elif (self.detect_monster_collision_with_world("y", 1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index + 1)[0] == False
+                    and not (self.y_index+1 > self.occupied_tile.tile_dim-1 or self.y_index+1 < 1)):
                     self.reset_monster_pos()
                     self.y_index += 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-                elif self.detect_monster_collision("y", -1)[0] == False and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1):
+                elif (self.detect_monster_collision_with_world("y", -1, player)[0] == False
+                    and self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index - 1)[0] == False
+                    and not(self.y_index-1 > self.occupied_tile.tile_dim-1 or self.y_index-1 < 1)):
                     self.reset_monster_pos()
                     self.y_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
