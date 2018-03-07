@@ -17,6 +17,8 @@ else:
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
 
+
+
 if platform.system() == "Windows"or platform.system() == "Linux":  # option to turn off colors to improve performance
     with_colors = input("Initiate with colors? ")
     if "Y" in with_colors or "y" in with_colors:
@@ -26,10 +28,24 @@ if platform.system() == "Windows"or platform.system() == "Linux":  # option to t
 else:
     with_colors = False
 
-if platform.system() != "Windows":
+if platform.system() != "Windows": # compatibility fixes
     clear_command = "clear"
 else:
     clear_command = "cls"
+
+with_custom = input("Generate map or use custom?") # asking user to either generate or use custom map
+if with_custom.lower() in "generate":
+    dim = int(input("Tile dimension?\n"))  # getting world dimensions from user
+    world = world_tile(dim, "world", with_colors, False,"") # creating "world" object in "table" class with user input
+    system(clear_command) # clearing screen to prepare for game
+else:
+    dim = 5
+    filename = input("Input name of file to be imported (including file extension):\n")
+    world = world_tile(dim, "world", with_colors, True, filename)
+    system(clear_command)
+
+dim = world.tile_dim
+
 player = character(name, 20, 2, 1) # name, health, damage, base speed
 # inventory system
 def speed_potion_effect():
@@ -70,12 +86,6 @@ number_of_player_moves = 0 # count of player moves for effect duration
 moves_until_effect_expires = {
     "speed": 0
 }
-
-
-
-world = world_tile(dim, "world", with_colors) # creating "world" object in "table" class with user input
-system(clear_command) # clearing screen to prepare for game
-
 
 
 ### FINDING PLAYER SPAWN POINT ###
