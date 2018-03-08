@@ -2,7 +2,6 @@ from os import system
 from tile_classes import world_tile
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
 from local_modules.colorama_master import colorama # color library
-
 # from local_modules.pyfiglet_master import pyfiglet
 # from local_modules.termcolor_master.termcolor_master import termcolor# terminal print
 from time import sleep
@@ -322,6 +321,15 @@ while True:
     world.print_tile()
     print_health()
     if player.health <= 0:
+        system("cls")
         break
-print("GAME OVER")
 
+game_over = colorama.Fore.RED + """
+  _______      ___      .___  ___.  _______      ______   ____    ____  _______ .______
+ /  _____|    /   \     |   \/   | |   ____|    /  __  \  \   \  /   / |   ____||   _  \\
+|  |  __     /  ^  \    |  \  /  | |  |__      |  |  |  |  \   \/   /  |  |__   |  |_)  |
+|  | |_ |   /  /_\  \   |  |\/|  | |   __|     |  |  |  |   \      /   |   __|  |      /
+|  |__| |  /  _____  \  |  |  |  | |  |____    |  `--'  |    \    /    |  |____ |  |\  \----.
+ \______| /__/     \__\ |__|  |__| |_______|    \______/      \__/     |_______|| _| `._____|
+                                                                                             """
+print(game_over)
