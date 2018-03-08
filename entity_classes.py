@@ -43,7 +43,7 @@ class monster: # for other monsters to inherit
     def does_mob_overlap(self, world, x_coord, y_coord): # coordinates should be a pair [x, y]
         mob_overlap_output = []
         for mob in world.monsters:
-            if (mob.x_index == x_coord or
+            if (mob.x_index == x_coord and
                 mob.y_index == y_coord):
                 mob_overlap_output.append(True)
                 mob_overlap_output.append("Target: {} at coordinates [{}, {}]".format(mob.name, mob.x_index, mob.y_index))
@@ -78,18 +78,19 @@ class monster: # for other monsters to inherit
             return monster_collision
 
     def move(self, player_coords, player):
-        if not(self.name == "~~Wraith~~"): # if not a wraith
-            self.chase(player_coords, player)
-        else: # if a wraith
-            self.moves_this_turn = not(self.moves_this_turn) # toggle switch so wraith moves every OTHER turn
+        if self.name == "~~Wraith~~": # if a wraith
+            self.moves_this_turn = not(self.moves_this_turn)
             if self.moves_this_turn:
                 self.chase(player_coords, player)
+        else: # if not a wraith
+            self.chase(player_coords, player)
 
     """
     Chase() makes monsters move towards player
     """
 
     def chase(self, player_coords, player): # equivalent of player move function for monsters
+
         player_x = player_coords[0]
         player_y = player_coords[1]
         if abs(self.x_index - player_x) < self.range or abs(self.y_index - player_y) < self.range: # if player within range
