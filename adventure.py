@@ -324,7 +324,7 @@ while True:
         system("cls")
         break
 
-game_over = colorama.Fore.RED + """
+game_over = """
   _______      ___      .___  ___.  _______      ______   ____    ____  _______ .______
  /  _____|    /   \     |   \/   | |   ____|    /  __  \  \   \  /   / |   ____||   _  \\
 |  |  __     /  ^  \    |  \  /  | |  |__      |  |  |  |  \   \/   /  |  |__   |  |_)  |
@@ -332,4 +332,4 @@ game_over = colorama.Fore.RED + """
 |  |__| |  /  _____  \  |  |  |  | |  |____    |  `--'  |    \    /    |  |____ |  |\  \----.
  \______| /__/     \__\ |__|  |__| |_______|    \______/      \__/     |_______|| _| `._____|
                                                                                              """
-print(game_over)
+print(colorama.Fore.RED + game_over if with_colors else game_over)
