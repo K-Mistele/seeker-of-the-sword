@@ -1,7 +1,10 @@
 from os import system
 from tile_classes import world_tile
 from local_modules.keyboard_master import keyboard # event listeners for keyboard
-from local_modules.colorama_master import colorama
+from local_modules.colorama_master import colorama # color library
+
+# from local_modules.pyfiglet_master import pyfiglet
+# from local_modules.termcolor_master.termcolor_master import termcolor# terminal print
 from time import sleep
 from math import ceil, floor
 from entity_classes import character, wraith, wyvern, goblin, cyclops
@@ -318,6 +321,7 @@ while True:
     system("cls")
     world.print_tile()
     print_health()
-
-
+    if player.health <= 0:
+        break
+print("GAME OVER")
 
