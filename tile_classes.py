@@ -2,7 +2,7 @@ from random import randint
 from math import sqrt, ceil
 from os import system
 import platform
-from local_modules.colorama_master import colorama
+from local_resources.colorama_master import colorama
 
 class world_tile:
     def __init__(self,dim,tile_type,with_colors): #creating the table

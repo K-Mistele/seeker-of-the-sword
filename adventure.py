@@ -1,15 +1,37 @@
 from os import system
 from tile_classes import world_tile
-from local_modules.keyboard_master import keyboard # event listeners for keyboard
-from local_modules.colorama_master import colorama # color library
-# from local_modules.pyfiglet_master import pyfiglet
-# from local_modules.termcolor_master.termcolor_master import termcolor# terminal print
+from local_resources.keyboard_master import keyboard # event listeners for keyboard
+from local_resources.colorama_master import colorama # color library
 from time import sleep
 from math import ceil, floor
 from entity_classes import character, wraith, wyvern, goblin, cyclops
-from inventory_classes import potion, melee_weapon
+from inventory_classes import potion
+from local_resources import ascii_resources # ascii art resources
 import platform
 
+system("cls")
+# display splash screen
+if platform.system() == "Windows" or platform.system() == "Linux":
+    colorama.init()
+    print(colorama.Fore.MAGENTA + ascii_resources.color_splash_screen[0] +
+          colorama.Fore.BLUE    + ascii_resources.color_splash_screen[1] +
+          colorama.Fore.RED     + ascii_resources.color_splash_screen[2] +
+          colorama.Fore.BLUE    + ascii_resources.color_splash_screen[3] +
+          colorama.Fore.RED     + ascii_resources.color_splash_screen[4] +
+          colorama.Fore.BLUE    + ascii_resources.color_splash_screen[5] +
+          colorama.Fore.RED     + ascii_resources.color_splash_screen[6] +
+          colorama.Fore.BLUE    + ascii_resources.color_splash_screen[7] +
+          colorama.Fore.RED     + ascii_resources.color_splash_screen[8] +
+          colorama.Fore.BLUE    + ascii_resources.color_splash_screen[9] +
+          colorama.Fore.RED     + ascii_resources.color_splash_screen[10] +
+          colorama.Fore.BLUE    + ascii_resources.color_splash_screen[11] +
+          colorama.Fore.RED     + ascii_resources.color_splash_screen[12] +
+          colorama.Fore.GREEN   + ascii_resources.color_splash_screen[13] +
+          colorama.Fore.WHITE)
+    colorama.deinit()
+else:
+    print(colorama.Fore.MAGENTA + ascii_resources.plain_splash_screen)
+sleep(5)
 
 dim = int(input("Tile dimension?\n")) # getting world dimensions from user
 name = input("Please enter your name:  ")
@@ -323,60 +345,4 @@ while True:
     if player.health <= 0:
         system("cls")
         break
-
-game_over = """
-  _______      ___      .___  ___.  _______      ______   ____    ____  _______ .______
- /  _____|    /   \     |   \/   | |   ____|    /  __  \  \   \  /   / |   ____||   _  \\
-|  |  __     /  ^  \    |  \  /  | |  |__      |  |  |  |  \   \/   /  |  |__   |  |_)  |
-|  | |_ |   /  /_\  \   |  |\/|  | |   __|     |  |  |  |   \      /   |   __|  |      /
-|  |__| |  /  _____  \  |  |  |  | |  |____    |  `--'  |    \    /    |  |____ |  |\  \----.
- \______| /__/     \__\ |__|  |__| |_______|    \______/      \__/     |_______|| _| `._____|
-                                                                                             """
-print(colorama.Fore.RED + game_over if with_colors else game_over)
-sword = """
-           /\\
- _         )( ______________________
-(_)///////(**)______________________>
-           )(
-           \/
-"""
-second_sword = """
-   |^^^|
-    }_{
-    }_{
-/|_/---\_|\\
-I _|\_/|_ I
-\| |   | |/
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   |   |
-   \   /
-    \ /
-     Y
-"""
-sword_and_shield = """
-   |\                     /)
- /\_\\\\__               (_//
-|   `>\-`     _._       //`)
- \ /` \\\\  _.-`:::`-._  //
-  `    \|`    :::    `|/
-        |     :::     |
-        |.....:::.....|
-        |:::::::::::::|
-        |     :::     |
-        \     :::     /
-         \    :::    /
-          `-. ::: .-'
-   jgs     //`:::`\\\\
-          //   '   \\\\
-         |/         \\\\
-"""
+print(colorama.Fore.RED + ascii_resources.game_over if with_colors else ascii_resources.game_over)

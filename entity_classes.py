@@ -1,6 +1,6 @@
 from tile_classes import world_tile
 from random import randint
-from local_modules.colorama_master import colorama
+from local_resources.colorama_master import colorama
 
 from math import ceil
 
@@ -273,7 +273,7 @@ class cyclops(monster):
         self.viable_tiles = [world.tile_elements[2]["character"],
                              " "]
         self.range = ceil((1/5)*dim) # 1/5 tile dimension
-        self.symbol = colorama.Fore.RED + "&" if with_colors else "="
+        self.symbol = colorama.Fore.RED + "&" if with_colors else "&"
         monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
         self.health = 8
         self.damage = 2
