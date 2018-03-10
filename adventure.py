@@ -54,8 +54,24 @@ while play_again:
             with_colors = False
     else:
         with_colors = False
+    difficulty = ""
+    while True:
+        select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker.  ").lower()
+        if select_difficulty in "normal":
+            difficulty = "normal"
+            player = character(name, 20, 2, 1)  # basic difficulty
+            break
+        elif select_difficulty in "heroic":
+            difficulty = "heroic"
+            player = character(name, 20, 2, 1)  # more mobs will spawn
+            break
+        elif select_difficulty in "true seeker":
+            difficulty = "seeker"
+            player = character(name, 15, 4, 1)  # lower health, higher damage; more mobs will spawn
+            break
+        else:
+            continue
 
-    player = character(name, 20, 2, 1) # name, health, damage, base speed
     # inventory system
     def speed_potion_effect():
         player.speed += 1
@@ -88,6 +104,7 @@ while play_again:
             invisibility_turns -= 1
             if invisibility_turns < 0:
                 invisible = False
+                print("Invisibility Potion wore off!")
 
 
     def invisibility_effect():
@@ -100,29 +117,43 @@ while play_again:
     speed_potion = potion("Speed Potion", int(ceil(dim/2)), "100", 1, speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
     greater_health_potion = potion("Greater Health Potion", "instant", "102", 1, greater_health_effect, "Restores 10 health")
-    invisibility_potion = potion("Invisibility Potion", 8, 103, 1, invisibility_effect, "Become invisible for a short time")
+    invisibility_potion = potion("Invisibility Potion", 10, 103, 1, invisibility_effect, "Become invisible for a short time")
 
 
 
     # global-scope variables
     game_break = False # creating end condition for game screen loop
-    player_inventory = [speed_potion, lesser_health_potion, greater_health_potion] # hard-coding a speed potion into the inventory for now
+    player_inventory = [speed_potion, lesser_health_potion, greater_health_potion, invisibility_potion] # hard-coding a speed potion into the inventory for now
     #speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0 # count of player moves for effect duration
     moves_until_effect_expires = {
         "speed": 0
     }
 
-
+    """Generate World, Monsters based on difficulty"""
 
     world = world_tile(dim, "world", with_colors) # creating "world" object in "table" class with user input
-    difficulty = "normal"
     if difficulty == "normal":
         world.monsters.append(wraith(world, dim, with_colors))
         for i in range(0, int(floor(dim/5))):  world.monsters.append(goblin(world, dim, with_colors))
         for i in range(0, int(floor(dim/6))):  world.monsters.append(wyvern(world, dim, with_colors))
         for i in range(0, int(floor(dim/10))): world.monsters.append(cyclops(world, dim, with_colors))
-
+    elif difficulty == "heroic":
+        world.monsters.append(wraith(world, dim, with_colors))
+        for i in range(0, int(floor(dim/4))): world.monsters.append(goblin(world, dim, with_colors))
+        for i in range(0, int(floor(dim/5))): world.monsters.append(wyvern(world, dim, with_colors))
+        for i in range(0, int(floor(dim/8))): world.monsters.append(cyclops(world, dim, with_colors))
+    elif difficulty == "seeker":
+        world.monsters.append(wraith(world, dim, with_colors))
+        world.monsters.append(wraith(world, dim, with_colors))
+        for i in range(0, int(ceil(dim/4))): world.monsters.append(goblin(world, dim, with_colors))
+        for i in range(0, int(ceil(dim/4))): world.monsters.append(wyvern(world, dim, with_colors))
+        for i in range(0, int(ceil(dim/5))): world.monsters.append(cyclops(world, dim, with_colors))
+    else:
+        world.monsters.append(wraith(world, dim, with_colors))
+        for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
+        for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
+        for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
     system("cls") # clearing screen to prepare for game
 
 
@@ -328,7 +359,6 @@ while play_again:
 
 
     while True:
-        invisibility_countdown()
         sleep(0.1)
         player_input = keyboard.read_key()
 
@@ -367,19 +397,20 @@ while play_again:
         print_health()
         sleep(0.2)
         for mob in world.monsters:
-            if invisible:
+            if not invisible:
                 mob.move(player_pos, player)
                 world.mod_char(mob.x_index, mob.y_index, mob.symbol)
         system("cls")
         world.print_tile()
         print_health()
+        invisibility_countdown()
         if player.health <= 0:
             system("cls")
             break
     print(colorama.Fore.RED + ascii_resources.game_over if with_colors else ascii_resources.game_over)
     sleep(3)
     #print(colorama.Fore.MAGENTA + ascii_resources.your_score if with_colors else ascii_resources.your_score)
-    print(colorama.Fore.GREEN + "     Your Score: " + str(player.score) if with_colors else "     Your Score: " + str(player.score))
+    print(colorama.Fore.MAGENTA + "     Your Score: " + str(player.score) if with_colors else "     Your Score: " + str(player.score))
     sleep(3)
     system("cls")
     while True:
