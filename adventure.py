@@ -3,6 +3,7 @@ from tile_classes import world_tile
 from local_resources.keyboard_master import keyboard # event listeners for keyboard
 from local_resources.colorama_master import colorama # color library
 from time import sleep
+from random import randint
 from math import ceil, floor
 from entity_classes import character, wraith, wyvern, goblin, cyclops
 from inventory_classes import potion
@@ -150,213 +151,230 @@ while play_again:
         for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
     system("cls") # clearing screen to prepare for game
 
-    while player.lives > 0:
-        ### FINDING PLAYER SPAWN POINT ###
-        player_pos = [1,2] # creating player coordinate storage
-        x = 0 # easy access to player position indices
-        y = 1
-        spawn_row = world.row(2)
-        i = int(ceil(dim/3))
-        for item in spawn_row: # finding empty space in first row for player to spawn
-            if item == " ":
-                player_pos[x] = i
+
+    ### FINDING PLAYER SPAWN POINT ###
+    player_pos = [1,2] # creating player coordinate storage
+    x = 0 # easy access to player position indices
+    y = 1
+    spawn_row = world.row(2)
+    i = int(ceil(dim/3))
+    for item in spawn_row: # finding empty space in first row for player to spawn
+        if item == " ":
+            player_pos[x] = i
+            break
+        i += 1
+    world.mod_char(player_pos[x],2,colorama.Fore.WHITE + "+" if with_colors else "+") # marking origin on map
+    world.print_tile() # printing the world for the first time
+
+    """
+    functions for motion
+    """
+    stored_tile = [colorama.Fore.WHITE + "O" if with_colors else "O"] # stores the tile the player is currently on (initial value will mark origin
+
+    def reset_pos(): # resets after motion the tile that the player was on
+        world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
+
+    def detect_collision(coordinate,direction):
+        collision_output = []
+        if coordinate == "x":
+            for dict_element in world.tile_elements:
+                if world.char(player_pos[x]+direction,player_pos[y]) == dict_element["character"] and dict_element["is_viable"] == False:
+                    collision_output.append(True)
+                    collision_output.append(dict_element["name"])
+                    return collision_output
+                    #return True
+
+            collision_output.append(False)
+            return collision_output
+                    #return False
+        elif coordinate == "y":
+            for dict_element in world.tile_elements:
+                if world.char(player_pos[x],player_pos[y]+direction) == dict_element["character"] and dict_element["is_viable"] == False:
+                    collision_output.append(True)
+                    collision_output.append(dict_element["name"])
+                    return collision_output
+                    #return True
+
+            collision_output.append(False)
+            return collision_output
+                    #return False
+
+    def detect_mob_collision(coordinate,direction):
+        mob_collision_output = []
+        if coordinate == "x":
+            for mob in list(world.monsters): # iterate over a copy of monsters list
+                #if world.char(player_pos[x]+direction,player_pos[y]) == mob.symbol:
+                if (mob.x_index == player_pos[x] + direction and
+                    mob.y_index == player_pos[y]):
+
+                    mob_collision_output.append(True)
+                    name = mob.name
+                    mob_collision_output.append(name)
+                    mob.health -= player.damage
+                    health = mob.health
+                    mob_collision_output.append(health)
+                    player.score += mob.points
+                    if mob.health <= 0:
+                        world.mod_char(mob.x_index, mob.y_index, mob.stored_char)# reset where mob was
+                        world.monsters.remove(mob) # remove mob from original list
+                    return mob_collision_output
+                    #return True
+
+            mob_collision_output.append(False)
+            return mob_collision_output
+                    #return False
+        elif coordinate == "y":
+            for mob in list(world.monsters): # iterate over a copy of monsters list
+                #if world.char(player_pos[x],player_pos[y]+direction) == mob.symbol:
+                if (mob.x_index == player_pos[x] and # check based on mob locations not character at that location
+                    mob.y_index == player_pos[y] + direction):
+
+                    mob_collision_output.append(True)
+                    name = mob.name
+                    mob_collision_output.append(name)
+                    mob.health -= player.damage
+                    health = mob.health
+                    mob_collision_output.append(health)
+                    player.score += mob.points
+                    if mob.health <= 0:
+                        world.mod_char(mob.x_index, mob.y_index, mob.stored_char)# reset where mob was
+                        world.monsters.remove(mob) # remove mob from original list
+                    return mob_collision_output
+                    #return True
+
+            mob_collision_output.append(False)
+            return mob_collision_output
+
+    accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
+    def player_move(motion):
+        global number_of_player_moves
+        global moves_until_effect_expires
+        number_of_player_moves += 1 # upping the count of player moves by one
+
+        # making speed timer count down
+        if player.speed > 1:
+            if moves_until_effect_expires["speed"] == 0:
+                player.speed -= 1
+            else:
+                moves_until_effect_expires["speed"] -= 1
+        # making invisibility potion timer count down
+        if player.invisible:
+            if moves_until_effect_expires["invisibility"] == 0:
+                player.invisible = False
+            else:
+                moves_until_effect_expires["invisibility"] -=1
+        if motion == "w":
+            mob_collision_w = detect_mob_collision("y", 1)
+            for i in range(0, player.speed):
+                if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
+                    print("You cannot leave the map!")
+                    sleep(0.5)
+                elif detect_collision("y",1)[0] == True:
+                    print("Collision detected:")
+                    print("You cannot traverse a {}".format(detect_collision("y",1)[1]))
+                    sleep(0.5)
+                elif mob_collision_w[0] and len(mob_collision_w) >= 2:
+                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
+                    sleep(0.5)
+                else:
+                    reset_pos() # clears character position and replaces with previous tile
+                    del stored_tile[0]
+                    player_pos[y] += 1 # moves character location on virtual map
+                    stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
+        elif motion == "s":
+            mob_collision_s = detect_mob_collision("y", -1)
+            for i in range(0, player.speed):
+                if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
+                    print("You cannot leave the map!")
+                    sleep(0.5)
+                elif detect_collision("y",-1)[0] == True:
+                    print("Collision detected:")
+                    print("You cannot traverse a {}".format(detect_collision("y",-1)[1]))
+                    sleep(0.5)
+                elif mob_collision_s[0] and len(mob_collision_s) >= 2:
+                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
+                    sleep(0.5)
+                else:
+                    reset_pos()
+                    del stored_tile[0]
+                    player_pos[y] -= 1
+                    stored_tile.append(world.char(player_pos[x], player_pos[y]))
+        elif motion == "a":
+            mob_collision_a = detect_mob_collision("x", -1)
+            for i in range(0, player.speed):
+                if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
+                    print("You cannot leave the map!")
+                    sleep(0.5)
+                elif detect_collision("x",-1)[0] == True:
+                    print("Collision detected:")
+                    print("You cannot traverse a {}".format(detect_collision("x",-1)[1]))
+                    sleep(0.5)
+                elif mob_collision_a[0] and len(mob_collision_a) >= 2:
+                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
+                    sleep(0.5)
+                else:
+                    reset_pos()
+                    del stored_tile[0]
+                    player_pos[x] -= 1
+                    stored_tile.append(world.char(player_pos[x], player_pos[y]))
+        elif motion == "d":
+            mob_collision_d = detect_mob_collision("x", 1)
+            for i in range(0, player.speed):
+                if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
+                    print("You cannot leave the map!")
+                    sleep(0.5)
+                elif detect_collision("x",1)[0] == True:
+                    print("Collision detected:")
+                    print("You cannot traverse a {}".format(detect_collision("x",1)[1]))
+                    sleep(0.5)
+                elif mob_collision_d[0] and len(mob_collision_d) >= 2:
+                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
+                    sleep(0.5)
+                else:
+                    reset_pos()
+                    del stored_tile[0]
+                    player_pos[x] += 1
+                    stored_tile.append(world.char(player_pos[x], player_pos[y]))
+
+    def randomly_locate_player():
+        while True:
+            new_x = randint(2, dim-1)
+            new_y = randint(2, dim-1)
+            new_location = world.char(new_x, new_y)
+            if (   new_location == "^"
+                or new_location == colorama.Fore.GREEN + "^"
+                or new_location == " "):
+                reset_pos()
+                del stored_tile[0]
+                player_pos[x] = new_x
+                player_pos[y] = new_y
+                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+" if with_colors else "+")
                 break
-            i += 1
-        world.mod_char(player_pos[x],2,colorama.Fore.WHITE + "+" if with_colors else "+") # marking origin on map
-        world.print_tile() # printing the world for the first time
 
-        """
-        functions for motion
-        """
-        stored_tile = [colorama.Fore.WHITE + "O" if with_colors else "O"] # stores the tile the player is currently on (initial value will mark origin
-
-        def reset_pos(): # resets after motion the tile that the player was on
-            world.mod_char(player_pos[x],player_pos[y],stored_tile[0])
-
-        def detect_collision(coordinate,direction):
-            collision_output = []
-            if coordinate == "x":
-                for dict_element in world.tile_elements:
-                    if world.char(player_pos[x]+direction,player_pos[y]) == dict_element["character"] and dict_element["is_viable"] == False:
-                        collision_output.append(True)
-                        collision_output.append(dict_element["name"])
-                        return collision_output
-                        #return True
-
-                collision_output.append(False)
-                return collision_output
-                        #return False
-            elif coordinate == "y":
-                for dict_element in world.tile_elements:
-                    if world.char(player_pos[x],player_pos[y]+direction) == dict_element["character"] and dict_element["is_viable"] == False:
-                        collision_output.append(True)
-                        collision_output.append(dict_element["name"])
-                        return collision_output
-                        #return True
-
-                collision_output.append(False)
-                return collision_output
-                        #return False
-
-        def detect_mob_collision(coordinate,direction):
-            mob_collision_output = []
-            if coordinate == "x":
-                for mob in list(world.monsters): # iterate over a copy of monsters list
-                    #if world.char(player_pos[x]+direction,player_pos[y]) == mob.symbol:
-                    if (mob.x_index == player_pos[x] + direction and
-                        mob.y_index == player_pos[y]):
-
-                        mob_collision_output.append(True)
-                        name = mob.name
-                        mob_collision_output.append(name)
-                        mob.health -= player.damage
-                        health = mob.health
-                        mob_collision_output.append(health)
-                        player.score += mob.points
-                        if mob.health <= 0:
-                            world.mod_char(mob.x_index, mob.y_index, mob.stored_char)# reset where mob was
-                            world.monsters.remove(mob) # remove mob from original list
-                        return mob_collision_output
-                        #return True
-
-                mob_collision_output.append(False)
-                return mob_collision_output
-                        #return False
-            elif coordinate == "y":
-                for mob in list(world.monsters): # iterate over a copy of monsters list
-                    #if world.char(player_pos[x],player_pos[y]+direction) == mob.symbol:
-                    if (mob.x_index == player_pos[x] and # check based on mob locations not character at that location
-                        mob.y_index == player_pos[y] + direction):
-
-                        mob_collision_output.append(True)
-                        name = mob.name
-                        mob_collision_output.append(name)
-                        mob.health -= player.damage
-                        health = mob.health
-                        mob_collision_output.append(health)
-                        player.score += mob.points
-                        if mob.health <= 0:
-                            world.mod_char(mob.x_index, mob.y_index, mob.stored_char)# reset where mob was
-                            world.monsters.remove(mob) # remove mob from original list
-                        return mob_collision_output
-                        #return True
-
-                mob_collision_output.append(False)
-                return mob_collision_output
-
-        accepted_motions = [["w","a","s","d"],["2w","2a","2s","2d"]]
-        def player_move(motion):
-            global number_of_player_moves
-            global moves_until_effect_expires
-            number_of_player_moves += 1 # upping the count of player moves by one
-
-            # making speed timer count down
-            if player.speed > 1:
-                if moves_until_effect_expires["speed"] == 0:
-                    player.speed -= 1
-                else:
-                    moves_until_effect_expires["speed"] -= 1
-            # making invisibility potion timer count down
-            if player.invisible:
-                if moves_until_effect_expires["invisibility"] == 0:
-                    player.invisible = False
-                else:
-                    moves_until_effect_expires["invisibility"] -=1
-            if motion == "w":
-                mob_collision_w = detect_mob_collision("y", 1)
-                for i in range(0, player.speed):
-                    if player_pos[y]+1 > dim-1 or player_pos[y]+1 < 1:
-                        print("You cannot leave the map!")
-                        sleep(0.5)
-                    elif detect_collision("y",1)[0] == True:
-                        print("Collision detected:")
-                        print("You cannot traverse a {}".format(detect_collision("y",1)[1]))
-                        sleep(0.5)
-                    elif mob_collision_w[0] and len(mob_collision_w) >= 2:
-                        print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
-                        sleep(0.5)
-                    else:
-                        reset_pos() # clears character position and replaces with previous tile
-                        del stored_tile[0]
-                        player_pos[y] += 1 # moves character location on virtual map
-                        stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
-            elif motion == "s":
-                mob_collision_s = detect_mob_collision("y", -1)
-                for i in range(0, player.speed):
-                    if player_pos[y]-1 > dim-1 or player_pos[y]-1 < 1:
-                        print("You cannot leave the map!")
-                        sleep(0.5)
-                    elif detect_collision("y",-1)[0] == True:
-                        print("Collision detected:")
-                        print("You cannot traverse a {}".format(detect_collision("y",-1)[1]))
-                        sleep(0.5)
-                    elif mob_collision_s[0] and len(mob_collision_s) >= 2:
-                        print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
-                        sleep(0.5)
-                    else:
-                        reset_pos()
-                        del stored_tile[0]
-                        player_pos[y] -= 1
-                        stored_tile.append(world.char(player_pos[x], player_pos[y]))
-            elif motion == "a":
-                mob_collision_a = detect_mob_collision("x", -1)
-                for i in range(0, player.speed):
-                    if player_pos[x]-1 > dim-1 or player_pos[x]-1 < 2:
-                        print("You cannot leave the map!")
-                        sleep(0.5)
-                    elif detect_collision("x",-1)[0] == True:
-                        print("Collision detected:")
-                        print("You cannot traverse a {}".format(detect_collision("x",-1)[1]))
-                        sleep(0.5)
-                    elif mob_collision_a[0] and len(mob_collision_a) >= 2:
-                        print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
-                        sleep(0.5)
-                    else:
-                        reset_pos()
-                        del stored_tile[0]
-                        player_pos[x] -= 1
-                        stored_tile.append(world.char(player_pos[x], player_pos[y]))
-            elif motion == "d":
-                mob_collision_d = detect_mob_collision("x", 1)
-                for i in range(0, player.speed):
-                    if player_pos[x]+1 > dim-1 or player_pos[x]+1 < 2:
-                        print("You cannot leave the map!")
-                        sleep(0.5)
-                    elif detect_collision("x",1)[0] == True:
-                        print("Collision detected:")
-                        print("You cannot traverse a {}".format(detect_collision("x",1)[1]))
-                        sleep(0.5)
-                    elif mob_collision_d[0] and len(mob_collision_d) >= 2:
-                        print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
-                        sleep(0.5)
-                    else:
-                        reset_pos()
-                        del stored_tile[0]
-                        player_pos[x] += 1
-                        stored_tile.append(world.char(player_pos[x], player_pos[y]))
-
-        def print_health():
-            global with_colors
-            healthString = ""
-            if with_colors:
-                heartString = colorama.Fore.RED + "O"
+    def print_health():
+        global with_colors
+        healthString = ""
+        if with_colors:
+            heartString = colorama.Fore.RED + "O"
+        else:
+            heartString = "O"
+        for i in range(0, player.health):
+            if i == 10:
+                healthString = healthString + "\n        {}".format(
+                    heartString)  # start a second, aligned row of "hearts" if more than ten health
             else:
-                heartString = "O"
-            for i in range(0, player.health):
-                if i == 10:
-                    healthString = healthString + "\n        {}".format(
-                        heartString)  # start a second, aligned row of "hearts" if more than ten health
-                else:
-                    healthString = healthString + "{}".format(heartString)
-            if with_colors:
-                print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
-                print(colorama.Fore.WHITE + "Coordinates:")
-                print(colorama.Fore.WHITE + str(player_pos))
-            else:
-                print("Health: {}".format(healthString))
-                print("Coordinates:")
-                print(player_pos)
+                healthString = healthString + "{}".format(heartString)
+        if with_colors:
+            print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
+            print(colorama.Fore.WHITE + "Coordinates:")
+            print(colorama.Fore.WHITE + str(player_pos))
+        else:
+            print("Health: {}".format(healthString))
+            print("Coordinates:")
+            print(player_pos)
 
+    while player.lives > 0:
 
         while True:
             sleep(0.1)
@@ -400,6 +418,7 @@ while play_again:
                 if not player.invisible:
                     mob.move(player_pos, player)
                     world.mod_char(mob.x_index, mob.y_index, mob.symbol)
+            sleep(0.1)
             system("cls")
             world.print_tile()
             print_health()
@@ -422,6 +441,13 @@ while play_again:
                         print(colorama.Fore.RED + ascii_resources.zero if with_colors else ascii_resources.zero)
                     sleep(2)
                     system("cls")
+                    print(colorama.Fore.MAGENTA + ascii_resources.sword_and_shield if with_colors else ascii_resources.sword_and_shield)
+                    sleep(2)
+                    print(colorama.Fore.RED + ascii_resources.begin if with_colors else ascii_resources.begin)
+                    sleep(2)
+                    system("cls")
+                    randomly_locate_player()
+                    world.print_tile()
 
     print(colorama.Fore.RED + ascii_resources.game_over if with_colors else ascii_resources.game_over)
     sleep(3)
