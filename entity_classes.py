@@ -6,12 +6,14 @@ from math import ceil
 
 class character:
     score = 0
-    def __init__(self, name, health, damage, speed):
+    def __init__(self, name, health, damage, speed, lives):
         self.name = name
         self.health = health
         self.damage = damage
         self.speed = speed
         self.stored_tile = ["O"]
+        self.lives = lives
+        self.invisible = False
 
 
 class monster: # for other monsters to inherit

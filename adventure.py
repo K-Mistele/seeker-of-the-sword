@@ -54,20 +54,22 @@ while play_again:
             with_colors = False
     else:
         with_colors = False
+
+    """Difficulty"""
     difficulty = ""
     while True:
         select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker.  ").lower()
         if select_difficulty in "normal":
             difficulty = "normal"
-            player = character(name, 20, 2, 1)  # basic difficulty
+            player = character(name, 20, 2, 1, 3)  # basic difficulty
             break
         elif select_difficulty in "heroic":
             difficulty = "heroic"
-            player = character(name, 20, 2, 1)  # more mobs will spawn
+            player = character(name, 20, 2, 1, 2)  # more mobs will spawn
             break
         elif select_difficulty in "true seeker":
             difficulty = "seeker"
-            player = character(name, 15, 4, 1)  # lower health, higher damage; more mobs will spawn
+            player = character(name, 15, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
             break
         else:
             continue
@@ -95,23 +97,14 @@ while play_again:
                     player.health += 1
                     i += 1
         print("You used a greater health potion! \n Health restored to {}!".format( player.health))
-    invisible = False
-    invisibility_turns = 0
-    def invisibility_countdown():
-        global invisibility_turns
-        global invisible
-        if invisible:
-            invisibility_turns -= 1
-            if invisibility_turns < 0:
-                invisible = False
-                print("Invisibility Potion wore off!")
 
 
     def invisibility_effect():
         global invisible
         global invisibility_turns
         invisible = True
-        invisibility_turns = invisibility_potion.duration
+        moves_until_effect_expires["invisibility"] += invisibility_potion.duration
+        print("You used an invisibility potion!")
 
 
     speed_potion = potion("Speed Potion", int(ceil(dim/2)), "100", 1, speed_potion_effect, "Speed x2")
@@ -127,7 +120,8 @@ while play_again:
     #speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0 # count of player moves for effect duration
     moves_until_effect_expires = {
-        "speed": 0
+        "speed": 0,
+        "invisibility": 0
     }
 
     """Generate World, Monsters based on difficulty"""
@@ -262,6 +256,12 @@ while play_again:
                 player.speed -= 1
             else:
                 moves_until_effect_expires["speed"] -= 1
+        # making invisibility potion timer count down
+        if player.invisible:
+            if moves_until_effect_expires["invisibility"] == 0:
+                player.invisible = False
+            else:
+                moves_until_effect_expires["invisibility"] -=1
         if motion == "w":
             mob_collision_w = detect_mob_collision("y", 1)
             for i in range(0, player.speed):
@@ -397,13 +397,12 @@ while play_again:
         print_health()
         sleep(0.2)
         for mob in world.monsters:
-            if not invisible:
+            if not player.invisible:
                 mob.move(player_pos, player)
                 world.mod_char(mob.x_index, mob.y_index, mob.symbol)
         system("cls")
         world.print_tile()
         print_health()
-        invisibility_countdown()
         if player.health <= 0:
             system("cls")
             break
