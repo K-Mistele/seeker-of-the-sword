@@ -5,6 +5,7 @@ from local_resources.colorama_master import colorama
 from math import ceil
 
 class character:
+    score = 0
     def __init__(self, name, health, damage, speed):
         self.name = name
         self.health = health
@@ -206,6 +207,7 @@ Wraith Class
 class wraith(monster):
 
     name = "~~Wraith~~"
+    points = 10000
 
     def __init__(self, world, dim, with_colors):
         self.viable_tiles = [world.tile_elements[1]["character"],
@@ -228,6 +230,7 @@ Wyvern Class
 class wyvern(monster):
 
     name = "Wyvern"
+    points = 10
 
     def __init__(self, world, dim, with_colors):
         self.viable_tiles = [world.tile_elements[0]["character"],
@@ -249,6 +252,7 @@ Goblin Class
 class goblin(monster):
 
     name = "Goblin"
+    points = 20
 
     def __init__(self, world, dim, with_colors):
         self.viable_tiles = [world.tile_elements[1]["character"],
@@ -268,6 +272,7 @@ Cyclops Class
 class cyclops(monster):
 
     name = "Cyclops"
+    points = 50
 
     def __init__(self, world, dim, with_colors):
         self.viable_tiles = [world.tile_elements[2]["character"],
