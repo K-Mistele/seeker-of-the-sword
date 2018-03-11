@@ -127,7 +127,7 @@ while play_again:
     def invisibility_effect():
         global invisible
         global invisibility_turns
-        invisible = True
+        player.invisible = True
         moves_until_effect_expires["invisibility"] += invisibility_potion.duration
         print("You used an invisibility potion!")
 
@@ -497,6 +497,7 @@ while play_again:
     print(colorama.Fore.RED + ascii_resources.game_over if with_colors else ascii_resources.game_over)
     sleep(3)
     # print(colorama.Fore.MAGENTA + ascii_resources.your_score if with_colors else ascii_resources.your_score)
+    player.score += number_of_player_moves
     print(colorama.Fore.MAGENTA + "     Your Score: " + str(player.score) if with_colors else "     Your Score: " + str(
         player.score))
     sleep(3)

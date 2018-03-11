@@ -1,6 +1,7 @@
 from local_resources.colorama_master import colorama
 from time import sleep
 from os import system
+import platform
 developed_by = """
 _______   ___________    ____  _______  __        ______   .______    _______  _______     
 |       \ |   ____\   \  /   / |   ____||  |      /  __  \  |   _  \  |   ____||       \    
@@ -63,34 +64,39 @@ ___           .__   __.      ___       _______  __    __   __  .______          
    \  \       |  |\   |  /  _____  \ |  |__| | |  `--'  | |  | |  |_)  |        /  /   
     \__\      |__| \__| /__/     \__\ \______|  \______/  |__| |______/        /__/ 
 """
+if platform.system() != "Windows":  # compatibility fixes
+    clear_command = "clear"
+else:
+    clear_command = "cls"
+
 def run_color_credits():
-    system("cls")
+    system(clear_command)
     colorama.init()
     print(colorama.Fore.BLUE + developed_by)
     sleep(2.5)
-    system("cls")
+    system(clear_command)
     print(colorama.Fore.RED + andrew_mistele)
     sleep(2.5)
-    system("cls")
+    system(clear_command)
     print(colorama.Fore.MAGENTA + kyle_mistele)
     sleep(2.5)
-    system("cls")
-    print(colorama.Fore.GREEN + michael_naguib + colorama.Fore.WHITE)
+    system(clear_command)
+    print(colorama.Fore.BLUE + michael_naguib + colorama.Fore.WHITE)
     colorama.deinit()
     sleep(2.5)
-    system("cls")
+    system(clear_command)
 
 def run_plain_credits():
-    system("cls")
+    system(clear_command)
     print(developed_by)
     sleep(2.5)
-    system("cls")
+    system(clear_command)
     print(andrew_mistele)
     sleep(2.5)
-    system("cls")
+    system(clear_command)
     print(kyle_mistele)
     sleep(2.5)
-    system("cls")
+    system(clear_command)
     print(michael_naguib)
     sleep(2.5)
-    system("cls")
+    system(clear_command)
