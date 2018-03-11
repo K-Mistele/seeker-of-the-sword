@@ -63,6 +63,8 @@ while play_again:
             with_colors = True
         else:
             with_colors = False
+    else:
+        with_colors = False
 
     """Difficulty"""
     difficulty = ""
@@ -424,7 +426,7 @@ while play_again:
             if player_input in accepted_motions[0]:  # get player input to move on virtual map
                 player_move(player_input)
             elif player_input == "z":
-                break  # loop kill switch
+                quit() # loop kill switch
             elif player_input == "e":
                 system(clear_command)
                 print("Inventory: \n")
