@@ -22,7 +22,7 @@ plain_splash_screen = """
             |_______/        \__/  \__/     \______/  | _| `._____||_______/              
 
 """
-color_splash_screen =  [
+color_splash_screen =  [ # in the form of a list because different parts have to be colorized differently
     """
       __  _ __  _    _______. _______  _______  __  ___  _______ .______       __  _ __  _    
      /  \/ /  \/ |  /       ||   ____||   ____||  |/  / |   ____||   _  \     /  \/ /  \/ |   
