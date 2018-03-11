@@ -2,14 +2,16 @@ from random import randint
 from math import sqrt, ceil
 from os import system
 import platform
-from local_modules.colorama_master import colorama
-import platform
+
+from local_resources.colorama_master import colorama
+
 
 class world_tile:
     def __init__(self,dim,tile_type,with_colors,is_custom, filename): #creating the table
         self.is_custom = is_custom
         self.with_colors = with_colors
         self.tile = []  # the actual tile that will be created
+        self.monsters = []
         if with_colors:
             colorama.init()
         if tile_type == "world":
@@ -129,4 +131,3 @@ class world_tile:
         y_index = int(y_index)
         y_index *= -1
         self.tile[y_index][x_index-1] = character
-
