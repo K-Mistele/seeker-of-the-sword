@@ -190,6 +190,7 @@ while play_again:
             break
         i += 1
     world.mod_char(player_pos[x], 2, colorama.Fore.WHITE + "+" if with_colors else "+")  # marking origin on map
+    origin_point = [player_pos[x], 2]
     world.print_tile()  # printing the world for the first time
 
     """
@@ -390,6 +391,13 @@ while play_again:
                 world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+" if with_colors else "+")
                 break
 
+    def return_player_to_origin(): # origin parameter should be list of [x,y] coordinates for player origin
+        reset_pos()
+        del stored_tile[0]
+        player_pos[x] = origin_point[x]
+        player_pos[y] = origin_point[y]
+        stored_tile.append(world.char(player_pos[x], player_pos[y]))
+        world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+" if with_colors else "+")
 
     def print_health():
         global with_colors
@@ -493,7 +501,8 @@ while play_again:
                     print(colorama.Fore.RED + ascii_resources.begin if with_colors else ascii_resources.begin)
                     sleep(2)
                     system(clear_command)
-                    randomly_locate_player()
+                    #randomly_locate_player()
+                    return_player_to_origin() # return player to origin point
                     world.print_tile()
 
     print(colorama.Fore.RED + ascii_resources.game_over if with_colors else ascii_resources.game_over)
