@@ -1,0 +1,15 @@
+signs=2
+test sign 1!
+test sign 2!
+MMMMMMMMMMMM
+M          M
+M MMMMMMMM M
+M M^^^^^^M M
+M M^....^M M
+M M^.  .^M M
+M M^.  .^M M
+M M^....^M M
+M M      M M
+M MMM  MMM M
+MT        TM
+MMMMMMMMMMMM

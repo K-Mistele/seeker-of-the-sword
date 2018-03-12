@@ -1,0 +1,33 @@
+signs=0
+fffffMMMffffffMMMfffffff........
+ffffffMMMMffffffff   ffffff4....
+fff         ffff           .....
+..                       .......
+..    MMMMM8888888888888881  ...
+.    M8  ff 8MMMMMM8ffff8M8   MM
+..M3MM8 ..wff 8MMM8      8...  M
+MMMMM8  ff ..ff8MM8 8888  8... M
+MM1MM8  Mwwf  8MM8w  8MM8    . M
+M   M8 888888  8M8w8w8MMM8 M . M
+MvM M8 8   8M8  88 < 8MM8    . M
+M MfM8 8 8  8M8  88 8MMM8^MMv. M
+M  fM8 8 88  8M8  8 8MM8 ff  . M
+MfM^M8 8 8M8  8M8   8MM8 ..f . M
+Mff 88   8MM8  88888MM8  .f .  M
+MMM  888888888   8MMMM8    ..  M
+.3 M>  >  >  >    8MMMM 8MM.  MM
+..  8888888888   8M88M>  8M8  MM
+... 8    M    888M8 <  8 8M8  MM
+..> 8M Mf  8 <> <   88   8M8  MM
+..>28Mff M 8 > <M888MM888MM8  MM
+f> .8f Mff .8MM8  > wwww MM8  MM
+ff..8M   Mff..8  88v8888 MM8  MM
+ff ..  M wf  .8 8M 5 > M      MM
+.f  .  M  MM  8 8MMMMM     .....
+...  8 fff .f 8  8www   888  ...
+.... <  Mff  888   MMM  88    ..
+......8888888888888888  8  M  ..
+.............             fff...
+fff.......f...ffffMM ^ ffff..ff.
+f2ff......4.....fffffffff...ff5.
+MMffff...........fff.........ff.
