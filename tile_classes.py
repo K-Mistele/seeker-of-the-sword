@@ -57,6 +57,7 @@ class world_tile:
                 {"name": "gateway 7", "character": colorama.Fore.CYAN + "7" if self.with_colors else "7",
                  "is_viable": True, "does_damage": False, "directional": False, "gate_id": 6, "is_gateway": True}
                 ]
+            self.all_elements = self.tile_elements + self.dungeon_elements + self.gateway_elements
             if self.is_custom == False:
                 self.tile_dim = dim
                 # self.tile_elements = ["M",".","^"]

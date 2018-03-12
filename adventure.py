@@ -1,4 +1,4 @@
-from os import system
+from os import system, listdir
 from tile_classes import world_tile
 # from local_resources.keyboard_master import keyboard # event listeners for keyboard
 from local_resources.colorama_master import colorama  # color library
@@ -17,17 +17,33 @@ else:
     is_mac = False
     from local_resources.keyboard_master import keyboard
 
-if platform.system() != "Windows":  # compatibility fixes
+if platform.system() != "Windows":  # determining whether to use system("cls") or system("clear") to clear screen
     clear_command = "clear"
 else:
     clear_command = "cls"
+if platform.system() == "Windows" or platform.system() == "Linux":  # option to turn off colors, auto off if not supported
+    with_colors = input("Initiate with colors? ")
+    while True:
+        if "y" in with_colors.lower():
+            with_colors = True
+            break
+        elif "n" in with_colors.lower():
+            with_colors = False
+            break
+        else:
+            print("Invalid input!")
+            continue
+else:
+    with_colors = False
+
+player_character = colorama.Fore.WHITE + "+" if with_colors else "+" # defining player character
 
 play_again = True
 game_iteration = 0
-while play_again:
+while play_again: # game replay loop
     system(clear_command)
     # display splash screen in color or plain
-    if platform.system() == "Windows" or platform.system() == "Linux":
+    if with_colors == True:
         colorama.init()
         print(colorama.Fore.MAGENTA + ascii_resources.color_splash_screen[0] +
               colorama.Fore.BLUE + ascii_resources.color_splash_screen[1] +
@@ -54,17 +70,8 @@ while play_again:
         if game_iteration == 0:
             run_plain_credits()
 
-    dim = int(input("Tile dimension?\n"))  # getting world dimensions from user
-    name = input("Please enter your name:  ")
-
-    if platform.system() == "Windows" or platform.system() == "Linux":  # option to turn off colors to improve performance
-        with_colors = input("Initiate with colors? ")
-        if "Y" in with_colors or "y" in with_colors:
-            with_colors = True
-        else:
-            with_colors = False
-    else:
-        with_colors = False
+    #dim = int(input("Tile dimension?\n"))  # getting world dimensions from user
+    name = input("Please enter your name:\n")
 
     """Difficulty"""
     difficulty = ""
@@ -85,19 +92,48 @@ while play_again:
         else:
             continue
 
-    with_custom = input("Generate map or use custom?")  # asking user to either generate or use custom map
-    if with_custom.lower() in "generate":
-        dim = int(input("Tile dimension?\n"))  # getting world dimensions from user
-        world = world_tile(dim, "world", with_colors, False, "")  # creating "world" object in "table" class with user input
-        system(clear_command)  # clearing screen to prepare for game
-    else:
-        dim = 5
-        filename = input("Input name of file to be imported (including file extension):\n")
-        world = world_tile(dim, "world", with_colors, True, filename)
-        system(clear_command)
-
+    while True:  # sanitized getting user input about custom maps
+        with_custom = input("Generate map or use custom?\n")  # asking user to either generate or use custom map
+        with_custom = with_custom.lower()
+        if with_custom in "generate" or "generate" in with_custom:
+            while True:  # sanitized getting dim
+                dim = input("Tile dimension?(minimum 16)\n")  # getting world dimensions from user
+                try:
+                    dim = int(dim)
+                    if dim < 16:
+                        print("Tile size too small")
+                        continue
+                    break
+                except:
+                    print("Invalid input!")
+                    continue
+            world = world_tile(dim, "world", with_colors, False,"")  # creating "world" object in "table" class with user input
+            system(clear_command)  # clearing screen to prepare for game
+            break
+        elif with_custom in "custom" or "custom" in with_custom:
+            dim = 5
+            available_files = listdir("custom_maps")  # getting all files in directory that stores maps
+            available_maps = []
+            for file in available_files:  # only preparing files to display to user that are text files
+                if ".txt" in file:
+                    available_maps.append(file.strip())
+            print("\nAvailable maps:")
+            for map in available_maps:  # printing maps that the user can choose from
+                print(map)
+            while True:
+                filename = input("\nInput name of file to be imported:\n")
+                if filename in available_maps:
+                    world = world_tile(dim, "world", with_colors, True, filename)
+                    system(clear_command)
+                    break
+                else:
+                    print("Invalid file name!")
+                    continue
+            break
+        else:
+            print("Invalid input!")
+            continue
     dim = world.tile_dim
-
 
     # inventory system
     def speed_potion_effect():
@@ -182,55 +218,105 @@ while play_again:
     player_pos = [1, 2]  # creating player coordinate storage
     x = 0  # easy access to player position indices
     y = 1
-    spawn_row = world.row(2)
-    i = int(ceil(dim / 3))
-    for item in spawn_row:  # finding empty space in first row for player to spawn
-        if item == " ":
-            player_pos[x] = i
+
+    iter_row = 2
+    found = False
+    while iter_row <= dim - 1:
+        spawn_row = world.row(iter_row)
+        iter_character = int(ceil(dim / 3))
+        index_counter = iter_character - 1
+        for item in spawn_row:
+            if item == " ":
+                player_pos[x] = iter_character - index_counter
+                found = True
+                break
+            elif index_counter < dim - 1:
+                iter_character += 1
+            else:
+                break
+        if found == True:
             break
-        i += 1
-    world.mod_char(player_pos[x], 2, colorama.Fore.WHITE + "+" if with_colors else "+")  # marking origin on map
-    origin_point = [player_pos[x], 2]
+        iter_row += 1
+        player_pos[y] = iter_row
+
+    world.mod_char(player_pos[x], iter_row, player_character)  # marking origin on map
+    origin_point = [player_pos[x], iter_row]
     world.print_tile()  # printing the world for the first time
 
     """
     functions for motion
     """
-    stored_tile = [
-        colorama.Fore.WHITE + "O" if with_colors else "O"]  # stores the tile the player is currently on (initial value will mark origin
-
+    stored_tile = [colorama.Fore.WHITE + "O" if with_colors else "O"]  # stores the tile the player is currently on
+    # initial value marks origin
 
     def reset_pos():  # resets after motion the tile that the player was on
         world.mod_char(player_pos[x], player_pos[y], stored_tile[0])
 
-
     def detect_collision(coordinate, direction):
         collision_output = []
         if coordinate == "x":
-            for dict_element in world.tile_elements:
+            for dict_element in world.all_elements:
                 if world.char(player_pos[x] + direction, player_pos[y]) == dict_element["character"] and dict_element[
-                    "is_viable"] == False:
+                    "is_viable"] == False:  # collision
                     collision_output.append(True)
                     collision_output.append(dict_element["name"])
+                    collision_output.append(20)
                     return collision_output
-                    # return True
+                elif world.char(player_pos[x] + direction, player_pos[y]) == dict_element["character"] and dict_element[
+                    "directional"] == True:  # ridges
+                    if direction == -1 and dict_element["direction"] == "right":
+                        collision_output.append(True)
+                        collision_output.append(dict_element["name"])
+                        collision_output.append(20)
+                        return collision_output
+                    elif direction == 1 and dict_element["direction"] == "left":
+                        collision_output.append(True)
+                        collision_output.append(dict_element["name"])
+                        collision_output.append(20)
+                        return collision_output
+                elif world.char(player_pos[x] + direction, player_pos[y]) == dict_element["character"] and dict_element[
+                    "is_gateway"] == True:  # teleporters
+                    collision_output.append(False)
+                    collision_output.append(dict_element["name"])
+                    collision_output.append(dict_element["gate_id"])
+                    return collision_output
 
-            collision_output.append(False)
+            collision_output.append(False)  # no collision
+            collision_output.append(None)
+            collision_output.append(None)
             return collision_output
             # return False
         elif coordinate == "y":
-            for dict_element in world.tile_elements:
+            for dict_element in world.all_elements:
                 if world.char(player_pos[x], player_pos[y] + direction) == dict_element["character"] and dict_element[
-                    "is_viable"] == False:
+                    "is_viable"] == False:  # collision
                     collision_output.append(True)
                     collision_output.append(dict_element["name"])
+                    collision_output.append(20)
                     return collision_output
-                    # return True
+                elif world.char(player_pos[x], player_pos[y] + direction) == dict_element["character"] and dict_element[
+                    "directional"] == True:  # ridges
+                    if direction == -1 and dict_element["direction"] == "up":
+                        collision_output.append(True)
+                        collision_output.append(dict_element["name"])
+                        collision_output.append(20)
+                        return collision_output
+                    elif direction == 1 and dict_element["direction"] == "down":
+                        collision_output.append(True)
+                        collision_output.append(dict_element["name"])
+                        collision_output.append(20)
+                        return collision_output
+                elif world.char(player_pos[x], player_pos[y] + direction) == dict_element["character"] and dict_element[
+                    "is_gateway"] == True:  # teleporters
+                    collision_output.append(False)
+                    collision_output.append(dict_element["name"])
+                    collision_output.append(dict_element["gate_id"])
+                    return collision_output
 
-            collision_output.append(False)
+            collision_output.append(False)  # no collision
+            collision_output.append(None)
+            collision_output.append(None)
             return collision_output
-            # return False
-
 
     def detect_mob_collision(coordinate, direction):
         mob_collision_output = []
@@ -279,9 +365,7 @@ while play_again:
             return mob_collision_output
 
 
-    accepted_motions = [["w", "a", "s", "d"], ["2w", "2a", "2s", "2d"]]
-
-
+    accepted_motions = ["w", "a", "s", "d"]
     def player_move(motion):
         global number_of_player_moves
         global moves_until_effect_expires
@@ -293,24 +377,45 @@ while play_again:
                 player.speed -= 1
             else:
                 moves_until_effect_expires["speed"] -= 1
-        # making invisibility potion timer count down
-        if player.invisible:
-            if moves_until_effect_expires["invisibility"] == 0:
-                player.invisible = False
-            else:
-                moves_until_effect_expires["invisibility"] -= 1
         if motion == "w":
-            mob_collision_w = detect_mob_collision("y", 1)
+            collision_output = detect_collision("y", 1)
             for i in range(0, player.speed):
-                if player_pos[y] + 1 > dim - 1 or player_pos[y] + 1 < 1:
+                if player_pos[y] + 1 > dim - 1 or player_pos[y] + 1 < 2:
                     print("You cannot leave the map!")
                     sleep(0.5)
-                elif detect_collision("y", 1)[0] == True:
-                    print("Collision detected:")
-                    print("You cannot traverse a {}".format(detect_collision("y", 1)[1]))
-                    sleep(0.5)
-                elif mob_collision_w[0] and len(mob_collision_w) >= 2:
-                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
+                elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
+                    cord_1 = 0
+                    cord_2 = 1
+                    # cord_iter = 0
+                    for pair_of_cords in world.gateway_cords[
+                        collision_output[2]]:  # checking whether player is moving onto a gateway and then moves them
+                        # print(pair_of_cords)
+                        # test_var = pair_of_cords
+                        if [player_pos[x], player_pos[y] + 1] == world.gateway_cords[collision_output[2]][
+                            cord_1]:  # if the location the player is moving onto is the first cord pair
+                            # then move the player to the second cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                        elif [player_pos[x], player_pos[y] + 1] == world.gateway_cords[collision_output[2]][
+                            cord_2]:  # if the location the player is moving onto is the second cord pair
+                            # then move the player to the first cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                elif collision_output[0] == True:
+                    # print("Collision detected:")
+                    print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 else:
                     reset_pos()  # clears character position and replaces with previous tile
@@ -319,17 +424,44 @@ while play_again:
                     stored_tile.append(
                         world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
         elif motion == "s":
-            mob_collision_s = detect_mob_collision("y", -1)
+            collision_output = detect_collision("y", -1)
             for i in range(0, player.speed):
-                if player_pos[y] - 1 > dim - 1 or player_pos[y] - 1 < 1:
+                if player_pos[y] - 1 > dim - 1 or player_pos[y] - 1 < 2:
                     print("You cannot leave the map!")
                     sleep(0.5)
-                elif detect_collision("y", -1)[0] == True:
-                    print("Collision detected:")
-                    print("You cannot traverse a {}".format(detect_collision("y", -1)[1]))
-                    sleep(0.5)
-                elif mob_collision_s[0] and len(mob_collision_s) >= 2:
-                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
+                elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
+                    cord_1 = 0
+                    cord_2 = 1
+                    # cord_iter = 0
+                    for pair_of_cords in world.gateway_cords[
+                        collision_output[2]]:  # checking whether player is moving onto a gateway and then moves them
+                        # print(pair_of_cords)
+                        # test_var = pair_of_cords
+                        if [player_pos[x], player_pos[y] - 1] == world.gateway_cords[collision_output[2]][
+                            cord_1]:  # if the location the player is moving onto is the first cord pair
+                            # then move the player to the second cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                        elif [player_pos[x], player_pos[y] - 1] == world.gateway_cords[collision_output[2]][
+                            cord_2]:  # if the location the player is moving onto is the second cord pair
+                            # then move the player to the first cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                elif collision_output[0] == True:
+                    # print("Collision detected:")
+                    print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -337,17 +469,44 @@ while play_again:
                     player_pos[y] -= 1
                     stored_tile.append(world.char(player_pos[x], player_pos[y]))
         elif motion == "a":
-            mob_collision_a = detect_mob_collision("x", -1)
+            collision_output = detect_collision("x", -1)
             for i in range(0, player.speed):
                 if player_pos[x] - 1 > dim - 1 or player_pos[x] - 1 < 2:
                     print("You cannot leave the map!")
                     sleep(0.5)
-                elif detect_collision("x", -1)[0] == True:
-                    print("Collision detected:")
-                    print("You cannot traverse a {}".format(detect_collision("x", -1)[1]))
-                    sleep(0.5)
-                elif mob_collision_a[0] and len(mob_collision_a) >= 2:
-                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
+                elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
+                    cord_1 = 0
+                    cord_2 = 1
+                    # cord_iter = 0
+                    for pair_of_cords in world.gateway_cords[
+                        collision_output[2]]:  # checking whether player is moving onto a gateway and then moves them
+                        # print(pair_of_cords)
+                        # test_var = pair_of_cords
+                        if [player_pos[x] - 1, player_pos[y]] == world.gateway_cords[collision_output[2]][
+                            cord_1]:  # if the location the player is moving onto is the first cord pair
+                            # then move the player to the second cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                        elif [player_pos[x] - 1, player_pos[y]] == world.gateway_cords[collision_output[2]][
+                            cord_2]:  # if the location the player is moving onto is the second cord pair
+                            # then move the player to the first cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                elif collision_output[0] == True:
+                    # print("Collision detected:")
+                    print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -355,17 +514,44 @@ while play_again:
                     player_pos[x] -= 1
                     stored_tile.append(world.char(player_pos[x], player_pos[y]))
         elif motion == "d":
-            mob_collision_d = detect_mob_collision("x", 1)
+            collision_output = detect_collision("x", 1)
             for i in range(0, player.speed):
                 if player_pos[x] + 1 > dim - 1 or player_pos[x] + 1 < 2:
                     print("You cannot leave the map!")
                     sleep(0.5)
-                elif detect_collision("x", 1)[0] == True:
-                    print("Collision detected:")
-                    print("You cannot traverse a {}".format(detect_collision("x", 1)[1]))
-                    sleep(0.5)
-                elif mob_collision_d[0] and len(mob_collision_d) >= 2:
-                    print("You attacked a {0}!\n{0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
+                elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
+                    cord_1 = 0
+                    cord_2 = 1
+                    # cord_iter = 0
+                    for pair_of_cords in world.gateway_cords[
+                        collision_output[2]]:  # checking whether player is moving onto a gateway and then moves them
+                        # print(pair_of_cords)
+                        # test_var = pair_of_cords
+                        if [player_pos[x] + 1, player_pos[y]] == world.gateway_cords[collision_output[2]][
+                            cord_1]:  # if the location the player is moving onto is the first cord pair
+                            # then move the player to the second cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                        elif [player_pos[x] + 1, player_pos[y]] == world.gateway_cords[collision_output[2]][
+                            cord_2]:  # if the location the player is moving onto is the second cord pair
+                            # then move the player to the first cord pair
+                            reset_pos()
+                            del stored_tile[0]
+                            player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                            player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                            stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                            print("A mysterious gateway transports you elsewhere!")
+                            sleep(0.5)
+                            break
+                elif collision_output[0] == True:
+                    # print("Collision detected:")
+                    print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -373,22 +559,18 @@ while play_again:
                     player_pos[x] += 1
                     stored_tile.append(world.char(player_pos[x], player_pos[y]))
 
-
     def randomly_locate_player():
         while True:
             new_x = randint(2, dim - 1)
             new_y = randint(2, dim - 1)
             new_location = world.char(new_x, new_y)
-            if (new_location == "^"
-                    or new_location == colorama.Fore.GREEN + "^"
-                    or new_location == " "):
+            if new_location == " " or new_location == world.tile_elements[2]["character"]:
                 reset_pos()
                 del stored_tile[0]
                 player_pos[x] = new_x
                 player_pos[y] = new_y
                 stored_tile.append(world.char(player_pos[x], player_pos[y]))
-
-                world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+" if with_colors else "+")
+                world.mod_char(player_pos[x], player_pos[y], player_character)
                 break
 
     def return_player_to_origin(): # origin parameter should be list of [x,y] coordinates for player origin
@@ -397,7 +579,7 @@ while play_again:
         player_pos[x] = origin_point[x]
         player_pos[y] = origin_point[y]
         stored_tile.append(world.char(player_pos[x], player_pos[y]))
-        world.mod_char(player_pos[x], player_pos[y], colorama.Fore.WHITE + "+" if with_colors else "+")
+        world.mod_char(player_pos[x], player_pos[y], player_character)
 
     def print_health():
         global with_colors
@@ -414,13 +596,8 @@ while play_again:
                 healthString = healthString + "{}".format(heartString)
         if with_colors:
             print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
-            print(colorama.Fore.WHITE + "Coordinates:")
-            print(colorama.Fore.WHITE + str(player_pos))
         else:
             print("Health: {}".format(healthString))
-            print("Coordinates:")
-            print(player_pos)
-
 
     while player.lives > 0:
 
@@ -431,7 +608,7 @@ while play_again:
             else:
                 player_input = input()
 
-            if player_input in accepted_motions[0]:  # get player input to move on virtual map
+            if player_input in accepted_motions:  # get player input to move on virtual map
                 player_move(player_input)
             elif player_input == "z":
                 quit() # loop kill switch
@@ -462,11 +639,29 @@ while play_again:
                 system(clear_command)
             else:
                 print("Invalid key input!")
-            world.mod_char(player_pos[x], player_pos[y],
-                   colorama.Fore.WHITE + "+" if with_colors else "+")  # stores character location to virtual map
+            world.mod_char(player_pos[x], player_pos[y],player_character)  # stores character location to virtual map
             system(clear_command)  # clears existing map
             world.print_tile()  # prints world (and new character location)
+
+            damage_dealt_by_spikes = False # checking whether player receives damage from world elements during turn
+            for element in world.all_elements:
+                if element["character"] == stored_tile[0] and element["does_damage"] == True:
+                    player.health -= element["damage"]
+                    if element["name"] == "spikes":
+                        damage_dealt_by_spikes = True
+                        break
             print_health()
+            if damage_dealt_by_spikes == True:
+                if with_colors == True:
+                    print(colorama.Fore.WHITE + "Spikes underfoot draw " + colorama.Fore.RED + "blood" + colorama.Fore.WHITE + "!")
+                else:
+                    print("Spikes underfoot draw blood!")
+            if stored_tile[0] == world.dungeon_elements[8]["character"]:
+                for sign_data in world.sign_info:
+                    if [player_pos[x], player_pos[y]] in sign_data:
+                        print(colorama.Fore.CYAN + "\nA posted sign reads:" if with_colors else "\nA posted sign reads:")
+                        print(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
+                        break
             sleep(0.2)
             for mob in world.monsters:
                 if not player.invisible:
@@ -476,6 +671,17 @@ while play_again:
             system(clear_command)
             world.print_tile()
             print_health()
+            if damage_dealt_by_spikes == True:
+                if with_colors == True:
+                    print(colorama.Fore.WHITE + "Spikes underfoot draw " + colorama.Fore.RED + "blood" + colorama.Fore.WHITE + "!")
+                else:
+                    print("Spikes underfoot draw blood!")
+            if stored_tile[0] == world.dungeon_elements[8]["character"]:
+                for sign_data in world.sign_info:
+                    if [player_pos[x], player_pos[y]] in sign_data:
+                        print(colorama.Fore.CYAN + "\nA posted sign reads:" if with_colors else "\nA posted sign reads:")
+                        print(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
+                        break
             if player.health <= 0:
                 if player.lives == 0:
                     system(clear_command)
