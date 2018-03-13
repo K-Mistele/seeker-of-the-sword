@@ -13,6 +13,8 @@ import platform
 
 if platform.system() == "Darwin":  # determining whether system is a mac for compatible modules
     is_mac = True
+    print("We have detected you are using a Mac terminal. You may wish to change your background color to black"
+          "for a better experience if you enable color mode.")
 else:
     is_mac = False
     from local_resources.keyboard_master import keyboard
