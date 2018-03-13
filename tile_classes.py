@@ -29,7 +29,7 @@ class world_tile:
                 {"name": "structure", "character": colorama.Fore.YELLOW + "8" if self.with_colors else "8",
                  "is_viable": False, "does_damage": False, "directional": False, "is_gateway": False},
                 {"name": "spikes", "character": colorama.Fore.RED + "w" if self.with_colors else "w",
-                 "is_viable": True, "does_damage": True, "directional": False, "is_gateway": False, "damage": 2},
+                 "is_viable": True, "does_damage": True, "directional": False, "is_gateway": False, "damage": 1},
                 {"name": "left ridge", "character": colorama.Fore.YELLOW + "<" if self.with_colors else "<",
                  "is_viable": True, "does_damage": False, "directional": True, "direction": "left","is_gateway": False},
                 {"name": "right ridge", "character": colorama.Fore.YELLOW + ">" if self.with_colors else ">",

@@ -277,8 +277,7 @@ class cyclops(monster):
     points = 50
 
     def __init__(self, world, dim, with_colors):
-        self.viable_tiles = [world.tile_elements[2]["character"],
-                             " "]
+        self.viable_tiles = [world.tile_elements[1]["character"],world.tile_elements[2]["character"]]
         self.range = ceil((1/5)*dim) # 1/5 tile dimension
         self.symbol = colorama.Fore.RED + "&" if with_colors else "&"
         monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)

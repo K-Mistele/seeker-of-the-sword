@@ -22,7 +22,7 @@ if platform.system() != "Windows":  # determining whether to use system("cls") o
 else:
     clear_command = "cls"
 if platform.system() == "Windows" or platform.system() == "Linux":  # option to turn off colors, auto off if not supported
-    with_colors = input("Initiate with colors? ")
+    with_colors = input("Initiate with colors?\n")
     while True:
         if "y" in with_colors.lower():
             with_colors = True
@@ -76,7 +76,7 @@ while play_again: # game replay loop
     """Difficulty"""
     difficulty = ""
     while True:
-        select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker.  ").lower()
+        select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
         if select_difficulty in "normal":
             difficulty = "normal"
             player = character(name, 20, 2, 1, 3)  # basic difficulty
@@ -116,14 +116,14 @@ while play_again: # game replay loop
             available_maps = []
             for file in available_files:  # only preparing files to display to user that are text files
                 if ".txt" in file:
-                    available_maps.append(file.strip())
+                    available_maps.append(file[:-4])
             print("\nAvailable maps:")
             for map in available_maps:  # printing maps that the user can choose from
                 print(map)
             while True:
                 filename = input("\nInput name of file to be imported:\n")
                 if filename in available_maps:
-                    world = world_tile(dim, "world", with_colors, True, filename)
+                    world = world_tile(dim, "world", with_colors, True, filename+".txt")
                     system(clear_command)
                     break
                 else:
@@ -379,6 +379,7 @@ while play_again: # game replay loop
                 moves_until_effect_expires["speed"] -= 1
         if motion == "w":
             collision_output = detect_collision("y", 1)
+            mob_collision_w = detect_mob_collision("y", 1)
             for i in range(0, player.speed):
                 if player_pos[y] + 1 > dim - 1 or player_pos[y] + 1 < 2:
                     print("You cannot leave the map!")
@@ -399,7 +400,10 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                         elif [player_pos[x], player_pos[y] + 1] == world.gateway_cords[collision_output[2]][
@@ -410,12 +414,18 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
                     print("You cannot traverse a {}.".format(collision_output[1]))
+                    sleep(0.5)
+                elif mob_collision_w[0] and len(mob_collision_w) >= 2:
+                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
                     sleep(0.5)
                 else:
                     reset_pos()  # clears character position and replaces with previous tile
@@ -425,6 +435,7 @@ while play_again: # game replay loop
                         world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
         elif motion == "s":
             collision_output = detect_collision("y", -1)
+            mob_collision_s = detect_mob_collision("y", -1)
             for i in range(0, player.speed):
                 if player_pos[y] - 1 > dim - 1 or player_pos[y] - 1 < 2:
                     print("You cannot leave the map!")
@@ -445,7 +456,10 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                         elif [player_pos[x], player_pos[y] - 1] == world.gateway_cords[collision_output[2]][
@@ -456,12 +470,18 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
                     print("You cannot traverse a {}.".format(collision_output[1]))
+                    sleep(0.5)
+                elif mob_collision_s[0] and len(mob_collision_s) >= 2:
+                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -470,6 +490,7 @@ while play_again: # game replay loop
                     stored_tile.append(world.char(player_pos[x], player_pos[y]))
         elif motion == "a":
             collision_output = detect_collision("x", -1)
+            mob_collision_a = detect_mob_collision("x", -1)
             for i in range(0, player.speed):
                 if player_pos[x] - 1 > dim - 1 or player_pos[x] - 1 < 2:
                     print("You cannot leave the map!")
@@ -490,7 +511,10 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                         elif [player_pos[x] - 1, player_pos[y]] == world.gateway_cords[collision_output[2]][
@@ -501,12 +525,18 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
                     print("You cannot traverse a {}.".format(collision_output[1]))
+                    sleep(0.5)
+                elif mob_collision_a[0] and len(mob_collision_a) >= 2:
+                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -515,6 +545,7 @@ while play_again: # game replay loop
                     stored_tile.append(world.char(player_pos[x], player_pos[y]))
         elif motion == "d":
             collision_output = detect_collision("x", 1)
+            mob_collision_d = detect_mob_collision("x", 1)
             for i in range(0, player.speed):
                 if player_pos[x] + 1 > dim - 1 or player_pos[x] + 1 < 2:
                     print("You cannot leave the map!")
@@ -535,7 +566,10 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                         elif [player_pos[x] + 1, player_pos[y]] == world.gateway_cords[collision_output[2]][
@@ -546,12 +580,18 @@ while play_again: # game replay loop
                             player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
                             player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
                             stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                            print("A mysterious gateway transports you elsewhere!")
+                            if with_colors:
+                                print(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
+                            else:
+                                print("A mysterious gateway transports you elsewhere!")
                             sleep(0.5)
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
                     print("You cannot traverse a {}.".format(collision_output[1]))
+                    sleep(0.5)
+                elif mob_collision_d[0] and len(mob_collision_d) >= 2:
+                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -585,7 +625,7 @@ while play_again: # game replay loop
         global with_colors
         healthString = ""
         if with_colors:
-            heartString = colorama.Fore.RED + "O"
+            heartString = colorama.Fore.RED + "O" + colorama.Fore.WHITE
         else:
             heartString = "O"
         for i in range(0, player.health):
@@ -667,7 +707,7 @@ while play_again: # game replay loop
                 if not player.invisible:
                     mob.move(player_pos, player)
                     world.mod_char(mob.x_index, mob.y_index, mob.symbol)
-            sleep(0.1)
+            sleep(0.2)
             system(clear_command)
             world.print_tile()
             print_health()
