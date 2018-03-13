@@ -21,20 +21,21 @@ if platform.system() != "Windows":  # determining whether to use system("cls") o
     clear_command = "clear"
 else:
     clear_command = "cls"
-if platform.system() == "Windows" or platform.system() == "Linux":  # option to turn off colors, auto off if not supported
+
+
+while True:
     with_colors = input("Initiate with colors?\n")
-    while True:
-        if "y" in with_colors.lower():
-            with_colors = True
-            break
-        elif "n" in with_colors.lower():
-            with_colors = False
-            break
-        else:
-            print("Invalid input!")
-            continue
-else:
-    with_colors = False
+    if "y" in with_colors.lower():
+        with_colors = True
+        break
+    elif "n" in with_colors.lower():
+        with_colors = False
+        break
+    else:
+        print("Invalid input!")
+        continue
+if with_colors:
+    colorama.init()
 
 player_character = colorama.Fore.WHITE + "+" if with_colors else "+" # defining player character
 
@@ -44,7 +45,7 @@ while play_again: # game replay loop
     system(clear_command)
     # display splash screen in color or plain
     if with_colors == True:
-        colorama.init()
+        #colorama.init()
         print(colorama.Fore.MAGENTA + ascii_resources.color_splash_screen[0] +
               colorama.Fore.BLUE + ascii_resources.color_splash_screen[1] +
               colorama.Fore.RED + ascii_resources.color_splash_screen[2] +
@@ -60,7 +61,7 @@ while play_again: # game replay loop
               colorama.Fore.RED + ascii_resources.color_splash_screen[12] +
               colorama.Fore.GREEN + ascii_resources.color_splash_screen[13] +
               colorama.Fore.WHITE)
-        colorama.deinit()
+        #colorama.deinit()
         sleep(3)
         if game_iteration == 0:
             run_color_credits()
@@ -70,15 +71,22 @@ while play_again: # game replay loop
         if game_iteration == 0:
             run_plain_credits()
 
-    #dim = int(input("Tile dimension?\n"))  # getting world dimensions from user
-    name = input("Please enter your name:\n")
-    if name.lower() == "hot dog":
-        print(colorama.Fore.GREEN + "\nWelcome, [ADMIN]\n"+colorama.Fore.WHITE)
+    if with_colors:
+        name = input(colorama.Fore.WHITE+"Please enter your name:\n")
+        if name.lower() == "hot dog":
+            print(colorama.Fore.GREEN + "\nWelcome, [ADMIN]\n")
+    else:
+        name = input("Please enter your name:\n")
+        if name.lower() == "hot dog":
+            print("\nWelcome, [ADMIN]\n")
 
     """Difficulty"""
     difficulty = ""
     while True:
-        select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
+        if with_colors:
+            select_difficulty = input(colorama.Fore.WHITE+"Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
+        else:
+            select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
         if select_difficulty in "normal":
             difficulty = "normal"
             player = character(name, 20, 2, 1, 3)  # basic difficulty
@@ -95,19 +103,30 @@ while play_again: # game replay loop
             continue
 
     while True:  # sanitized getting user input about custom maps
-        with_custom = input("Generate map or use custom?\n")  # asking user to either generate or use custom map
-        with_custom = with_custom.lower()
+        if with_colors:
+            with_custom = input(colorama.Fore.WHITE+"Generate map or use custom?\n").lower()
+        else:
+            with_custom = input("Generate map or use custom?\n").lower()  # asking user to either generate or use custom map
         if with_custom in "generate" or "generate" in with_custom:
             while True:  # sanitized getting dim
-                dim = input("Tile dimension?(minimum 16)\n")  # getting world dimensions from user
+                if with_colors:
+                    dim = input(colorama.Fore.WHITE+"Tile dimension?(minimum 16)\n")
+                else:
+                    dim = input("Tile dimension?(minimum 16)\n")  # getting world dimensions from user
                 try:
                     dim = int(dim)
                     if dim < 16:
-                        print("Tile size too small")
+                        if with_colors:
+                            print(colorama.Fore.WHITE+"Tile size too small.")
+                        else:
+                            print("Tile size too small.")
                         continue
                     break
                 except:
-                    print("Invalid input!")
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"Invalid input!")
+                    else:
+                        print("Invalid input!")
                     continue
             world = world_tile(dim, "world", with_colors, False,"")  # creating "world" object in "table" class with user input
             system(clear_command)  # clearing screen to prepare for game
@@ -119,57 +138,88 @@ while play_again: # game replay loop
             for file in available_files:  # only preparing files to display to user that are text files
                 if ".txt" in file:
                     available_maps.append(file[:-4])
-            print("\nAvailable maps:")
+            if with_colors:
+                print(colorama.Fore.WHITE+"\nAvailable maps:")
+            else:
+                print("\nAvailable maps:")
             for map in available_maps:  # printing maps that the user can choose from
-                print(map)
+                if with_colors:
+                    print(colorama.Fore.WHITE+map)
+                else:
+                    print(map)
             while True:
-                filename = input("\nInput name of file to be imported:\n")
+                if with_colors:
+                    filename = input(colorama.Fore.WHITE+"\nInput name of file to be imported:\n")
+                else:
+                    filename = input("\nInput name of file to be imported:\n")
                 if filename in available_maps:
                     world = world_tile(dim, "world", with_colors, True, filename+".txt")
                     system(clear_command)
                     break
                 else:
-                    print("Invalid file name!")
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"Invalid file name!")
+                    else:
+                        print("Invalid file name!")
                     continue
             break
         else:
-            print("Invalid input!")
+            if with_colors:
+                print(colorama.Fore.WHITE+"Invalid Input!")
+            else:
+                print("Invalid input!")
             continue
     dim = world.tile_dim
 
     # inventory system
     def speed_potion_effect():
+        global with_colors
         player.speed += 1
         moves_until_effect_expires["speed"] += speed_potion.duration
-        print("You used a speed potion!")
+        if with_colors:
+            print(colorama.Fore.WHITE+"Invalid Input!")
+        else:
+            print("You used a speed potion!")
 
 
     def lesser_health_effect():
+        global with_colors
         if player.health < 20:
             i = 0
             while i < 5:
                 if player.health < 20:
                     player.health += 1
                     i += 1
-        print("You used a lesser health potion! \n Health restored to {}!".format(player.health))
+        if with_colors:
+            print(colorama.Fore.WHITE+"You used a lesser health potion! \n Health restored to {}!".format(player.health))
+        else:
+            print("You used a lesser health potion! \n Health restored to {}!".format(player.health))
 
 
     def greater_health_effect():
+        global with_colors
         if player.health < 20:
             i = 0
             while i < 10:
                 if player.health < 20:
                     player.health += 1
                     i += 1
-        print("You used a greater health potion! \n Health restored to {}!".format(player.health))
+        if with_colors:
+            print(colorama.Fore.WHITE+"You used a greater health potion! \n Health restored to {}!".format(player.health))
+        else:
+            print("You used a greater health potion! \n Health restored to {}!".format(player.health))
 
 
     def invisibility_effect():
+        global with_colors
         global invisible
         global invisibility_turns
         player.invisible = True
         moves_until_effect_expires["invisibility"] += invisibility_potion.duration
-        print("You used an invisibility potion!")
+        if with_colors:
+            print(colorama.Fore.WHITE+"You used an invisibility potion!")
+        else:
+            print("You used an invisibility potion!")
 
 
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
@@ -698,7 +748,10 @@ while play_again: # game replay loop
                 quit() # loop kill switch
             elif player_input == "e":
                 system(clear_command)
-                print("Inventory: \n")
+                if with_colors:
+                    print(colorama.Fore.WHITE+"Inventory: \n")
+                else:
+                    print("Inventory: \n")
                 for item in player_inventory:  # display inventory
                     if item.quantity > 0:
                         print("   {}: ".format(item.name))

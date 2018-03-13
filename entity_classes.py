@@ -69,7 +69,10 @@ class monster: # for other monsters to inherit
                     monster_collision.append(self.occupied_tile.char(self.x_index+direction, self.y_index)) # char collided with
                     if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
                         target.health -= self.damage
-                        print("A {} has attacked you!".format(self.name))
+                        if self.with_colors:
+                            print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
+                        else:
+                            print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
@@ -79,7 +82,10 @@ class monster: # for other monsters to inherit
                     monster_collision.append(self.occupied_tile.char(self.x_index, self.y_index+direction)) # char collided with
                     if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
                         target.health -= self.damage
-                        print("A {} has attacked you!".format(self.name))
+                        if self.with_colors:
+                            print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
+                        else:
+                            print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
