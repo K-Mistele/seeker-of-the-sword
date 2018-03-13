@@ -159,7 +159,7 @@ class world_tile:
                                 self.mod_char(col_pos, row_pos, self.dungeon_elements[0]["character"])
                             elif character == "-":
                                 self.mod_char(col_pos, row_pos, self.dungeon_elements[1]["character"])
-                            elif character == "8":
+                            elif character == "#":
                                 self.mod_char(col_pos, row_pos, self.dungeon_elements[2]["character"])
                             elif character == "w":
                                 self.mod_char(col_pos, row_pos, self.dungeon_elements[3]["character"])

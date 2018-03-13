@@ -72,6 +72,8 @@ while play_again: # game replay loop
 
     #dim = int(input("Tile dimension?\n"))  # getting world dimensions from user
     name = input("Please enter your name:\n")
+    if name.lower() == "hot dog":
+        print(colorama.Fore.GREEN + "\nWelcome, [ADMIN]\n"+colorama.Fore.WHITE)
 
     """Difficulty"""
     difficulty = ""
