@@ -61,12 +61,12 @@ while play_again: # game replay loop
               colorama.Fore.GREEN + ascii_resources.color_splash_screen[13] +
               colorama.Fore.WHITE)
         colorama.deinit()
-        sleep(5)
+        sleep(3)
         if game_iteration == 0:
             run_color_credits()
     else:
         print(ascii_resources.plain_splash_screen)
-        sleep(5)
+        sleep(3)
         if game_iteration == 0:
             run_plain_credits()
 
@@ -228,7 +228,10 @@ while play_again: # game replay loop
         iter_character = int(ceil(dim / 3))
         index_counter = iter_character - 1
         for item in spawn_row:
-            if item == " ":
+            if iter_character - index_counter < int(ceil(dim / 3)):
+                iter_character += 1
+                continue
+            elif item == " ":
                 player_pos[x] = iter_character - index_counter
                 found = True
                 break
