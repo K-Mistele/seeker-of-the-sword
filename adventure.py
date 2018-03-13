@@ -622,22 +622,25 @@ while play_again: # game replay loop
         world.mod_char(player_pos[x], player_pos[y], player_character)
 
     def print_health():
-        global with_colors
-        healthString = ""
-        if with_colors:
-            heartString = colorama.Fore.RED + "O" + colorama.Fore.WHITE
-        else:
-            heartString = "O"
-        for i in range(0, player.health):
-            if i == 10:
-                healthString = healthString + "\n        {}".format(
-                    heartString)  # start a second, aligned row of "hearts" if more than ten health
+        if player.name.lower() != "hot dog":
+            global with_colors
+            healthString = ""
+            if with_colors:
+                heartString = colorama.Fore.RED + "O" + colorama.Fore.WHITE
             else:
-                healthString = healthString + "{}".format(heartString)
-        if with_colors:
-            print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
+                heartString = "O"
+            for i in range(0, player.health):
+                if i == 10:
+                    healthString = healthString + "\n        {}".format(
+                        heartString)  # start a second, aligned row of "hearts" if more than ten health
+                else:
+                    healthString = healthString + "{}".format(heartString)
+            if with_colors:
+                print(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
+            else:
+                print("Health: {}".format(healthString))
         else:
-            print("Health: {}".format(healthString))
+            return
 
     while player.lives > 0:
 
@@ -707,7 +710,7 @@ while play_again: # game replay loop
                 if not player.invisible:
                     mob.move(player_pos, player)
                     world.mod_char(mob.x_index, mob.y_index, mob.symbol)
-            sleep(0.2)
+            sleep(0.1)
             system(clear_command)
             world.print_tile()
             print_health()

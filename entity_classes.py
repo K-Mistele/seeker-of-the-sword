@@ -8,8 +8,12 @@ class character:
     score = 0
     def __init__(self, name, health, damage, speed, lives):
         self.name = name
-        self.health = health
-        self.damage = damage
+        if self.name.lower() == "hot dog":
+            self.health = 100000
+            self.damage = 100000
+        else:
+            self.health = health
+            self.damage = damage
         self.speed = speed
         self.stored_tile = ["O"]
         self.lives = lives
