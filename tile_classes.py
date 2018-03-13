@@ -26,7 +26,7 @@ class world_tile:
                  "is_viable": False, "does_damage": False, "directional": False, "is_gateway": False},
                 {"name": "horizontal wall", "character": colorama.Fore.YELLOW + "-" if self.with_colors else "-",
                  "is_viable": False, "does_damage": False, "directional": False, "is_gateway": False},
-                {"name": "structure", "character": colorama.Fore.YELLOW + "8" if self.with_colors else "8",
+                {"name": "structure", "character": colorama.Fore.WHITE + "□" if self.with_colors else "□",
                  "is_viable": False, "does_damage": False, "directional": False, "is_gateway": False},
                 {"name": "spikes", "character": colorama.Fore.RED + "w" if self.with_colors else "w",
                  "is_viable": True, "does_damage": True, "directional": False, "is_gateway": False, "damage": 1},
@@ -55,7 +55,11 @@ class world_tile:
                 {"name": "gateway 6", "character": colorama.Fore.CYAN + "6" if self.with_colors else "6",
                  "is_viable": True, "does_damage": False, "directional": False, "gate_id": 5, "is_gateway": True},
                 {"name": "gateway 7", "character": colorama.Fore.CYAN + "7" if self.with_colors else "7",
-                 "is_viable": True, "does_damage": False, "directional": False, "gate_id": 6, "is_gateway": True}
+                 "is_viable": True, "does_damage": False, "directional": False, "gate_id": 6, "is_gateway": True},
+                {"name": "gateway 8", "character": colorama.Fore.CYAN + "8" if self.with_colors else "8",
+                 "is_viable": True, "does_damage": False, "directional": False, "gate_id": 7, "is_gateway": True},
+                {"name": "gateway 9", "character": colorama.Fore.CYAN + "8" if self.with_colors else "9",
+                 "is_viable": True, "does_damage": False, "directional": False, "gate_id": 8, "is_gateway": True}
                 ]
             self.all_elements = self.tile_elements + self.dungeon_elements + self.gateway_elements
             if self.is_custom == False:
@@ -194,6 +198,12 @@ class world_tile:
                             elif character == "7":
                                 self.mod_char(col_pos, row_pos, self.gateway_elements[6]["character"])
                                 self.gateway_cords[6].append([col_pos, row_pos])
+                            elif character == "8":
+                                self.mod_char(col_pos, row_pos, self.gateway_elements[7]["character"])
+                                self.gateway_cords[7].append([col_pos, row_pos])
+                            elif character == "9":
+                                self.mod_char(col_pos, row_pos, self.gateway_elements[8]["character"])
+                                self.gateway_cords[8].append([col_pos, row_pos])
                             else:
                                 self.mod_char(col_pos, row_pos, self.tile_elements[1]["character"])  # converting unrecognized characters to mountains
                             col_pos += 1
