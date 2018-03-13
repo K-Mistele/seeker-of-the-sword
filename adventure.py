@@ -382,7 +382,10 @@ while play_again: # game replay loop
             mob_collision_w = detect_mob_collision("y", 1)
             for i in range(0, player.speed):
                 if player_pos[y] + 1 > dim - 1 or player_pos[y] + 1 < 2:
-                    print("You cannot leave the map!")
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot leave the map!")
+                    else:
+                        print("You cannot leave the map!")
                     sleep(0.5)
                 elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
                     cord_1 = 0
@@ -422,10 +425,16 @@ while play_again: # game replay loop
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
-                    print("You cannot traverse a {}.".format(collision_output[1]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot traverse a {}.".format(collision_output[1]))
+                    else:
+                        print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 elif mob_collision_w[0] and len(mob_collision_w) >= 2:
-                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
+                    else:
+                        print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_w[1], mob_collision_w[2]))
                     sleep(0.5)
                 else:
                     reset_pos()  # clears character position and replaces with previous tile
@@ -438,7 +447,10 @@ while play_again: # game replay loop
             mob_collision_s = detect_mob_collision("y", -1)
             for i in range(0, player.speed):
                 if player_pos[y] - 1 > dim - 1 or player_pos[y] - 1 < 2:
-                    print("You cannot leave the map!")
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot leave the map!")
+                    else:
+                        print("You cannot leave the map!")
                     sleep(0.5)
                 elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
                     cord_1 = 0
@@ -478,10 +490,16 @@ while play_again: # game replay loop
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
-                    print("You cannot traverse a {}.".format(collision_output[1]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot traverse a {}.".format(collision_output[1]))
+                    else:
+                        print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 elif mob_collision_s[0] and len(mob_collision_s) >= 2:
-                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
+                    else:
+                        print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_s[1], mob_collision_s[2]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -493,7 +511,10 @@ while play_again: # game replay loop
             mob_collision_a = detect_mob_collision("x", -1)
             for i in range(0, player.speed):
                 if player_pos[x] - 1 > dim - 1 or player_pos[x] - 1 < 2:
-                    print("You cannot leave the map!")
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot leave the map!")
+                    else:
+                        print("You cannot leave the map!")
                     sleep(0.5)
                 elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
                     cord_1 = 0
@@ -533,10 +554,16 @@ while play_again: # game replay loop
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
-                    print("You cannot traverse a {}.".format(collision_output[1]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot traverse a {}.".format(collision_output[1]))
+                    else:
+                        print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 elif mob_collision_a[0] and len(mob_collision_a) >= 2:
-                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
+                    else:
+                        print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_a[1], mob_collision_a[2]))
                     sleep(0.5)
                 else:
                     reset_pos()
@@ -548,7 +575,10 @@ while play_again: # game replay loop
             mob_collision_d = detect_mob_collision("x", 1)
             for i in range(0, player.speed):
                 if player_pos[x] + 1 > dim - 1 or player_pos[x] + 1 < 2:
-                    print("You cannot leave the map!")
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot leave the map!")
+                    else:
+                        print("You cannot leave the map!")
                     sleep(0.5)
                 elif (collision_output[0] == False) and (collision_output[2] in range(0, 10)):
                     cord_1 = 0
@@ -588,10 +618,16 @@ while play_again: # game replay loop
                             break
                 elif collision_output[0] == True:
                     # print("Collision detected:")
-                    print("You cannot traverse a {}.".format(collision_output[1]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You cannot traverse a {}.".format(collision_output[1]))
+                    else:
+                        print("You cannot traverse a {}.".format(collision_output[1]))
                     sleep(0.5)
                 elif mob_collision_d[0] and len(mob_collision_d) >= 2:
-                    print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
+                    if with_colors:
+                        print(colorama.Fore.WHITE+"You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
+                    else:
+                        print("You attacked a {0}! {0}'s health is now {1}!".format(mob_collision_d[1], mob_collision_d[2]))
                     sleep(0.5)
                 else:
                     reset_pos()
