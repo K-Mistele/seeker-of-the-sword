@@ -61,7 +61,11 @@ while play_again: # game replay loop
               colorama.Fore.RED + ascii_resources.color_splash_screen[10] +
               colorama.Fore.BLUE + ascii_resources.color_splash_screen[11] +
               colorama.Fore.RED + ascii_resources.color_splash_screen[12] +
-              colorama.Fore.GREEN + ascii_resources.color_splash_screen[13] +
+              colorama.Fore.BLUE + ascii_resources.color_splash_screen[13] +
+              colorama.Fore.RED + ascii_resources.color_splash_screen[14] +
+              colorama.Fore.BLUE + ascii_resources.color_splash_screen[15] +
+              colorama.Fore.RED + ascii_resources.color_splash_screen[16] +
+              colorama.Fore.GREEN + ascii_resources.color_splash_screen[17] +
               colorama.Fore.WHITE)
         #colorama.deinit()
         sleep(3)
