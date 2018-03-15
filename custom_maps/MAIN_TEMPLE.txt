@@ -1,0 +1,34 @@
+signs=1
+Seek ye the sword? Be ye wary of the ~~WRAITH~~
+fffffMMMffffffMMMfffffff........
+ffffffMMMMffffffff   ffffff4....
+fff         ffff           .....
+..                       .......
+..    ####################1  ...
+.    ##  ff ########ffff###   MM
+..M3M## ..wff #####      #...  M
+MMMMM#  ff ..ff#### ####  #... M
+MM1MM#  Mwwf  ####w  ####    . M
+M   M# ######  ###w#w##### M . M
+MvM M# #   ###  ## < ####    . M
+M MfM# # #  ###  ## #####^MMv. M
+M  fM# # ##  ###  # #### ff  . M
+MfM^M# # ###  ###   #### ..f . M
+Mff ##   ####  ########  .f .  M
+MMM  #########   ######    ..  M
+.3 #>  >  >  >    ##### ###.  MM
+..  ##########   #####>  ###  MM
+... ##   M    ##### <  # ###  MM
+..> ## Mf  # <> <   ##   ###  MM
+..>2##ff M # > <############  MM
+f> .#f Mff .####  > wwww ###  MM
+ff..##   Mff..#  ##v#### ###  MM
+ff ..  M wf  .# ## 5 > #      MM
+.f  .  M  MM  # ######     .....
+...  # fff .f #  #www   ###  ...
+.... <  #ff  ###   ###  ##    ..
+......################  #  M  ..
+.............         T   fff...
+fff.......f...ffffMM ^ ffff..ff.
+f2ff......4.....fffffffff...ff5.
+MMffff...........fff.........ff.

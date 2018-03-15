@@ -8,8 +8,12 @@ class character:
     score = 0
     def __init__(self, name, health, damage, speed, lives):
         self.name = name
-        self.health = health
-        self.damage = damage
+        if self.name.lower() == "hot dog":
+            self.health = 100000
+            self.damage = 100000
+        else:
+            self.health = health
+            self.damage = damage
         self.speed = speed
         self.stored_tile = ["O"]
         self.lives = lives
@@ -65,7 +69,10 @@ class monster: # for other monsters to inherit
                     monster_collision.append(self.occupied_tile.char(self.x_index+direction, self.y_index)) # char collided with
                     if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
                         target.health -= self.damage
-                        print("A {} has attacked you!".format(self.name))
+                        if self.with_colors:
+                            print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
+                        else:
+                            print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
@@ -75,7 +82,10 @@ class monster: # for other monsters to inherit
                     monster_collision.append(self.occupied_tile.char(self.x_index, self.y_index+direction)) # char collided with
                     if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
                         target.health -= self.damage
-                        print("A {} has attacked you!".format(self.name))
+                        if self.with_colors:
+                            print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
+                        else:
+                            print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
@@ -239,6 +249,7 @@ class wyvern(monster):
                              world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"],
                              " "]
+        self.with_colors = with_colors
         self.range = ceil((1/2)*dim) # range is 1/2 the dimension
         self.symbol = colorama.Fore.RED + "%" if with_colors else "%"
         monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
@@ -259,6 +270,7 @@ class goblin(monster):
     def __init__(self, world, dim, with_colors):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              " "]
+        self.with_colors = with_colors
         self.symbol = colorama.Fore.RED + "$" if with_colors else "$"
         self.range = ceil((1/4)*dim)  # tracking range 1/4 dim
         monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
@@ -277,8 +289,9 @@ class cyclops(monster):
     points = 50
 
     def __init__(self, world, dim, with_colors):
-        self.viable_tiles = [world.tile_elements[2]["character"],
-                             " "]
+        self.viable_tiles = [world.tile_elements[1]["character"],
+                             world.tile_elements[2]["character"]]
+        self.with_colors = with_colors
         self.range = ceil((1/5)*dim) # 1/5 tile dimension
         self.symbol = colorama.Fore.RED + "&" if with_colors else "&"
         monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
