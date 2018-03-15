@@ -1,4 +1,4 @@
-# ascii-adventure
+# Seeker of the Sword
 An ASCII-character based adventure world written in python.
 (Executes into console.)
 
