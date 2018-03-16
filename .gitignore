@@ -5,3 +5,4 @@ venv1/
 
 #Python
 __pycache__/
+map_converter.py

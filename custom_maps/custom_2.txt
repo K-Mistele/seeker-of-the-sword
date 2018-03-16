@@ -1,0 +1,13 @@
+signs=0
+MMMMMMMMMMMM
+M..........M
+M MMMMMMMM M
+M MffffffM M
+M Mf....fM M
+M Mf.  .fM M
+M.Mf.  .fM.M
+M Mf.ww.fM M
+M M      M M
+M MMMwwMMM M
+M          M
+MMMMMMMMMMMM
