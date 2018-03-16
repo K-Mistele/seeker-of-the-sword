@@ -61,7 +61,11 @@ while play_again: # game replay loop
               colorama.Fore.RED + ascii_resources.color_splash_screen[10] +
               colorama.Fore.BLUE + ascii_resources.color_splash_screen[11] +
               colorama.Fore.RED + ascii_resources.color_splash_screen[12] +
-              colorama.Fore.GREEN + ascii_resources.color_splash_screen[13] +
+              colorama.Fore.BLUE + ascii_resources.color_splash_screen[13] +
+              colorama.Fore.RED + ascii_resources.color_splash_screen[14] +
+              colorama.Fore.BLUE + ascii_resources.color_splash_screen[15] +
+              colorama.Fore.RED + ascii_resources.color_splash_screen[16] +
+              colorama.Fore.GREEN + ascii_resources.color_splash_screen[17] +
               colorama.Fore.WHITE)
         #colorama.deinit()
         sleep(3)
@@ -228,7 +232,7 @@ while play_again: # game replay loop
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
     greater_health_potion = potion("Greater Health Potion", "instant", "102", 1, greater_health_effect,
                                    "Restores 10 health")
-    invisibility_potion = potion("Invisibility Potion", 10, 103, 1, invisibility_effect,
+    invisibility_potion = potion("Invisibility Potion", 10, "103", 1, invisibility_effect,
                                  "Become invisible for a short time")
 
     # global-scope variables
@@ -434,6 +438,11 @@ while play_again: # game replay loop
                 player.speed -= 1
             else:
                 moves_until_effect_expires["speed"] -= 1
+        if player.invisible == True:
+            if moves_until_effect_expires["invisibility"] == 0:
+                player.invisible = False
+            else:
+                moves_until_effect_expires["invisibility"] -= 1
         if motion == "w":
             collision_output = detect_collision("y", 1)
             mob_collision_w = detect_mob_collision("y", 1)
@@ -822,6 +831,7 @@ while play_again: # game replay loop
                         print(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
                         break
             if player.health <= 0:
+                player.lives -= 1
                 if player.lives == 0:
                     system(clear_command)
                     break
