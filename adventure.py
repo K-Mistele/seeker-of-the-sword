@@ -232,7 +232,7 @@ while play_again: # game replay loop
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
     greater_health_potion = potion("Greater Health Potion", "instant", "102", 1, greater_health_effect,
                                    "Restores 10 health")
-    invisibility_potion = potion("Invisibility Potion", 10, 103, 1, invisibility_effect,
+    invisibility_potion = potion("Invisibility Potion", 10, "103", 1, invisibility_effect,
                                  "Become invisible for a short time")
 
     # global-scope variables
@@ -438,6 +438,11 @@ while play_again: # game replay loop
                 player.speed -= 1
             else:
                 moves_until_effect_expires["speed"] -= 1
+        if player.invisible == True:
+            if moves_until_effect_expires["invisibility"] == 0:
+                player.invisible = False
+            else:
+                moves_until_effect_expires["invisibility"] -= 1
         if motion == "w":
             collision_output = detect_collision("y", 1)
             mob_collision_w = detect_mob_collision("y", 1)
@@ -826,6 +831,7 @@ while play_again: # game replay loop
                         print(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
                         break
             if player.health <= 0:
+                player.lives -= 1
                 if player.lives == 0:
                     system(clear_command)
                     break
