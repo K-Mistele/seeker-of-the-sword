@@ -831,12 +831,12 @@ while play_again: # game replay loop
                         print(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
                         break
             if player.health <= 0:
-                #player.lives -= 1
+                player.lives -= 1
                 if player.lives <= 0:
                     system(clear_command)
                     break
                 else:
-                    player.health = 15 if difficulty == "heroic" else 20
+                    player.health = 15 if difficulty == "true seeker" else 20
                     player.lives -= 1
                     system(clear_command)
                     print(colorama.Fore.RED + ascii_resources.lives_left if with_colors else ascii_resources.lives_left)
