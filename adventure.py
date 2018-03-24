@@ -10,6 +10,7 @@ from inventory_classes import potion, melee_weapon
 from local_resources import ascii_resources  # ascii art resources
 from local_resources.ascii_credits import run_color_credits, run_plain_credits
 import platform
+from check_high_scores import check_high_scores, print_high_scores # csv high scores system
 
 if platform.system() == "Darwin":  # determining whether system is a mac for compatible modules
     is_mac = True
@@ -99,7 +100,7 @@ while play_again: # game replay loop
             break
         elif select_difficulty in "true seeker":
             difficulty = "seeker"
-            player = character(name, 15, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
+            player = character(name, 15, 4, 1, 0)  # lower health, higher damage; more mobs will spawn
             break
         else:
             continue
@@ -826,7 +827,7 @@ while play_again: # game replay loop
                     system(clear_command)
                     break
                 else:
-                    player.health = 15 if difficulty == "heroic" else 20
+                    player.health = 15 if difficulty == "true seeker" else 20
                     player.lives -= 1
                     system(clear_command)
                     print(colorama.Fore.RED + ascii_resources.lives_left if with_colors else ascii_resources.lives_left)
@@ -856,6 +857,8 @@ while play_again: # game replay loop
     player.score += number_of_player_moves
     print(colorama.Fore.MAGENTA + "     Your Score: " + str(player.score) if with_colors else "     Your Score: " + str(
         player.score))
+    high_scores = check_high_scores(player.name, player.score, world.tile_dim)
+    print_high_scores(high_scores, with_colors)
     sleep(3)
     system(clear_command)
     while True:
