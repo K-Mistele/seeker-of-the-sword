@@ -45,6 +45,9 @@ def print_high_scores(scores, with_colors):
 
     for score in scores:
         # make sure all names have same amount of white space
+        if len(score[0]) > 20:
+            score[0] = score[0][0:15]
+            # trim overly long usernames
         score[0] = "|" + score[0]
         for i in range(len(score[0]), 20):
             score[0] += " "
