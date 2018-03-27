@@ -104,7 +104,7 @@ while play_again: # game replay loop
             break
         elif select_difficulty in "true seeker":
             difficulty = "seeker"
-            player = character(name, 15, 4, 1, 0)  # lower health, higher damage; more mobs will spawn
+            player = character(name, 15, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
             break
         else:
             continue
