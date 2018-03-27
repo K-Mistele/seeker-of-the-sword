@@ -95,15 +95,15 @@ while play_again: # game replay loop
             select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
         if select_difficulty in "normal":
             difficulty = "normal"
-            player = character(name, 20, 2, 1, 3)  # basic difficulty
+            player = character(name, 20, 20, 2, 1, 3)  # basic difficulty
             break
         elif select_difficulty in "heroic":
             difficulty = "heroic"
-            player = character(name, 20, 2, 1, 2)  # more mobs will spawn
+            player = character(name, 20, 20, 2, 1, 2)  # more mobs will spawn
             break
         elif select_difficulty in "true seeker":
             difficulty = "seeker"
-            player = character(name, 15, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
+            player = character(name, 15, 15, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
             break
         else:
             continue
@@ -227,6 +227,14 @@ while play_again: # game replay loop
         else:
             print("You used an invisibility potion!")
 
+    def strength_effect():
+        player.damage = player.base_damage * 2
+        moves_until_effect_expires["stength"] += strength_potion.duration
+        if with_colors:
+            print(colorama.Fore.WHITE+"You used a strength potion!")
+        else:
+            print("You used a strength potion~")
+
 
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
@@ -234,6 +242,7 @@ while play_again: # game replay loop
                                    "Restores 10 health")
     invisibility_potion = potion("Invisibility Potion", 10, "103", 1, invisibility_effect,
                                  "Become invisible for a short time")
+    strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", 1, strength_effect, "Double your strength for a short time!")
 
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
@@ -243,7 +252,8 @@ while play_again: # game replay loop
     number_of_player_moves = 0  # count of player moves for effect duration
     moves_until_effect_expires = {
         "speed": 0,
-        "invisibility": 0
+        "invisibility": 0,
+        "strength": 0
     }
 
     """Generate World, Monsters based on difficulty"""
@@ -443,6 +453,11 @@ while play_again: # game replay loop
                 player.invisible = False
             else:
                 moves_until_effect_expires["invisibility"] -= 1
+        if player.damage != player.base_damage:
+            if moves_until_effect_expires["strength"] == 0:
+                player.damage = player.base_damage
+            else:
+                moves_until_effect_expires["strength"] -= 1
         if motion == "w":
             collision_output = detect_collision("y", 1)
             mob_collision_w = detect_mob_collision("y", 1)

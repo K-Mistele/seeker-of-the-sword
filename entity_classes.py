@@ -6,14 +6,15 @@ from math import ceil
 
 class character:
     score = 0
-    def __init__(self, name, health, damage, speed, lives):
+    def __init__(self, name, base_damage, health, damage, speed, lives):
         self.name = name
         if self.name.lower() == "hot dog":
-            self.health = 100000
+            self.base_health = 100000
             self.damage = 100000
         else:
             self.health = health
             self.damage = damage
+        self.base_damage = base_damage
         self.speed = speed
         self.stored_tile = ["O"]
         self.lives = lives
