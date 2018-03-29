@@ -31,7 +31,8 @@ class monster: # for other monsters to inherit
         else:
             self.with_colors = False
             """
-
+        self.special_condition = eval(False)
+        self.attack_range = 1
         self.damage = 1 # default
         self.moves_this_turn = True
         self.occupied_tile = world
@@ -108,7 +109,15 @@ class monster: # for other monsters to inherit
         player_x = player_coords[0]
         player_y = player_coords[1]
         if abs(self.x_index - player_x) < self.range or abs(self.y_index - player_y) < self.range: # if player within range
-            """If farther apart in x than y"""
+
+            # wizard's range attack
+            if self.name == "Wizard" and (abs(player_x - self.x_index) <= self.attack_range or abs( player_y - self.y_index) <= self.attack_range):
+                player.health -= self.damage
+                # prevent wizard from moving in too close to player
+                if (abs(player_x - self.x_index) <= ceil(self.attack_range/2) or abs( player_y - self.y_index) <= ceil(self.attack_range/2) ):
+                    return # abort the function so wizard doesn't move closer
+
+            # if farther apart in x than y
             if abs(self.x_index - player_x) > abs(self.y_index - player_y):
                 # move towards player in x
                 if self.x_index > player_x: # if monster is to the right of player
@@ -212,6 +221,7 @@ class monster: # for other monsters to inherit
                     self.reset_monster_pos()
                     self.y_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+
 """
 Wraith Class
 """
@@ -298,4 +308,74 @@ class cyclops(monster):
         monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
         self.health = 8
         self.damage = 2
+        self.speed = 1
+
+"""
+Wizard Class
+"""
+class wizard(monster):
+    name = "Wizard"
+    points = 40
+
+    def __init__(self, world, dim, with_colors):
+        self.viable_tiles = [world.tile_elements[2],
+                             world.dungeon_elements[3],
+                             world.dungeon_elements[4],
+                             world.dungeon_elements[5],
+                             world.dungeon_elements[6],
+                             world.dungeon_elements[7],
+                             " "]
+        self.with_colors = with_colors
+        self.range = ceil((1/4)*dim) # 1/4 tile dimension
+        self.symbol = colorama.Fore.RED + "!" if with_colors else "!"
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        self.health = 3
+        self.damage = 1
+        self.speed = 1
+        self.attack_range = 3
+
+class necromancer(monster):
+    name = "Necromancer"
+    points = 40
+
+    def __init__(self, world, dim, with_colors):
+        self.viable_tiles = [world.tile_elements[2],
+                             world.dungeon_elements[0],
+                             world.dungeon_elements[1],
+                             world.dungeon_elements[2],
+                             world.dungeon_elements[3],
+                             world.dungeon_elements[4],
+                             world.dungeon_elements[5],
+                             world.dungeon_elements[6],
+                             world.dungeon_elements[7],
+                             " "]
+        self.with_colors = with_colors
+        self.range = ceil((1/4)*dim) # 1/4 world dim
+        self.symbol = colorama.Fore.RED + "*" if with_colors else "*"
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        self.health = 1
+        self.damage = 0 # necromancer's power is its ability to summon imps (skeletons?)
+        self.speed = 1
+
+class cursed_shadow(monster): # summoned by necromancers, extraordinarily weak
+    name = "Cursed Shadow"
+    points = 5
+
+    def __init__(self, world, dim, with_colors):
+        self.viable_tiles = [world.tile_elements[2],
+                             world.dungeon_elements[0],
+                             world.dungeon_elements[1],
+                             world.dungeon_elements[2],
+                             world.dungeon_elements[3],
+                             world.dungeon_elements[4],
+                             world.dungeon_elements[5],
+                             world.dungeon_elements[6],
+                             world.dungeon_elements[7],
+                             " "]
+        self.with_colors = with_colors
+        self.range = ceil((1/2)*dim)
+        self.symbol = colorama.Fore.RED + "." if with_colors else "_"
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        self.health = 1
+        self.damage = 1
         self.speed = 1
