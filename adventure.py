@@ -6,7 +6,7 @@ from time import sleep
 from random import randint
 from math import ceil, floor
 from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow
-from inventory_classes import potion, melee_weapon
+from inventory_classes import potion, melee_weapon, consumable
 from local_resources import ascii_resources  # ascii art resources
 from local_resources.ascii_credits import run_color_credits, run_plain_credits
 import platform
@@ -235,6 +235,24 @@ while play_again: # game replay loop
         else:
             print("You used a strength potion~")
 
+    def tnt_effect():
+        if 1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim:
+            world.mod_char(player_pos[x]+1, player_pos[y], " ")
+        if 1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim:
+            world.mod_char(player_pos[x]+1, player_pos[y]+1, " ")
+        if 1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim:
+            world.mod_char(player_pos[x]+1, player_pos[y]-1, " ")
+        if 1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim:
+            world.mod_char(player_pos[x]-1, player_pos[y], " ")
+        if 1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim:
+            world.mod_char(player_pos[x]-1, player_pos[y]+1, " ")
+        if 1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim:
+            world.mod_char(player_pos[x]-1, player_pos[y]-1, " ")
+        if 1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim:
+            world.mod_char(player_pos[x], player_pos[y]+1, " ")
+        if 1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim:
+            world.mod_char(player_pos[x], player_pos[y]-1, " ")
+
 
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
@@ -243,11 +261,11 @@ while play_again: # game replay loop
     invisibility_potion = potion("Invisibility Potion", 10, "103", 1, invisibility_effect,
                                  "Become invisible for a short time")
     strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", 1, strength_effect, "Double your strength for a short time!")
-
+    tnt = consumable("TNT", "201", 2, tnt_effect, "Clears a small area around you. Boom!")
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
     player_inventory = [speed_potion, lesser_health_potion, greater_health_potion,
-                        invisibility_potion]  # hard-coding a speed potion into the inventory for now
+                        invisibility_potion, strength_potion, tnt]  # hard-coding a speed potion into the inventory for now
     # speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0  # count of player moves for effect duration
     moves_until_effect_expires = {
@@ -742,7 +760,7 @@ while play_again: # game replay loop
         world.mod_char(player_pos[x], player_pos[y], player_character)
 
     def print_health():
-        if player.name.lower() != "hot dog":
+        if "[admin]" not in player.name.lower():
             global with_colors
             healthString = ""
             if with_colors:
@@ -785,8 +803,8 @@ while play_again: # game replay loop
                     if item.quantity > 0:
                         print("   {}: ".format(item.name))
                         print(
-                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item.effect_readable, item.duration,
-                                                                                        item.quantity))
+                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item.effect_readable, item.duration if isinstance(item, potion) else "n/a",
+                                                                                        item.quantity ))
                 while True:  # inventory system
                     e_input = input("Enter inventory command: ('e' to exit)\n")
                     if e_input == "e":

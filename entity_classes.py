@@ -7,13 +7,14 @@ class character:
     score = 0
     def __init__(self, name, health, base_damage, damage, speed, lives):
         self.name = name
-        if self.name.lower() == "hot dog":
-            self.base_health = 100000
+        if "[admin]" in self.name.lower() :
+            self.health = 100000
             self.damage = 100000
+            self.base_damage = 100000
         else:
             self.health = health
             self.damage = damage
-        self.base_damage = base_damage
+            self.base_damage = base_damage
         self.speed = speed
         self.stored_tile = ["O"]
         self.lives = lives
