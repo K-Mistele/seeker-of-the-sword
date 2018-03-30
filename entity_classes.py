@@ -119,7 +119,7 @@ class monster: # for other monsters to inherit
         if abs(self.x_index - player_x) < self.range or abs(self.y_index - player_y) < self.range: # if player within range
 
             # wizard's range attack
-            if self.name == "Wizard" and (abs(self.x_index - player_x) <= self.attack_range or abs(self.y_index - player_y) <= self.attack_range):
+            if self.name == "Wizard" and (abs(self.x_index - player_x) <= self.attack_range and abs(self.y_index - player_y) <= self.attack_range):
                 player.health -= self.damage
                 print(colorama.Fore.RED + "A wizard casts a magic gaffe at you!" if self.with_colors else "A wizard casts a magic gaffe at you!")
                 # prevent wizard from moving in too close to player
