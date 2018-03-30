@@ -236,22 +236,36 @@ while play_again: # game replay loop
             print("You used a strength potion~")
 
     def tnt_effect():
-        if 1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim:
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
+                and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y], " ")
-        if 1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim:
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+                and world.char(player_pos[x]+1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]+1, " ")
-        if 1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim:
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+                and world.char(player_pos[x]+1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]-1, " ")
-        if 1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim:
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
+                and world.char(player_pos[x]-1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y], " ")
-        if 1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim:
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+                and world.char(player_pos[x]-1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]+1, " ")
-        if 1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim:
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+                and world.char(player_pos[x]-1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]-1, " ")
-        if 1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim:
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+                and world.char(player_pos[x], player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]+1, " ")
-        if 1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim:
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+                and world.char(player_pos[x], player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]-1, " ")
+
+    def cataclysm_effect():
+        for mob in world.monsters:
+            world.mod_char(mob.x_index, mob.y_index, mob.stored_char) # remove mosnter symbol from board and restore char
+        del world.monsters[:] # kill all monsters in world
+        player.health = 0
 
 
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
@@ -262,10 +276,11 @@ while play_again: # game replay loop
                                  "Become invisible for a short time")
     strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", 1, strength_effect, "Double your strength for a short time!")
     tnt = consumable("TNT", "201", 2, tnt_effect, "Clears a small area around you. Boom!")
+    cataclysm = consumable("The Cataclysm", "202", 1, cataclysm_effect, "WARNING: Kills all life in this world tile. ")
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
     player_inventory = [speed_potion, lesser_health_potion, greater_health_potion,
-                        invisibility_potion, strength_potion, tnt]  # hard-coding a speed potion into the inventory for now
+                        invisibility_potion, strength_potion, tnt, cataclysm if "[admin]" in player.name else []]  # hard-coding a speed potion into the inventory for now
     # speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0  # count of player moves for effect duration
     moves_until_effect_expires = {
