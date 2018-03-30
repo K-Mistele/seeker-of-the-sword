@@ -123,13 +123,16 @@ class monster: # for other monsters to inherit
                 player.health -= self.damage
                 print(colorama.Fore.RED + "A wizard casts a magic gaffe at you!" if self.with_colors else "A wizard casts a magic gaffe at you!")
                 # prevent wizard from moving in too close to player
-                if (abs(player_x - self.x_index) <= ceil(self.attack_range/2) or abs( player_y - self.y_index) <= ceil(self.attack_range/2) ):
+                if (abs(player_x - self.x_index) <= ceil(self.attack_range/2) and abs( player_y - self.y_index) <= ceil(self.attack_range/2) ):
                     return # abort the function so wizard doesn't move closer
 
             # necromancer summon attack
             if self.name == "Necromancer":
                 self.spawn_cursed_shadow()
 
+                # prevent necromancer from moving within 5 tiles of player
+                if (abs(player_x - self.x_index) <= 4 and abs( player_y - self.y_index) <= 4 ):
+                    return # abort the function so necromancer doesn't move closer
 
             # if farther apart in x than y
             if abs(self.x_index - player_x) > abs(self.y_index - player_y):
@@ -246,7 +249,7 @@ class wraith(monster):
     name = "~~Wraith~~"
     points = 10000
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"],
                              " "]
@@ -269,7 +272,7 @@ class wyvern(monster):
     name = "Wyvern"
     points = 10
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[0]["character"],
                              world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"],
@@ -277,7 +280,7 @@ class wyvern(monster):
         self.with_colors = with_colors
         self.range = ceil((1/2)*dim) # range is 1/2 the dimension
         self.symbol = colorama.Fore.RED + "%" if with_colors else "%"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 2
         self.damage = 2
         self.speed = 1
@@ -292,13 +295,13 @@ class goblin(monster):
     name = "Goblin"
     points = 20
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              " "]
         self.with_colors = with_colors
         self.symbol = colorama.Fore.RED + "$" if with_colors else "$"
         self.range = ceil((1/4)*dim)  # tracking range 1/4 dim
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 3
         self.damage = 3
         self.speed = 1
@@ -313,13 +316,13 @@ class cyclops(monster):
     name = "Cyclops"
     points = 50
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"]]
         self.with_colors = with_colors
         self.range = ceil((1/5)*dim) # 1/5 tile dimension
         self.symbol = colorama.Fore.RED + "&" if with_colors else "&"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 8
         self.damage = 2
         self.speed = 1
@@ -331,7 +334,7 @@ class wizard(monster):
     name = "Wizard"
     points = 40
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[2],
                              world.dungeon_elements[3],
                              world.dungeon_elements[4],
@@ -342,7 +345,7 @@ class wizard(monster):
         self.with_colors = with_colors
         self.range = ceil((1/4)*dim) # 1/4 tile dimension
         self.symbol = colorama.Fore.RED + "!" if with_colors else "!"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 3
         self.damage = 1
         self.speed = 1
@@ -352,7 +355,7 @@ class necromancer(monster):
     name = "Necromancer"
     points = 40
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[2],
                              world.tile_elements[3],
                              world.dungeon_elements[0],
@@ -367,7 +370,7 @@ class necromancer(monster):
         self.with_colors = with_colors
         self.range = ceil((1/4)*dim) # 1/4 world dim
         self.symbol = colorama.Fore.RED + "*" if with_colors else "*"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 1
         self.damage = 0 # necromancer's power is its ability to summon imps (skeletons?)
         self.speed = 1
