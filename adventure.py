@@ -5,7 +5,7 @@ from local_resources.colorama_master import colorama  # color library
 from time import sleep
 from random import randint
 from math import ceil, floor
-from entity_classes import character, wraith, wyvern, goblin, cyclops
+from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow
 from inventory_classes import potion, melee_weapon
 from local_resources import ascii_resources  # ascii art resources
 from local_resources.ascii_credits import run_color_credits, run_plain_credits
@@ -95,15 +95,15 @@ while play_again: # game replay loop
             select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
         if select_difficulty in "normal":
             difficulty = "normal"
-            player = character(name, 20, 20, 2, 1, 3)  # basic difficulty
+            player = character(name, 20, 2, 2, 1, 3)  # basic difficulty
             break
         elif select_difficulty in "heroic":
             difficulty = "heroic"
-            player = character(name, 20, 20, 2, 1, 2)  # more mobs will spawn
+            player = character(name, 20, 2, 2, 1, 2)  # more mobs will spawn
             break
         elif select_difficulty in "true seeker":
             difficulty = "seeker"
-            player = character(name, 15, 15, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
+            player = character(name, 15, 4, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
             break
         else:
             continue
@@ -280,6 +280,9 @@ while play_again: # game replay loop
         for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
         for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
         for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
+    if name == "mob test":
+        world.monsters.append(wizard(world, dim, with_colors))
+        world.monsters.append(necromancer(world, dim, with_colors))
     system(clear_command)  # clearing screen to prepare for game
 
     ### FINDING PLAYER SPAWN POINT ###
