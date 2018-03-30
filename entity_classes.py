@@ -354,6 +354,7 @@ class necromancer(monster):
 
     def __init__(self, world, dim, with_colors):
         self.viable_tiles = [world.tile_elements[2],
+                             world.tile_elements[3],
                              world.dungeon_elements[0],
                              world.dungeon_elements[1],
                              world.dungeon_elements[2],
@@ -396,6 +397,7 @@ class necromancer(monster):
                     cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True,
                                   self.x_index + 1, self.y_index))
                 self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
 
             elif (self.does_mob_overlap(self.occupied_tile, self.x_index - 1, self.y_index)[0] == False and
                     self.detect_monster_collision_with_world("x", -1, None, targeting=False)[0] == False):
@@ -403,6 +405,7 @@ class necromancer(monster):
                     cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True,
                                   self.x_index - 1, self.y_index))
                 self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
 
             elif (self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index + 1)[0] == False and
                     self.detect_monster_collision_with_world("y", 1, None, targeting=False)[0] == False):
@@ -410,6 +413,7 @@ class necromancer(monster):
                     cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True, self.x_index,
                                   self.y_index + 1))
                 self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
 
             elif (self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index - 1)[0] == False and
                     self.detect_monster_collision_with_world("x", -1, None, targeting=False)[0] == False):
@@ -417,6 +421,7 @@ class necromancer(monster):
                     cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True, self.x_index,
                                   self.y_index - 1))
                 self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
 
         else:
             self.spawn_cooldown = False
@@ -428,6 +433,7 @@ class cursed_shadow(monster): # summoned by necromancers, extraordinarily weak
 
     def __init__(self, world, dim, with_colors, location_override = False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[2],
+                             world.tile_elements[3],
                              world.dungeon_elements[0],
                              world.dungeon_elements[1],
                              world.dungeon_elements[2],
