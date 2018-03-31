@@ -29,7 +29,7 @@ class chest:
         self.viable_tiles = [" "]
         self.symbol = colorama.Fore.CYAN + "H" if self.world.with_colors else "H"
 
-        # locating chest
+        # locating chesty
         self.location_override = location_override
         if self.location_override:
             # hard-code chest location
@@ -38,8 +38,8 @@ class chest:
         else:
             # randomly locate chest
             while True:
-                self.x_index = randint(2, self.world.dim - 1) # so mobs don't spawn on world borders
-                self.y_index = randint(4, self.world.dim - 1) # so mobs don't spawn on world borders, or too close to player
+                self.x_index = randint(2, self.world.tile_dim - 1) # so mobs don't spawn on world borders
+                self.y_index = randint(4, self.world.tile_dim - 1) # so mobs don't spawn on world borders, or too close to player
                 if world_tile.char(self.world, self.x_index, self.y_index) in self.viable_tiles:
                     # self.stored_char = world_tile.char(world,self.x_index, self.y_index)
                     world_tile.mod_char(self.world, self.x_index, self.y_index, self.symbol)
