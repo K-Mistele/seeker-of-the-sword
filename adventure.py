@@ -871,26 +871,26 @@ while play_again: # game replay loop
                 else:
                     print("Inventory: \n")
                 #TODO: rework so quantity is not intrinsic to item
+                #fixme: unlimited use of inventory items now for some reason
                 for item in player_inventory:  # display inventory
-                    quantity = item[1]
-                    if quantity > 0:
+                    # quantity = item[1]
+                    if item[1] > 0:
                         print("   {}: ".format(item[0].name))
                         print(
                         "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item[0].effect_readable,
-                        item[0].duration if isinstance(item, potion) else "n/a", quantity ))
+                        item[0].duration if isinstance(item[0], potion) else "n/a", item[1] ))
                 while True:  # inventory system
                     e_input = input("Enter inventory command: ('e' to exit)\n")
                     if e_input == "e":
                         break
                     elif any(item[0].name == e_input for item in player_inventory):  # if there is an item object in player inventory with name input by user
                         for item in player_inventory:  # iterate through and find it
-                            quantity = item[1]
                             if e_input == item[0].name:
-                                if quantity == 0:  # if no more of this item in inventory
+                                if item[1] == 0:  # if no more of this item in inventory
                                     print("You are out of this item. ")
                                     break
                                 else:
-                                    quantity -= 1  # remove one of the item from inventory
+                                    item[1] -= 1  # remove one of the item from inventory
                                     item[0].effect()  # and use its effect
                     else:
                         print("Unrecognized command")
