@@ -23,12 +23,16 @@ class character:
 class chest:
 
     # TODO: make chests immune to TNT
+
     def __init__(self, world, location_override=False, location_override_x=0, location_override_y=0,
-                 inventory_size=3, generate_items=True):
-        self.location_override = location_override
+                 inventory_size=3, generate_items=True, item_override=[]):
+
         self.world = world
         self.viable_tiles = [" "]
         self.symbol = colorama.Fore.CYAN + "H" if self.world.with_colors else "H"
+
+        # locating chest
+        self.location_override = location_override
         if self.location_override:
             # hard-code chest location
             self.x_index = location_override_x
@@ -36,8 +40,8 @@ class chest:
         else:
             # randomly locate chest
             while True:
-                self.x_index = randint(2, dim - 1) # so mobs don't spawn on world borders
-                self.y_index = randint(4, dim - 1) # so mobs don't spawn on world borders, or too close to player
+                self.x_index = randint(2, self.world.dim - 1) # so mobs don't spawn on world borders
+                self.y_index = randint(4, self.world.dim - 1) # so mobs don't spawn on world borders, or too close to player
                 if world_tile.char(self.world, self.x_index, self.y_index) in self.viable_tiles:
                     # self.stored_char = world_tile.char(world,self.x_index, self.y_index)
                     world_tile.mod_char(self.world, self.x_index, self.y_index, self.symbol)

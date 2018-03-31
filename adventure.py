@@ -237,7 +237,7 @@ while play_again: # game replay loop
             print("You used a strength potion!")
 
     def tnt_effect():
-        # TODO: make chests immune to TNT in color and non-color mode
+        #TODO: make chests immune to TNT in color and non-color mode
         if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
             #    and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y], " ")
