@@ -83,7 +83,7 @@ while play_again: # game replay loop
             print(colorama.Fore.GREEN + "\nWelcome, [ADMIN]\n")
     else:
         name = input("Please enter your name:\n")
-        if name.lower() == "hot dog":
+        if "[admin]" in name.lower():
             print("\nWelcome, [ADMIN]\n")
 
     """Difficulty"""
@@ -325,7 +325,7 @@ while play_again: # game replay loop
 
     spawn_mobs(difficulty)
     system(clear_command)  # clearing screen to prepare for game
-    
+
     def new_round(difficulty):
         system(clear_command)
         print(colorama.Fore.BLUE + ascii_resources.new_round if with_colors else ascii_resources.new_round)
