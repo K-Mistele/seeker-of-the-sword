@@ -288,22 +288,24 @@ while play_again: # game replay loop
 
     """Creating Inventory Items"""
     #TODO: update so quantity is NOT intrinsic to item
-    speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
-    lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
-    greater_health_potion = potion("Greater Health Potion", "instant", "102", 1, greater_health_effect,
-                                   "Restores 10 health")
-    invisibility_potion = potion("Invisibility Potion", 10, "103", 1, invisibility_effect,
-                                 "Become invisible for a short time")
-    strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", 1, strength_effect, "Double your strength for a short time!")
-    tnt = consumable("TNT", "201", 2, tnt_effect, "Clears a small area around you. Boom!")
-    cataclysm = consumable("The Cataclysm", "202", 1, cataclysm_effect, "WARNING: Kills all life in this world tile. ")
+    speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", speed_potion_effect, "Speed x2")
+    lesser_health_potion = potion("Lesser Health Potion", "instant", "101", lesser_health_effect, "Restores 5 health")
+    greater_health_potion = potion("Greater Health Potion", "instant", "102", greater_health_effect, "Restores 10 health")
+    invisibility_potion = potion("Invisibility Potion", 10, "103", invisibility_effect, "Become invisible for a short time")
+    strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", strength_effect, "Double your strength for a short time!")
+    tnt = consumable("TNT", "201", tnt_effect, "Clears a small area around you. Boom!")
+    cataclysm = consumable("The Cataclysm", "202", cataclysm_effect, "WARNING: Kills all life in this world tile. ")
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
 
-    player_inventory = [speed_potion, lesser_health_potion, greater_health_potion,
-                        invisibility_potion, strength_potion, tnt,]  # hard-coding a speed potion into the inventory for now
+    player_inventory = [[speed_potion, 1],
+                        [lesser_health_potion, 1],
+                        [greater_health_potion, 1],
+                        [invisibility_potion, 1],
+                        [strength_potion, 1],
+                        [tnt, 2]]  # hard-coding a speed potion into the inventory for now
     if "[admin]" in player.name:
-        player_inventory.append(cataclysm)
+        player_inventory.append([cataclysm, 1])
     # speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0  # count of player moves for effect duration
     moves_until_effect_expires = {
@@ -870,24 +872,26 @@ while play_again: # game replay loop
                     print("Inventory: \n")
                 #TODO: rework so quantity is not intrinsic to item
                 for item in player_inventory:  # display inventory
-                    if item.quantity > 0:
-                        print("   {}: ".format(item.name))
+                    quantity = item[1]
+                    if quantity > 0:
+                        print("   {}: ".format(item[0].name))
                         print(
-                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item.effect_readable, item.duration if isinstance(item, potion) else "n/a",
-                                                                                        item.quantity ))
+                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item[0].effect_readable,
+                        item[0].duration if isinstance(item, potion) else "n/a", quantity ))
                 while True:  # inventory system
                     e_input = input("Enter inventory command: ('e' to exit)\n")
                     if e_input == "e":
                         break
-                    elif any(item.name == e_input for item in player_inventory):  # if there is an item object in player inventory with name input by user
+                    elif any(item[0].name == e_input for item in player_inventory):  # if there is an item object in player inventory with name input by user
                         for item in player_inventory:  # iterate through and find it
-                            if e_input == item.name:
-                                if item.quantity == 0:  # if no more of this item in inventory
+                            quantity = item[1]
+                            if e_input == item[0].name:
+                                if quantity == 0:  # if no more of this item in inventory
                                     print("You are out of this item. ")
                                     break
                                 else:
-                                    item.quantity -= 1  # remove one of the item from inventory
-                                    item.effect()  # and use its effect
+                                    quantity -= 1  # remove one of the item from inventory
+                                    item[0].effect()  # and use its effect
                     else:
                         print("Unrecognized command")
                 system(clear_command)
