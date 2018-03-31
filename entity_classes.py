@@ -25,7 +25,7 @@ class chest:
     # TODO: make chests immune to TNT
 
     def __init__(self, world, location_override=False, location_override_x=0, location_override_y=0,
-                 inventory_size=3, generate_items=True, item_override=[]):
+                 inventory_size=3, generate_items=True, inventory_override=[], possible_items):
 
         self.world = world
         self.viable_tiles = [" "]
@@ -49,7 +49,19 @@ class chest:
                 else:
                     continue # keep trying until you get a valid x/y combo
         self.inventory = []
-        # TODO: hard-code or generate chest inventory
+        self.possible_items = possible_items
+
+        self.generate_items = generate_items
+        self.inventory_override = inventory_override
+        self.inventory_size = int(inventory_size)
+
+        # determine items in chest inventory
+        if self.generate_items == True:
+            for i in range(0, inventory_size):
+                index = randint(0, len(self.possible_items)-1) # select a random item from possible items
+                self.inventory.append(self.possible_items[index]) # and add it to the chest's inventory
+        else:
+            self.inventory.extend(self.inventory_override)
 
 
 class monster: # for other monsters to inherit

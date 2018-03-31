@@ -178,6 +178,7 @@ while play_again: # game replay loop
             continue
     dim = world.tile_dim
 
+    """Creating effect functions for inventory items"""
     # inventory system
     def speed_potion_effect():
         global with_colors
@@ -277,7 +278,7 @@ while play_again: # game replay loop
         else:
             print("Cataclysm activated.")
 
-
+    """Creating Inventory Items"""
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
     greater_health_potion = potion("Greater Health Potion", "instant", "102", 1, greater_health_effect,
@@ -300,6 +301,9 @@ while play_again: # game replay loop
         "invisibility": 0,
         "strength": 0
     }
+
+    """Possible items for chest inventories"""
+    possible_items = [greater_health_potion, lesser_health_potion, invisibility_potion, strength_potion, tnt]
 
     """Generate World, Monsters based on difficulty"""
     def spawn_mobs(difficulty):
