@@ -234,7 +234,7 @@ while play_again: # game replay loop
         if with_colors:
             print(colorama.Fore.WHITE+"You used a strength potion!")
         else:
-            print("You used a strength potion~")
+            print("You used a strength potion!")
 
     def tnt_effect():
         if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
@@ -261,12 +261,20 @@ while play_again: # game replay loop
         if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
             #    and world.char(player_pos[x], player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]-1, " ")
+        if with_colors:
+            print(colorama.Fore.WHITE+"BOOM!")
+        else:
+            print("BOOM!")
 
     def cataclysm_effect():
         for mob in world.monsters:
             world.mod_char(mob.x_index, mob.y_index, mob.stored_char) # remove mosnter symbol from board and restore char
         del world.monsters[:] # kill all monsters in world
         player.health = 0
+        if with_colors:
+            print(colorama.Fore.WHITE+"Cataclysm activated.")
+        else:
+            print("Cataclysm activated.")
 
 
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
@@ -492,27 +500,32 @@ while play_again: # game replay loop
             mob_collision_output.append(False)
             return mob_collision_output
 
-
+    action_string = ""
     accepted_motions = ["w", "a", "s", "d"]
     def player_move(motion):
         global number_of_player_moves
         global moves_until_effect_expires
+        global action_string
+        action_string = ""
         number_of_player_moves += 1  # upping the count of player moves by one
 
         # making speed timer count down
         if player.speed > 1:
             if moves_until_effect_expires["speed"] == 0:
                 player.speed -= 1
+                action_string += "Speed potion wore off!\n"
             else:
                 moves_until_effect_expires["speed"] -= 1
         if player.invisible == True:
             if moves_until_effect_expires["invisibility"] == 0:
                 player.invisible = False
+                action_string += "Invisibility Potion wore off!\n"
             else:
                 moves_until_effect_expires["invisibility"] -= 1
         if player.damage != player.base_damage:
             if moves_until_effect_expires["strength"] == 0:
                 player.damage = player.base_damage
+                action_string += "Strength Potion wore off!\n"
             else:
                 moves_until_effect_expires["strength"] -= 1
         if motion == "w":
@@ -819,6 +832,7 @@ while play_again: # game replay loop
     while player.lives > 0:
 
         while True:
+            # if all mobs cleared, round system initializes (until story gameplay is built)
             if len(world.monsters) == 0 or (len(world.monsters) == 1 and world.monsters[0].name == "~~Wraith~~"):
                 system(clear_command)
                 new_round(difficulty)
@@ -875,6 +889,7 @@ while play_again: # game replay loop
                         damage_dealt_by_spikes = True
                         break
             print_health()
+            print(action_string)
             if damage_dealt_by_spikes == True:
                 if with_colors == True:
                     print(colorama.Fore.WHITE + "Spikes underfoot draw " + colorama.Fore.RED + "blood" + colorama.Fore.WHITE + "!")
@@ -895,6 +910,7 @@ while play_again: # game replay loop
             system(clear_command)
             world.print_tile()
             print_health()
+            print(action_string)
             if damage_dealt_by_spikes == True:
                 if with_colors == True:
                     print(colorama.Fore.WHITE + "Spikes underfoot draw " + colorama.Fore.RED + "blood" + colorama.Fore.WHITE + "!")
