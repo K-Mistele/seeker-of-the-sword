@@ -22,8 +22,6 @@ class character:
 
 class chest:
 
-
-
     def __init__(self, world, possible_items, location_override=False, location_override_x=0, location_override_y=0,
                  inventory_size=3, generate_items=True, inventory_override=None, ):
 
@@ -62,9 +60,20 @@ class chest:
         if self.generate_items == True:
             for i in range(0, inventory_size):
                 index = randint(0, len(self.possible_items)-1) # select a random item from possible items
-                self.inventory.append(self.possible_items[index]) # and add it to the chest's inventory
+                self.inventory.append([self.possible_items[index],  # and add it to the chest's inventory
+                                       randint(1, 3)]) # along with a random quantity from one to three
         else:
             self.inventory.extend(self.inventory_override)
+
+    def transfer_contents(self, player_inventory):
+        for chest_item in list(self.inventory):
+            for item in player_inventory:
+                if chest_item[0].name == item[0].name: # if item is already in player's inventory
+                    item[1] += chest_item[1] # increase quantity in player inventory by quantity of item in chest
+                    self.inventory.remove(chest_item) # remove item from chest inventory
+                else:
+                    player_inventory.append([chest_item[0], 
+                                             chest_item[1]]) # create a new inventory entry with the item and quantity
 
 
 class monster: # for other monsters to inherit
