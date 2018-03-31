@@ -22,10 +22,10 @@ class character:
 
 class chest:
 
-    # TODO: make chests immune to TNT
+
 
     def __init__(self, world, possible_items, location_override=False, location_override_x=0, location_override_y=0,
-                 inventory_size=3, generate_items=True, inventory_override=[], ):
+                 inventory_size=3, generate_items=True, inventory_override=None, ):
 
         self.world = world
         self.viable_tiles = [" "]
@@ -52,7 +52,10 @@ class chest:
         self.possible_items = possible_items
 
         self.generate_items = generate_items
-        self.inventory_override = inventory_override
+        if inventory_override == None:
+            self.inventory_override = []
+        else:
+            self.inventory_override = inventory_override
         self.inventory_size = int(inventory_size)
 
         # determine items in chest inventory

@@ -238,7 +238,7 @@ while play_again: # game replay loop
             print("You used a strength potion!")
 
     def tnt_effect():
-        #TODO: make chests immune to TNT in color and non-color mode
+
         if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
             and world.char(player_pos[x]+1, player_pos[y]) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
@@ -287,7 +287,7 @@ while play_again: # game replay loop
             print("Cataclysm activated.")
 
     """Creating Inventory Items"""
-    #TODO: update so quantity is NOT intrinsic to item
+
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", lesser_health_effect, "Restores 5 health")
     greater_health_potion = potion("Greater Health Potion", "instant", "102", greater_health_effect, "Restores 10 health")
@@ -870,8 +870,6 @@ while play_again: # game replay loop
                     print(colorama.Fore.WHITE+"Inventory: \n")
                 else:
                     print("Inventory: \n")
-                #TODO: rework so quantity is not intrinsic to item
-                #fixme: unlimited use of inventory items now for some reason
                 for item in player_inventory:  # display inventory
                     # quantity = item[1]
                     if item[1] > 0:
