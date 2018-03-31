@@ -72,7 +72,7 @@ class chest:
                     item[1] += chest_item[1] # increase quantity in player inventory by quantity of item in chest
                     self.inventory.remove(chest_item) # remove item from chest inventory
                 else:
-                    player_inventory.append([chest_item[0], 
+                    player_inventory.append([chest_item[0],
                                              chest_item[1]]) # create a new inventory entry with the item and quantity
 
 
