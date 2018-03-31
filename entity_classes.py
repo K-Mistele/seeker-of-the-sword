@@ -358,7 +358,6 @@ class necromancer(monster):
 
     def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[2],
-                             world.tile_elements[3],
                              world.dungeon_elements[0],
                              world.dungeon_elements[1],
                              world.dungeon_elements[2],
@@ -437,7 +436,7 @@ class cursed_shadow(monster): # summoned by necromancers, extraordinarily weak
 
     def __init__(self, world, dim, with_colors, location_override = False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[2],
-                             world.tile_elements[3],
+                             world.tile_elements[1],
                              world.dungeon_elements[0],
                              world.dungeon_elements[1],
                              world.dungeon_elements[2],
