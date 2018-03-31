@@ -279,6 +279,7 @@ while play_again: # game replay loop
             print("Cataclysm activated.")
 
     """Creating Inventory Items"""
+    #TODO: update so quantity is NOT intrinsic to item
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
     greater_health_potion = potion("Greater Health Potion", "instant", "102", 1, greater_health_effect,
@@ -290,6 +291,7 @@ while play_again: # game replay loop
     cataclysm = consumable("The Cataclysm", "202", 1, cataclysm_effect, "WARNING: Kills all life in this world tile. ")
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
+
     player_inventory = [speed_potion, lesser_health_potion, greater_health_potion,
                         invisibility_potion, strength_potion, tnt,]  # hard-coding a speed potion into the inventory for now
     if "[admin]" in player.name:
@@ -858,6 +860,7 @@ while play_again: # game replay loop
                     print(colorama.Fore.WHITE+"Inventory: \n")
                 else:
                     print("Inventory: \n")
+                #TODO: rework so quantity is not intrinsic to item
                 for item in player_inventory:  # display inventory
                     if item.quantity > 0:
                         print("   {}: ".format(item.name))

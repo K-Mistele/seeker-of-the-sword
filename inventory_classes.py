@@ -1,4 +1,6 @@
 class potion:
+
+    #TODO: update so quantity is not intrinsic to item
     def __init__(self, name, duration, item_id, quantity, effect, effect_readable):
         self.name = name
         self.duration = duration
