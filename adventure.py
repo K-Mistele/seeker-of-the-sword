@@ -5,7 +5,7 @@ from local_resources.colorama_master import colorama  # color library
 from time import sleep
 from random import randint
 from math import ceil, floor
-from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow
+from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow, chest
 from inventory_classes import potion, melee_weapon, consumable
 from local_resources import ascii_resources  # ascii art resources
 from local_resources.ascii_credits import run_color_credits, run_plain_credits
@@ -239,28 +239,36 @@ while play_again: # game replay loop
 
     def tnt_effect():
         #TODO: make chests immune to TNT in color and non-color mode
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
+            and world.char(player_pos[x]+1, player_pos[y]) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y], " ")
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+            and world.char(player_pos[x] + 1, player_pos[y]+1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]+1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]+1, " ")
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+            and world.char(player_pos[x] + 1, player_pos[y]-1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]+1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]-1, " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
+            and world.char(player_pos[x]-1, player_pos[y]) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]-1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y], " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+            and world.char(player_pos[x] - 1, player_pos[y]+1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]-1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]+1, " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+            and world.char(player_pos[x]-1, player_pos[y]-1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]-1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]-1, " ")
-        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+            and world.char(player_pos[x], player_pos[y]+1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x], player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]+1, " ")
-        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+            and world.char(player_pos[x], player_pos[y]-1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x], player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]-1, " ")
         if with_colors:
