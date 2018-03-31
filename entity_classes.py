@@ -1,19 +1,20 @@
 from tile_classes import world_tile
 from random import randint
 from local_resources.colorama_master import colorama
-
-from math import ceil
+from math import ceil, floor
 
 class character:
     score = 0
-    def __init__(self, name, health, damage, speed, lives):
+    def __init__(self, name, health, base_damage, damage, speed, lives):
         self.name = name
-        if self.name.lower() == "hot dog":
+        if "[admin]" in self.name.lower() :
             self.health = 100000
             self.damage = 100000
+            self.base_damage = 100000
         else:
             self.health = health
             self.damage = damage
+            self.base_damage = base_damage
         self.speed = speed
         self.stored_tile = ["O"]
         self.lives = lives
@@ -22,7 +23,7 @@ class character:
 
 class monster: # for other monsters to inherit
 
-    def __init__(self, world, dim, viable_tiles, symbol, m_range):
+    def __init__(self, world, dim, viable_tiles, symbol, m_range, location_override=False, location_override_x=0, location_override_y=0):
 
         """
         if platform.system() == 'Windows' or platform.system() == "Linux":
@@ -30,22 +31,30 @@ class monster: # for other monsters to inherit
         else:
             self.with_colors = False
             """
-
+        self.special_condition = eval("False")
+        self.attack_range = 1
         self.damage = 1 # default
         self.moves_this_turn = True
         self.occupied_tile = world
         self.viable_tiles = viable_tiles # default
         # random generation for mob
         self.range = m_range # default range
-        while True:
-            self.x_index = randint(2, dim - 1) # so mobs don't spawn on world borders
-            self.y_index = randint(4, dim - 1) # so mobs don't spawn on world borders, or too close to player
-            if world_tile.char(world, self.x_index, self.y_index) in viable_tiles:
-                self.stored_char = world_tile.char(world,self.x_index, self.y_index)
-                world_tile.mod_char(world, self.x_index, self.y_index, symbol)
-                break  # mob has been spawned
-            else:
-                continue # keep trying until you get a valid x/y combo
+        self.location_override = location_override
+        if self.location_override == False:
+            while True:
+                self.x_index = randint(2, dim - 1) # so mobs don't spawn on world borders
+                self.y_index = randint(4, dim - 1) # so mobs don't spawn on world borders, or too close to player
+                if world_tile.char(world, self.x_index, self.y_index) in viable_tiles:
+                    self.stored_char = world_tile.char(world,self.x_index, self.y_index)
+                    world_tile.mod_char(world, self.x_index, self.y_index, symbol)
+                    break  # mob has been spawned
+                else:
+                    continue # keep trying until you get a valid x/y combo
+        elif self.location_override == True:
+            self.x_index = location_override_x
+            self.y_index = location_override_y
+            self.stored_char = world_tile.char(world, self.x_index, self.y_index)
+            world_tile.mod_char(world, self.x_index, self.y_index, symbol)
     """Detects if will cause mob to collide with another mob"""
     def does_mob_overlap(self, world, x_coord, y_coord): # coordinates should be a pair [x, y]
         mob_overlap_output = []
@@ -61,18 +70,19 @@ class monster: # for other monsters to inherit
     def reset_monster_pos(self): # reset the tile where the monster was
         world_tile.mod_char(self.occupied_tile, self.x_index, self.y_index, self.stored_char)
 
-    def detect_monster_collision_with_world(self, coordinate, direction, target):
+    def detect_monster_collision_with_world(self, coordinate, direction, target, targeting=True):
         monster_collision = []
         if coordinate == "x":
             if self.occupied_tile.char(self.x_index+direction, self.y_index) not in self.viable_tiles:
                     monster_collision.append(True) # collision detected
                     monster_collision.append(self.occupied_tile.char(self.x_index+direction, self.y_index)) # char collided with
-                    if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
-                        target.health -= self.damage
-                        if self.with_colors:
-                            print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
-                        else:
-                            print("A {} has attacked you!".format(self.name))
+                    if targeting:
+                        if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
+                            target.health -= self.damage
+                            if self.with_colors:
+                                print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
+                            else:
+                                print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
@@ -80,12 +90,13 @@ class monster: # for other monsters to inherit
             if self.occupied_tile.char(self.x_index, self.y_index+direction) not in self.viable_tiles:
                     monster_collision.append(True) # collision detected
                     monster_collision.append(self.occupied_tile.char(self.x_index, self.y_index+direction)) # char collided with
-                    if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
-                        target.health -= self.damage
-                        if self.with_colors:
-                            print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
-                        else:
-                            print("A {} has attacked you!".format(self.name))
+                    if targeting:
+                        if monster_collision[1] == "+" or monster_collision[1] == colorama.Fore.WHITE + "+": # if monster collides with player
+                            target.health -= self.damage
+                            if self.with_colors:
+                                print(colorama.Fore.RED+"A {} has attacked you!".format(self.name))
+                            else:
+                                print("A {} has attacked you!".format(self.name))
             else:
                 monster_collision.append(False)
             return monster_collision
@@ -107,7 +118,24 @@ class monster: # for other monsters to inherit
         player_x = player_coords[0]
         player_y = player_coords[1]
         if abs(self.x_index - player_x) < self.range or abs(self.y_index - player_y) < self.range: # if player within range
-            """If farther apart in x than y"""
+
+            # wizard's range attack
+            if self.name == "Wizard" and (abs(self.x_index - player_x) <= self.attack_range and abs(self.y_index - player_y) <= self.attack_range):
+                player.health -= self.damage
+                print(colorama.Fore.RED + "A wizard casts a magic gaffe at you!" if self.with_colors else "A wizard casts a magic gaffe at you!")
+                # prevent wizard from moving in too close to player
+                if (abs(player_x - self.x_index) <= ceil(self.attack_range/2) and abs( player_y - self.y_index) <= ceil(self.attack_range/2) ):
+                    return # abort the function so wizard doesn't move closer
+
+            # necromancer summon attack
+            if self.name == "Necromancer":
+                self.spawn_cursed_shadow()
+
+                # prevent necromancer from moving within 5 tiles of player
+                if (abs(player_x - self.x_index) <= 6 and abs( player_y - self.y_index) <= 6 ):
+                    return # abort the function so necromancer doesn't move closer
+
+            # if farther apart in x than y
             if abs(self.x_index - player_x) > abs(self.y_index - player_y):
                 # move towards player in x
                 if self.x_index > player_x: # if monster is to the right of player
@@ -211,6 +239,7 @@ class monster: # for other monsters to inherit
                     self.reset_monster_pos()
                     self.y_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
+
 """
 Wraith Class
 """
@@ -221,7 +250,7 @@ class wraith(monster):
     name = "~~Wraith~~"
     points = 10000
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"],
                              " "]
@@ -244,7 +273,7 @@ class wyvern(monster):
     name = "Wyvern"
     points = 10
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[0]["character"],
                              world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"],
@@ -252,7 +281,7 @@ class wyvern(monster):
         self.with_colors = with_colors
         self.range = ceil((1/2)*dim) # range is 1/2 the dimension
         self.symbol = colorama.Fore.RED + "%" if with_colors else "%"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 2
         self.damage = 2
         self.speed = 1
@@ -267,13 +296,13 @@ class goblin(monster):
     name = "Goblin"
     points = 20
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              " "]
         self.with_colors = with_colors
         self.symbol = colorama.Fore.RED + "$" if with_colors else "$"
         self.range = ceil((1/4)*dim)  # tracking range 1/4 dim
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 3
         self.damage = 3
         self.speed = 1
@@ -288,13 +317,140 @@ class cyclops(monster):
     name = "Cyclops"
     points = 50
 
-    def __init__(self, world, dim, with_colors):
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
         self.viable_tiles = [world.tile_elements[1]["character"],
                              world.tile_elements[2]["character"]]
         self.with_colors = with_colors
         self.range = ceil((1/5)*dim) # 1/5 tile dimension
         self.symbol = colorama.Fore.RED + "&" if with_colors else "&"
-        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range)
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
         self.health = 8
         self.damage = 2
+        self.speed = 1
+
+"""
+Wizard Class
+"""
+class wizard(monster):
+    name = "Wizard"
+    points = 40
+
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
+        self.viable_tiles = [world.tile_elements[2],
+                             world.dungeon_elements[3],
+                             world.dungeon_elements[4],
+                             world.dungeon_elements[5],
+                             world.dungeon_elements[6],
+                             world.dungeon_elements[7],
+                             " "]
+        self.with_colors = with_colors
+        self.range = ceil((1/4)*dim) # 1/4 tile dimension
+        self.symbol = colorama.Fore.RED + "!" if with_colors else "!"
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
+        self.health = 3
+        self.damage = 1
+        self.speed = 1
+        self.attack_range = 3
+
+class necromancer(monster):
+    name = "Necromancer"
+    points = 40
+
+    def __init__(self, world, dim, with_colors, location_override=False, location_override_x=0, location_override_y=0):
+        self.viable_tiles = [world.tile_elements[2],
+                             world.tile_elements[3],
+                             world.dungeon_elements[0],
+                             world.dungeon_elements[1],
+                             world.dungeon_elements[2],
+                             world.dungeon_elements[3],
+                             world.dungeon_elements[4],
+                             world.dungeon_elements[5],
+                             world.dungeon_elements[6],
+                             world.dungeon_elements[7],
+                             " "]
+        self.with_colors = with_colors
+        self.range = ceil((1/4)*dim) # 1/4 world dim
+        self.symbol = colorama.Fore.RED + "*" if with_colors else "*"
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
+        self.health = 1
+        self.damage = 0 # necromancer's power is its ability to summon imps (skeletons?)
+        self.speed = 1
+        self.cursed_shadow_counter = 0
+        self.necromancer_count = 0
+        self.spawn_cooldown = False
+        # special method to spawn cursed shadows
+
+    def spawn_cursed_shadow(self):
+
+        # update number of cursed shadows and necromancers in world
+        self.cursed_shadow_counter = 0
+        self.necromancer_count = 0
+        for monster in self.occupied_tile.monsters:
+            if monster.name == "Cursed Shadow":
+                self.cursed_shadow_counter += 1
+            if monster.name == "Necromancer":
+                self.necromancer_count += 1
+
+        # make sure there can only be three cursed shadows per necromancer, and a necromancer can only spawn once every other turn
+        if floor(self.cursed_shadow_counter / self.necromancer_count) < 3 and self.spawn_cooldown == False:
+
+            # try spawning a cursed shadow if there are empty tiles adjacent to necromancer
+            if (self.does_mob_overlap(self.occupied_tile, self.x_index + 1, self.y_index)[0] == False and
+                    self.detect_monster_collision_with_world("x", 1, None, targeting=False)[0] == False):
+                self.occupied_tile.monsters.append(
+                    cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True,
+                                  self.x_index + 1, self.y_index))
+                self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
+
+            elif (self.does_mob_overlap(self.occupied_tile, self.x_index - 1, self.y_index)[0] == False and
+                    self.detect_monster_collision_with_world("x", -1, None, targeting=False)[0] == False):
+                self.occupied_tile.monsters.append(
+                    cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True,
+                                  self.x_index - 1, self.y_index))
+                self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
+
+            elif (self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index + 1)[0] == False and
+                    self.detect_monster_collision_with_world("y", 1, None, targeting=False)[0] == False):
+                self.occupied_tile.monsters.append(
+                    cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True, self.x_index,
+                                  self.y_index + 1))
+                self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
+
+            elif (self.does_mob_overlap(self.occupied_tile, self.x_index, self.y_index - 1)[0] == False and
+                    self.detect_monster_collision_with_world("x", -1, None, targeting=False)[0] == False):
+                self.occupied_tile.monsters.append(
+                    cursed_shadow(self.occupied_tile, self.occupied_tile.tile_dim, self.with_colors, True, self.x_index,
+                                  self.y_index - 1))
+                self.spawn_cooldown = True
+                print(colorama.Fore.RED + "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!" if self.with_colors else "A Necromancer summons a Cursed Shadow from the Netherworld to pursue you!")
+
+        else:
+            self.spawn_cooldown = False
+
+
+class cursed_shadow(monster): # summoned by necromancers, extraordinarily weak
+    name = "Cursed Shadow"
+    points = 5
+
+    def __init__(self, world, dim, with_colors, location_override = False, location_override_x=0, location_override_y=0):
+        self.viable_tiles = [world.tile_elements[2],
+                             world.tile_elements[3],
+                             world.dungeon_elements[0],
+                             world.dungeon_elements[1],
+                             world.dungeon_elements[2],
+                             world.dungeon_elements[3],
+                             world.dungeon_elements[4],
+                             world.dungeon_elements[5],
+                             world.dungeon_elements[6],
+                             world.dungeon_elements[7],
+                             " "]
+        self.with_colors = with_colors
+        self.range = ceil((1/2)*dim)
+        self.symbol = colorama.Fore.RED + "`" if with_colors else "`"
+        monster.__init__(self, world, dim, self.viable_tiles, self.symbol, self.range, location_override, location_override_x, location_override_y)
+        self.health = 1
+        self.damage = 1
         self.speed = 1

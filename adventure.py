@@ -5,8 +5,8 @@ from local_resources.colorama_master import colorama  # color library
 from time import sleep
 from random import randint
 from math import ceil, floor
-from entity_classes import character, wraith, wyvern, goblin, cyclops
-from inventory_classes import potion, melee_weapon
+from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow
+from inventory_classes import potion, melee_weapon, consumable
 from local_resources import ascii_resources  # ascii art resources
 from local_resources.ascii_credits import run_color_credits, run_plain_credits
 import platform
@@ -84,7 +84,7 @@ while play_again: # game replay loop
             print(colorama.Fore.GREEN + "\nWelcome, [ADMIN]\n")
     else:
         name = input("Please enter your name:\n")
-        if name.lower() == "hot dog":
+        if "[admin]" in name.lower():
             print("\nWelcome, [ADMIN]\n")
 
     """Difficulty"""
@@ -96,15 +96,15 @@ while play_again: # game replay loop
             select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
         if select_difficulty in "normal":
             difficulty = "normal"
-            player = character(name, 20, 2, 1, 3)  # basic difficulty
+            player = character(name, 20, 2, 2, 1, 3)  # basic difficulty
             break
         elif select_difficulty in "heroic":
             difficulty = "heroic"
-            player = character(name, 20, 2, 1, 2)  # more mobs will spawn
+            player = character(name, 20, 2, 2, 1, 2)  # more mobs will spawn
             break
         elif select_difficulty in "true seeker":
             difficulty = "seeker"
-            player = character(name, 15, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
+            player = character(name, 15, 4, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
             break
         else:
             continue
@@ -228,6 +228,46 @@ while play_again: # game replay loop
         else:
             print("You used an invisibility potion!")
 
+    def strength_effect():
+        player.damage = player.base_damage * 2
+        moves_until_effect_expires["strength"] += strength_potion.duration
+        if with_colors:
+            print(colorama.Fore.WHITE+"You used a strength potion!")
+        else:
+            print("You used a strength potion~")
+
+    def tnt_effect():
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+            #    and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
+            world.mod_char(player_pos[x]+1, player_pos[y], " ")
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+            #    and world.char(player_pos[x]+1, player_pos[y]+1) in world.tile_elements):
+            world.mod_char(player_pos[x]+1, player_pos[y]+1, " ")
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+            #    and world.char(player_pos[x]+1, player_pos[y]-1) in world.tile_elements):
+            world.mod_char(player_pos[x]+1, player_pos[y]-1, " ")
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+            #    and world.char(player_pos[x]-1, player_pos[y]) in world.tile_elements):
+            world.mod_char(player_pos[x]-1, player_pos[y], " ")
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+            #    and world.char(player_pos[x]-1, player_pos[y]+1) in world.tile_elements):
+            world.mod_char(player_pos[x]-1, player_pos[y]+1, " ")
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+            #    and world.char(player_pos[x]-1, player_pos[y]-1) in world.tile_elements):
+            world.mod_char(player_pos[x]-1, player_pos[y]-1, " ")
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+            #    and world.char(player_pos[x], player_pos[y]+1) in world.tile_elements):
+            world.mod_char(player_pos[x], player_pos[y]+1, " ")
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+            #    and world.char(player_pos[x], player_pos[y]-1) in world.tile_elements):
+            world.mod_char(player_pos[x], player_pos[y]-1, " ")
+
+    def cataclysm_effect():
+        for mob in world.monsters:
+            world.mod_char(mob.x_index, mob.y_index, mob.stored_char) # remove mosnter symbol from board and restore char
+        del world.monsters[:] # kill all monsters in world
+        player.health = 0
+
 
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
@@ -235,43 +275,69 @@ while play_again: # game replay loop
                                    "Restores 10 health")
     invisibility_potion = potion("Invisibility Potion", 10, "103", 1, invisibility_effect,
                                  "Become invisible for a short time")
-
+    strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", 1, strength_effect, "Double your strength for a short time!")
+    tnt = consumable("TNT", "201", 2, tnt_effect, "Clears a small area around you. Boom!")
+    cataclysm = consumable("The Cataclysm", "202", 1, cataclysm_effect, "WARNING: Kills all life in this world tile. ")
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
     player_inventory = [speed_potion, lesser_health_potion, greater_health_potion,
-                        invisibility_potion]  # hard-coding a speed potion into the inventory for now
+                        invisibility_potion, strength_potion, tnt,]  # hard-coding a speed potion into the inventory for now
+    if "[admin]" in player.name:
+        player_inventory.append(cataclysm)
     # speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0  # count of player moves for effect duration
     moves_until_effect_expires = {
         "speed": 0,
-        "invisibility": 0
+        "invisibility": 0,
+        "strength": 0
     }
 
     """Generate World, Monsters based on difficulty"""
+    def spawn_mobs(difficulty):
+        #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input
+        if difficulty == "normal":
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
+        elif difficulty == "heroic":
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 5))): world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 8))): world.monsters.append(cyclops(world, dim, with_colors))
+        elif difficulty == "seeker":
+            world.monsters.append(wraith(world, dim, with_colors))
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(ceil(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(ceil(dim / 4))): world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(ceil(dim / 5))): world.monsters.append(cyclops(world, dim, with_colors))
+        else:
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
+        if name == "mob test":
+            world.monsters.append(wizard(world, dim, with_colors))
+            world.monsters.append(necromancer(world, dim, with_colors))
+        if world.is_custom == True: # if world is generated --> a dungeon
+            for i in range(0, int(ceil(world.tile_dim/16))): # scale number of necromancers and wizards spawned to world
+                world.monsters.append(necromancer(world, dim, with_colors))
+                world.monsters.append(wizard(world, dim, with_colors))
 
-    #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input
-    if difficulty == "normal":
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
-    elif difficulty == "heroic":
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 5))): world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 8))): world.monsters.append(cyclops(world, dim, with_colors))
-    elif difficulty == "seeker":
-        world.monsters.append(wraith(world, dim, with_colors))
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(ceil(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(ceil(dim / 4))): world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(ceil(dim / 5))): world.monsters.append(cyclops(world, dim, with_colors))
-    else:
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
+    spawn_mobs(difficulty)
     system(clear_command)  # clearing screen to prepare for game
+
+    def new_round(difficulty):
+        system(clear_command)
+        print(colorama.Fore.BLUE + ascii_resources.new_round if with_colors else ascii_resources.new_round)
+        sleep(0.2)
+        print(colorama.Fore.MAGENTA + ascii_resources.plus_200_points if with_colors else ascii_resources.plus_200_points)
+        sleep(1.2)
+        spawn_mobs(difficulty)
+        return_player_to_origin()
+        system(clear_command)
+
+
 
     ### FINDING PLAYER SPAWN POINT ###
     player_pos = [1, 2]  # creating player coordinate storage
@@ -444,6 +510,11 @@ while play_again: # game replay loop
                 player.invisible = False
             else:
                 moves_until_effect_expires["invisibility"] -= 1
+        if player.damage != player.base_damage:
+            if moves_until_effect_expires["strength"] == 0:
+                player.damage = player.base_damage
+            else:
+                moves_until_effect_expires["strength"] -= 1
         if motion == "w":
             collision_output = detect_collision("y", 1)
             mob_collision_w = detect_mob_collision("y", 1)
@@ -725,7 +796,7 @@ while play_again: # game replay loop
         world.mod_char(player_pos[x], player_pos[y], player_character)
 
     def print_health():
-        if player.name.lower() != "hot dog":
+        if "[admin]" not in player.name.lower():
             global with_colors
             healthString = ""
             if with_colors:
@@ -748,6 +819,10 @@ while play_again: # game replay loop
     while player.lives > 0:
 
         while True:
+            if len(world.monsters) == 0 or (len(world.monsters) == 1 and world.monsters[0].name == "~~Wraith~~"):
+                system(clear_command)
+                new_round(difficulty)
+                world.print_tile()
             sleep(0.1)
             if is_mac == False:
                 player_input = keyboard.read_key()
@@ -768,8 +843,8 @@ while play_again: # game replay loop
                     if item.quantity > 0:
                         print("   {}: ".format(item.name))
                         print(
-                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item.effect_readable, item.duration,
-                                                                                        item.quantity))
+                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item.effect_readable, item.duration if isinstance(item, potion) else "n/a",
+                                                                                        item.quantity ))
                 while True:  # inventory system
                     e_input = input("Enter inventory command: ('e' to exit)\n")
                     if e_input == "e":
