@@ -316,7 +316,8 @@ while play_again: # game replay loop
 
     """Possible items for chest inventories"""
     possible_items = [greater_health_potion, lesser_health_potion, invisibility_potion, strength_potion, tnt]
-
+    # TODO: add chest to world
+    world.chests.append(chest(world_tile, possible_items, False, inventory_size=5)) # larger inventory
     """Generate World, Monsters based on difficulty"""
     def spawn_mobs(difficulty):
         #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input

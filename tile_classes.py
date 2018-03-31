@@ -12,7 +12,7 @@ class world_tile:
         self.tile = []  # the actual tile that will be created
         self.monsters = []
         # chests
-        if self.chests == None:
+        if default_chests == None:
             self.chests = [] # by default an empty list, can append to
         else:
             self.chests = default_chests
