@@ -316,6 +316,11 @@ while play_again: # game replay loop
     if name == "mob test":
         world.monsters.append(wizard(world, dim, with_colors))
         world.monsters.append(necromancer(world, dim, with_colors))
+    if world.is_custom == True: # if world is generated --> a dungeon
+        for i in range(0, int(ceil(world.tile_dim/16))): # scale number of necromancers and wizards spawned to world
+            world.monsters.append(necromancer(world, dim, with_colors))
+            world.monsters.append(wizard(world, dim, with_colors))
+
     system(clear_command)  # clearing screen to prepare for game
 
     ### FINDING PLAYER SPAWN POINT ###

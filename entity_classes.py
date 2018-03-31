@@ -132,7 +132,7 @@ class monster: # for other monsters to inherit
                 self.spawn_cursed_shadow()
 
                 # prevent necromancer from moving within 5 tiles of player
-                if (abs(player_x - self.x_index) <= 4 and abs( player_y - self.y_index) <= 4 ):
+                if (abs(player_x - self.x_index) <= 6 and abs( player_y - self.y_index) <= 6 ):
                     return # abort the function so necromancer doesn't move closer
 
             # if farther apart in x than y
