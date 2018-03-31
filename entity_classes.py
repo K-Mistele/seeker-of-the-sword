@@ -24,8 +24,8 @@ class chest:
 
     # TODO: make chests immune to TNT
 
-    def __init__(self, world, location_override=False, location_override_x=0, location_override_y=0,
-                 inventory_size=3, generate_items=True, inventory_override=[], possible_items):
+    def __init__(self, world, possible_items, location_override=False, location_override_x=0, location_override_y=0,
+                 inventory_size=3, generate_items=True, inventory_override=[], ):
 
         self.world = world
         self.viable_tiles = [" "]
