@@ -229,36 +229,36 @@ while play_again: # game replay loop
 
     def strength_effect():
         player.damage = player.base_damage * 2
-        moves_until_effect_expires["stength"] += strength_potion.duration
+        moves_until_effect_expires["strength"] += strength_potion.duration
         if with_colors:
             print(colorama.Fore.WHITE+"You used a strength potion!")
         else:
             print("You used a strength potion~")
 
     def tnt_effect():
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
-                and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+            #    and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y], " ")
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
-                and world.char(player_pos[x]+1, player_pos[y]+1) in world.tile_elements):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+            #    and world.char(player_pos[x]+1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]+1, " ")
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
-                and world.char(player_pos[x]+1, player_pos[y]-1) in world.tile_elements):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+            #    and world.char(player_pos[x]+1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]-1, " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
-                and world.char(player_pos[x]-1, player_pos[y]) in world.tile_elements):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+            #    and world.char(player_pos[x]-1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y], " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
-                and world.char(player_pos[x]-1, player_pos[y]+1) in world.tile_elements):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+            #    and world.char(player_pos[x]-1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]+1, " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
-                and world.char(player_pos[x]-1, player_pos[y]-1) in world.tile_elements):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+            #    and world.char(player_pos[x]-1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]-1, " ")
-        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
-                and world.char(player_pos[x], player_pos[y]+1) in world.tile_elements):
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+            #    and world.char(player_pos[x], player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]+1, " ")
-        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
-                and world.char(player_pos[x], player_pos[y]-1) in world.tile_elements):
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+            #    and world.char(player_pos[x], player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]-1, " ")
 
     def cataclysm_effect():
@@ -280,7 +280,9 @@ while play_again: # game replay loop
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
     player_inventory = [speed_potion, lesser_health_potion, greater_health_potion,
-                        invisibility_potion, strength_potion, tnt, cataclysm if "[admin]" in player.name else []]  # hard-coding a speed potion into the inventory for now
+                        invisibility_potion, strength_potion, tnt,]  # hard-coding a speed potion into the inventory for now
+    if "[admin]" in player.name:
+        player_inventory.append(cataclysm)
     # speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0  # count of player moves for effect duration
     moves_until_effect_expires = {
@@ -290,38 +292,51 @@ while play_again: # game replay loop
     }
 
     """Generate World, Monsters based on difficulty"""
-
-    #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input
-    if difficulty == "normal":
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
-    elif difficulty == "heroic":
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 5))): world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 8))): world.monsters.append(cyclops(world, dim, with_colors))
-    elif difficulty == "seeker":
-        world.monsters.append(wraith(world, dim, with_colors))
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(ceil(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(ceil(dim / 4))): world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(ceil(dim / 5))): world.monsters.append(cyclops(world, dim, with_colors))
-    else:
-        world.monsters.append(wraith(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
-        for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
-    if name == "mob test":
-        world.monsters.append(wizard(world, dim, with_colors))
-        world.monsters.append(necromancer(world, dim, with_colors))
-    if world.is_custom == True: # if world is generated --> a dungeon
-        for i in range(0, int(ceil(world.tile_dim/16))): # scale number of necromancers and wizards spawned to world
-            world.monsters.append(necromancer(world, dim, with_colors))
+    def spawn_mobs(difficulty):
+        #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input
+        if difficulty == "normal":
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
+        elif difficulty == "heroic":
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 5))): world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 8))): world.monsters.append(cyclops(world, dim, with_colors))
+        elif difficulty == "seeker":
+            world.monsters.append(wraith(world, dim, with_colors))
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(ceil(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(ceil(dim / 4))): world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(ceil(dim / 5))): world.monsters.append(cyclops(world, dim, with_colors))
+        else:
+            world.monsters.append(wraith(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
+            for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
+        if name == "mob test":
             world.monsters.append(wizard(world, dim, with_colors))
+            world.monsters.append(necromancer(world, dim, with_colors))
+        if world.is_custom == True: # if world is generated --> a dungeon
+            for i in range(0, int(ceil(world.tile_dim/16))): # scale number of necromancers and wizards spawned to world
+                world.monsters.append(necromancer(world, dim, with_colors))
+                world.monsters.append(wizard(world, dim, with_colors))
 
+    spawn_mobs(difficulty)
     system(clear_command)  # clearing screen to prepare for game
+    
+    def new_round(difficulty):
+        system(clear_command)
+        print(colorama.Fore.BLUE + ascii_resources.new_round if with_colors else ascii_resources.new_round)
+        sleep(0.2)
+        print(colorama.Fore.MAGENTA + ascii_resources.plus_200_points if with_colors else ascii_resources.plus_200_points)
+        sleep(1.2)
+        spawn_mobs(difficulty)
+        return_player_to_origin()
+        system(clear_command)
+
+
 
     ### FINDING PLAYER SPAWN POINT ###
     player_pos = [1, 2]  # creating player coordinate storage
@@ -803,6 +818,10 @@ while play_again: # game replay loop
     while player.lives > 0:
 
         while True:
+            if len(world.monsters) == 0 or (len(world.monsters) == 1 and world.monsters[0].name == "~~Wraith~~"):
+                system(clear_command)
+                new_round(difficulty)
+                world.print_tile()
             sleep(0.1)
             if is_mac == False:
                 player_input = keyboard.read_key()
