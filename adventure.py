@@ -298,11 +298,8 @@ while play_again: # game replay loop
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
 
-    player_inventory = [[speed_potion, 1],
-                        [lesser_health_potion, 1],
+    player_inventory = [[lesser_health_potion, 1],
                         [greater_health_potion, 1],
-                        [invisibility_potion, 1],
-                        [strength_potion, 1],
                         [tnt, 2]]  # hard-coding a speed potion into the inventory for now
     if "[admin]" in player.name:
         player_inventory.append([cataclysm, 1])
@@ -317,7 +314,7 @@ while play_again: # game replay loop
     """Possible items for chest inventories"""
     possible_items = [greater_health_potion, lesser_health_potion, invisibility_potion, strength_potion, tnt]
     # TODO: add chest to world
-    world.chests.append(chest(world, possible_items,  False, inventory_size=5)) # larger inventory
+    world.chests.append(chest(world, possible_items,  False, inventory_size=5, max_number_of_items=1)) # larger inventory
     """Generate World, Monsters based on difficulty"""
     def spawn_mobs(difficulty):
         #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input
@@ -848,7 +845,7 @@ while play_again: # game replay loop
             return
 
     while player.lives > 0:
-
+        open_chest = True
         while True:
             # if all mobs cleared, round system initializes (until story gameplay is built)
             if len(world.monsters) == 0 or (len(world.monsters) == 1 and world.monsters[0].name == "~~Wraith~~"):
@@ -936,12 +933,43 @@ while play_again: # game replay loop
                     print(colorama.Fore.WHITE + "Spikes underfoot draw " + colorama.Fore.RED + "blood" + colorama.Fore.WHITE + "!")
                 else:
                     print("Spikes underfoot draw blood!")
+            # if player is standing on a sign
             if stored_tile[0] == world.dungeon_elements[8]["character"]:
                 for sign_data in world.sign_info:
                     if [player_pos[x], player_pos[y]] in sign_data:
                         print(colorama.Fore.CYAN + "\nA posted sign reads:" if with_colors else "\nA posted sign reads:")
                         print(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
                         break
+
+            # if player is standing on a chest
+            if stored_tile[0] == (colorama.Fore.CYAN + "H" if with_colors else "H") and open_chest == True:
+                system(clear_command)
+                print(colorama.Fore.WHITE + "Chest Inventory:\n" if with_colors else "Chest Inventory:\n")
+                for chest in world.chests:
+                    if chest.x_index == player_pos[x] and chest.y_index == player_pos[y]:
+                        for item in chest.inventory:
+                            print("    {}:".format(item[0].name))
+                            print("      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(
+                                    item[0].effect_readable,
+                                    item[0].duration if isinstance(item[0], potion) else "n/a", item[1]))
+                        while True:
+                            c_input = input("Transfer Items to inventory?\n")
+                            if c_input in "yes":
+                                chest.transfer_contents(player_inventory)
+                                print("Items transferred to your inventory!")
+                                sleep(1)
+                                break
+                            elif c_input in "no":
+                                print("Items not transferred.")
+                                sleep(1)
+                                break
+                            else:
+                                continue
+                open_chest = False
+                system(clear_command)
+                world.print_tile()
+            else:
+                open_chest = True
             if player.health <= 0:
                 player.lives -= 1
                 if player.lives == 0:

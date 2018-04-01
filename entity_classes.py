@@ -23,7 +23,7 @@ class character:
 class chest:
 
     def __init__(self, world, possible_items, location_override=False, location_override_x=0, location_override_y=0,
-                 inventory_size=3, generate_items=True, inventory_override=None, ):
+                 inventory_size=3, max_number_of_items=3, generate_items=True, inventory_override=None, ):
 
         self.world = world
         self.viable_tiles = [" "]
@@ -59,21 +59,30 @@ class chest:
         # determine items in chest inventory
         if self.generate_items == True:
             for i in range(0, inventory_size):
-                index = randint(0, len(self.possible_items)-1) # select a random item from possible items
-                self.inventory.append([self.possible_items[index],  # and add it to the chest's inventory
-                                       randint(1, 3)]) # along with a random quantity from one to three
+                poss_items = self.possible_items
+                index = randint(0, len(poss_items)-1) # select a random item from possible items
+                self.inventory.append([poss_items[index],  # and add it to the chest's inventory
+                                       randint(1, max_number_of_items)]) # along with a random quantity from one to three
+                self.possible_items.remove(poss_items[index])
         else:
             self.inventory.extend(self.inventory_override)
-
+    # fixme: re-write this whole function
+    # transfers way too many copies to player inventory
+    # won't let you delete contents of chest once transferred to inventory
     def transfer_contents(self, player_inventory):
-        for chest_item in list(self.inventory):
+        to_remove=[]
+
+        for i in range(0, len(self.inventory)):
             for item in player_inventory:
-                if chest_item[0].name == item[0].name: # if item is already in player's inventory
-                    item[1] += chest_item[1] # increase quantity in player inventory by quantity of item in chest
-                    self.inventory.remove(chest_item) # remove item from chest inventory
-                else:
-                    player_inventory.append([chest_item[0],
-                                             chest_item[1]]) # create a new inventory entry with the item and quantity
+                if self.inventory[i][0].name == item[0].name: # if name of item in chest matches item in inventory
+                    item[1] += self.inventory[i][1] # increase quantity of item in inventory
+                    to_remove.append(self.inventory[i]) # prepare to remove this item from chest inventory
+        for item in to_remove:
+            self.inventory.remove(item) # remove items whose quantities have been added to inventory
+        for item in self.inventory: # append items to player inventory that aren't already there
+            player_inventory.append(item)
+
+
 
 
 class monster: # for other monsters to inherit
