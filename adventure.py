@@ -185,7 +185,7 @@ while play_again: # game replay loop
         player.speed += 1
         moves_until_effect_expires["speed"] += speed_potion.duration
         if with_colors:
-            print(colorama.Fore.WHITE+"Invalid Input!")
+            print(colorama.Fore.WHITE+"You used a speed potion!")
         else:
             print("You used a speed potion!")
 
@@ -313,7 +313,7 @@ while play_again: # game replay loop
 
     """Possible items for chest inventories"""
     possible_items = [greater_health_potion, lesser_health_potion, invisibility_potion, strength_potion, tnt]
-    # TODO: add chest to world
+
     world.chests.append(chest(world, possible_items,  False, inventory_size=5, max_number_of_items=1)) # larger inventory
     """Generate World, Monsters based on difficulty"""
     def spawn_mobs(difficulty):

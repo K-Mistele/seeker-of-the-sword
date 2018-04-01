@@ -66,7 +66,6 @@ class chest:
                 self.possible_items.remove(poss_items[index])
         else:
             self.inventory.extend(self.inventory_override)
-    # fixme: re-write this whole function
     # transfers way too many copies to player inventory
     # won't let you delete contents of chest once transferred to inventory
     def transfer_contents(self, player_inventory):
