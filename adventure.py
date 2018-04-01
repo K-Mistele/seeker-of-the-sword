@@ -197,7 +197,7 @@ while play_again: # game replay loop
             while i < 5:
                 if player.health < 20:
                     player.health += 1
-                    i += 1
+                i += 1
         if with_colors:
             print(colorama.Fore.WHITE+"You used a lesser health potion! \n Health restored to {}!".format(player.health))
         else:
@@ -211,7 +211,7 @@ while play_again: # game replay loop
             while i < 10:
                 if player.health < 20:
                     player.health += 1
-                    i += 1
+                i += 1
         if with_colors:
             print(colorama.Fore.WHITE+"You used a greater health potion! \n Health restored to {}!".format(player.health))
         else:
@@ -312,7 +312,7 @@ while play_again: # game replay loop
     }
 
     """Possible items for chest inventories"""
-    possible_items = [greater_health_potion, lesser_health_potion, invisibility_potion, strength_potion, tnt]
+    possible_items = [greater_health_potion, lesser_health_potion, invisibility_potion, strength_potion, speed_potion]
 
     world.chests.append(chest(world, possible_items,  False, inventory_size=5, max_number_of_items=1)) # larger inventory
     """Generate World, Monsters based on difficulty"""
