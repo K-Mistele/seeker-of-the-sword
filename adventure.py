@@ -96,15 +96,15 @@ while play_again: # game replay loop
             select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
         if select_difficulty in "normal":
             difficulty = "normal"
-            player = character(name, 20, 2, 2, 1, 3)  # basic difficulty
+            player = character(name, 20, 1, 1, 1, 3)  # basic difficulty
             break
         elif select_difficulty in "heroic":
             difficulty = "heroic"
-            player = character(name, 20, 2, 2, 1, 2)  # more mobs will spawn
+            player = character(name, 20, 1, 1, 1, 2)  # more mobs will spawn
             break
         elif select_difficulty in "true seeker":
             difficulty = "seeker"
-            player = character(name, 15, 4, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
+            player = character(name, 15, 2, 2, 1, 1)  # lower health, higher damage; more mobs will spawn
             break
         else:
             continue

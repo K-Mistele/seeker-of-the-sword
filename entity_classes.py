@@ -2,6 +2,7 @@ from tile_classes import world_tile
 from random import randint
 from local_resources.colorama_master import colorama
 from math import ceil, floor
+from inventory_classes import melee_weapon, ranged_weapon, ranged_ammo
 
 class character:
     score = 0
@@ -19,6 +20,21 @@ class character:
         self.stored_tile = ["O"]
         self.lives = lives
         self.invisible = False
+        self.equipped_melee_weapon=[]
+        self.equipped_ranged_weapon=[]
+
+    def equip_weapon(self, weapon, player_inventory):
+        if isinstance(weapon, melee_weapon):
+            # weapon is a melee weapon
+            # TODO: increase player damage by weapon damage, apply weapon enchantment
+            print() # placeholder
+        elif isinstance(weapon, ranged_weapon):
+            # weapon is a melee weapon
+            # TODO: create command system so instead of moving player can use bow to hit the nearest target
+            print()
+
+    def unequip_weapon(self, player_inventory):
+        print() # placeholder
 
 class chest:
 
