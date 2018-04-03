@@ -1,6 +1,7 @@
 #PyCHarm
 .idea/
 venv1/
+venv/
 .idea/workspace.xml
 
 #Python
