@@ -288,6 +288,7 @@ while play_again: # game replay loop
 
     """Creating Inventory Items"""
 
+"""
     speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", speed_potion_effect, "Speed x2")
     lesser_health_potion = potion("Lesser Health Potion", "instant", "101", lesser_health_effect, "Restores 5 health")
     greater_health_potion = potion("Greater Health Potion", "instant", "102", greater_health_effect, "Restores 10 health")
@@ -295,6 +296,22 @@ while play_again: # game replay loop
     strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", strength_effect, "Double your strength for a short time!")
     tnt = consumable("TNT", "201", tnt_effect, "Clears a small area around you. Boom!")
     cataclysm = consumable("The Cataclysm", "202", cataclysm_effect, "WARNING: Kills all life in this world tile. ")
+"""
+
+# Simlified interface ....
+
+import Inventory
+playerInventory = Inventory([lesser_health_effect,greater_health_effect,tnt_effect,speed_potion_effect,invisibility_effect,strength_effect,cataclysm_effect],dim)
+'''
+    Idealy the effect potions would accept the playerInstance or worldInstance as an arg
+    
+    until the other code in adventure.py can be refactored it will be nearly impossible to resolve the scope problems this project currently faces 
+    b/c nothing in adventure.py is written in an object oriented manner but a procedural function call....
+    
+    10/10 not reccomend merge as of 5:20 4/3/18
+'''
+
+
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
 
