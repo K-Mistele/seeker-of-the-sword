@@ -5,7 +5,7 @@ from local_resources.colorama_master import colorama  # color library
 from time import sleep
 from random import randint
 from math import ceil, floor
-from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow
+from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow, chest
 from inventory_classes import potion, melee_weapon, consumable
 from local_resources import ascii_resources  # ascii art resources
 from local_resources.ascii_credits import run_color_credits, run_plain_credits
@@ -178,13 +178,14 @@ while play_again: # game replay loop
             continue
     dim = world.tile_dim
 
+    """Creating effect functions for inventory items"""
     # inventory system
     def speed_potion_effect():
         global with_colors
         player.speed += 1
         moves_until_effect_expires["speed"] += speed_potion.duration
         if with_colors:
-            print(colorama.Fore.WHITE+"Invalid Input!")
+            print(colorama.Fore.WHITE+"You used a speed potion!")
         else:
             print("You used a speed potion!")
 
@@ -196,7 +197,7 @@ while play_again: # game replay loop
             while i < 5:
                 if player.health < 20:
                     player.health += 1
-                    i += 1
+                i += 1
         if with_colors:
             print(colorama.Fore.WHITE+"You used a lesser health potion! \n Health restored to {}!".format(player.health))
         else:
@@ -210,7 +211,7 @@ while play_again: # game replay loop
             while i < 10:
                 if player.health < 20:
                     player.health += 1
-                    i += 1
+                i += 1
         if with_colors:
             print(colorama.Fore.WHITE+"You used a greater health potion! \n Health restored to {}!".format(player.health))
         else:
@@ -237,28 +238,37 @@ while play_again: # game replay loop
             print("You used a strength potion!")
 
     def tnt_effect():
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
+            and world.char(player_pos[x]+1, player_pos[y]) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]+1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y], " ")
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+            and world.char(player_pos[x] + 1, player_pos[y]+1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]+1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]+1, " ")
-        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+        if (1 < player_pos[x]+1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+            and world.char(player_pos[x] + 1, player_pos[y]-1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]+1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]+1, player_pos[y]-1, " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y] < world.tile_dim
+            and world.char(player_pos[x]-1, player_pos[y]) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]-1, player_pos[y]) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y], " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+            and world.char(player_pos[x] - 1, player_pos[y]+1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]-1, player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]+1, " ")
-        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+        if (1 < player_pos[x]-1 < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+            and world.char(player_pos[x]-1, player_pos[y]-1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x]-1, player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x]-1, player_pos[y]-1, " ")
-        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim):
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]+1 < world.tile_dim
+            and world.char(player_pos[x], player_pos[y]+1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x], player_pos[y]+1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]+1, " ")
-        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim):
+        if (1 < player_pos[x] < world.tile_dim and 1 < player_pos[y]-1 < world.tile_dim
+            and world.char(player_pos[x], player_pos[y]-1) != (colorama.Fore.CYAN + "H" if with_colors else "H")):
             #    and world.char(player_pos[x], player_pos[y]-1) in world.tile_elements):
             world.mod_char(player_pos[x], player_pos[y]-1, " ")
         if with_colors:
@@ -276,22 +286,23 @@ while play_again: # game replay loop
         else:
             print("Cataclysm activated.")
 
+    """Creating Inventory Items"""
 
-    speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", 1, speed_potion_effect, "Speed x2")
-    lesser_health_potion = potion("Lesser Health Potion", "instant", "101", 1, lesser_health_effect, "Restores 5 health")
-    greater_health_potion = potion("Greater Health Potion", "instant", "102", 1, greater_health_effect,
-                                   "Restores 10 health")
-    invisibility_potion = potion("Invisibility Potion", 10, "103", 1, invisibility_effect,
-                                 "Become invisible for a short time")
-    strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", 1, strength_effect, "Double your strength for a short time!")
-    tnt = consumable("TNT", "201", 2, tnt_effect, "Clears a small area around you. Boom!")
-    cataclysm = consumable("The Cataclysm", "202", 1, cataclysm_effect, "WARNING: Kills all life in this world tile. ")
+    speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", speed_potion_effect, "Speed x2")
+    lesser_health_potion = potion("Lesser Health Potion", "instant", "101", lesser_health_effect, "Restores 5 health")
+    greater_health_potion = potion("Greater Health Potion", "instant", "102", greater_health_effect, "Restores 10 health")
+    invisibility_potion = potion("Invisibility Potion", 10, "103", invisibility_effect, "Become invisible for a short time")
+    strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", strength_effect, "Double your strength for a short time!")
+    tnt = consumable("TNT", "201", tnt_effect, "Clears a small area around you. Boom!")
+    cataclysm = consumable("The Cataclysm", "202", cataclysm_effect, "WARNING: Kills all life in this world tile. ")
     # global-scope variables
     game_break = False  # creating end condition for game screen loop
-    player_inventory = [speed_potion, lesser_health_potion, greater_health_potion,
-                        invisibility_potion, strength_potion, tnt,]  # hard-coding a speed potion into the inventory for now
+
+    player_inventory = [[lesser_health_potion, 1],
+                        [greater_health_potion, 1],
+                        [tnt, 2]]  # hard-coding a speed potion into the inventory for now
     if "[admin]" in player.name:
-        player_inventory.append(cataclysm)
+        player_inventory.append([cataclysm, 1])
     # speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
     number_of_player_moves = 0  # count of player moves for effect duration
     moves_until_effect_expires = {
@@ -300,6 +311,10 @@ while play_again: # game replay loop
         "strength": 0
     }
 
+    """Possible items for chest inventories"""
+    possible_items = [greater_health_potion, lesser_health_potion, invisibility_potion, strength_potion, speed_potion]
+
+    world.chests.append(chest(world, possible_items,  False, inventory_size=5, max_number_of_items=1)) # larger inventory
     """Generate World, Monsters based on difficulty"""
     def spawn_mobs(difficulty):
         #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input
@@ -830,7 +845,7 @@ while play_again: # game replay loop
             return
 
     while player.lives > 0:
-
+        open_chest = True
         while True:
             # if all mobs cleared, round system initializes (until story gameplay is built)
             if len(world.monsters) == 0 or (len(world.monsters) == 1 and world.monsters[0].name == "~~Wraith~~"):
@@ -854,24 +869,25 @@ while play_again: # game replay loop
                 else:
                     print("Inventory: \n")
                 for item in player_inventory:  # display inventory
-                    if item.quantity > 0:
-                        print("   {}: ".format(item.name))
+                    # quantity = item[1]
+                    if item[1] > 0:
+                        print("   {}: ".format(item[0].name))
                         print(
-                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item.effect_readable, item.duration if isinstance(item, potion) else "n/a",
-                                                                                        item.quantity ))
+                        "      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(item[0].effect_readable,
+                        item[0].duration if isinstance(item[0], potion) else "n/a", item[1] ))
                 while True:  # inventory system
                     e_input = input("Enter inventory command: ('e' to exit)\n")
                     if e_input == "e":
                         break
-                    elif any(item.name == e_input for item in player_inventory):  # if there is an item object in player inventory with name input by user
+                    elif any(item[0].name == e_input for item in player_inventory):  # if there is an item object in player inventory with name input by user
                         for item in player_inventory:  # iterate through and find it
-                            if e_input == item.name:
-                                if item.quantity == 0:  # if no more of this item in inventory
+                            if e_input == item[0].name:
+                                if item[1] == 0:  # if no more of this item in inventory
                                     print("You are out of this item. ")
                                     break
                                 else:
-                                    item.quantity -= 1  # remove one of the item from inventory
-                                    item.effect()  # and use its effect
+                                    item[1] -= 1  # remove one of the item from inventory
+                                    item[0].effect()  # and use its effect
                     else:
                         print("Unrecognized command")
                 system(clear_command)
@@ -889,6 +905,7 @@ while play_again: # game replay loop
                         damage_dealt_by_spikes = True
                         break
             print_health()
+
             print(action_string)
             if damage_dealt_by_spikes == True:
                 if with_colors == True:
@@ -916,12 +933,43 @@ while play_again: # game replay loop
                     print(colorama.Fore.WHITE + "Spikes underfoot draw " + colorama.Fore.RED + "blood" + colorama.Fore.WHITE + "!")
                 else:
                     print("Spikes underfoot draw blood!")
+            # if player is standing on a sign
             if stored_tile[0] == world.dungeon_elements[8]["character"]:
                 for sign_data in world.sign_info:
                     if [player_pos[x], player_pos[y]] in sign_data:
                         print(colorama.Fore.CYAN + "\nA posted sign reads:" if with_colors else "\nA posted sign reads:")
                         print(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
                         break
+
+            # if player is standing on a chest
+            if stored_tile[0] == (colorama.Fore.CYAN + "H" if with_colors else "H") and open_chest == True:
+                system(clear_command)
+                print(colorama.Fore.WHITE + "Chest Inventory:\n" if with_colors else "Chest Inventory:\n")
+                for chest in world.chests:
+                    if chest.x_index == player_pos[x] and chest.y_index == player_pos[y]:
+                        for item in chest.inventory:
+                            print("    {}:".format(item[0].name))
+                            print("      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(
+                                    item[0].effect_readable,
+                                    item[0].duration if isinstance(item[0], potion) else "n/a", item[1]))
+                        while True:
+                            c_input = input("Transfer Items to inventory?\n")
+                            if c_input in "yes":
+                                chest.transfer_contents(player_inventory)
+                                print("Items transferred to your inventory!")
+                                sleep(1)
+                                break
+                            elif c_input in "no":
+                                print("Items not transferred.")
+                                sleep(1)
+                                break
+                            else:
+                                continue
+                open_chest = False
+                system(clear_command)
+                world.print_tile()
+            else:
+                open_chest = True
             if player.health <= 0:
                 player.lives -= 1
                 if player.lives == 0:

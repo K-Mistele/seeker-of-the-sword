@@ -5,11 +5,17 @@ from local_resources.colorama_master import colorama
 
 
 class world_tile:
-    def __init__(self,dim,tile_type,with_colors,is_custom, filename): #creating the table
+    def __init__(self,dim,tile_type,with_colors,is_custom, filename, default_chests=None): #creating the table,
+        # chests should be a list if there are hardcoded chests
         self.is_custom = is_custom
         self.with_colors = with_colors
         self.tile = []  # the actual tile that will be created
         self.monsters = []
+        # chests
+        if default_chests == None:
+            self.chests = [] # by default an empty list, can append to
+        else:
+            self.chests = default_chests
         if with_colors:
             colorama.init()
         if tile_type == "world":
