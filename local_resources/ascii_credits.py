@@ -84,34 +84,34 @@ if platform.system() != "Windows":  # compatibility fixes
 else:
     clear_command = "cls"
 
-def run_color_credits():
+def run_color_credits(timeDuration=2.5):
     system(clear_command)
     colorama.init()
     print(colorama.Fore.BLUE + developed_by)
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)
     print(colorama.Fore.RED + andrew_mistele)
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)
     print(colorama.Fore.MAGENTA + kyle_mistele)
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)
     print(colorama.Fore.BLUE + michael_naguib + colorama.Fore.WHITE)
     colorama.deinit()
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)
 
-def run_plain_credits():
+def run_plain_credits(timeDuration=2.5):
     system(clear_command)
     print(developed_by)
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)
     print(andrew_mistele)
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)
     print(kyle_mistele)
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)
     print(michael_naguib)
-    sleep(2.5)
+    sleep(timeDuration)
     system(clear_command)

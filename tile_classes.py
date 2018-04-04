@@ -216,10 +216,10 @@ class world_tile:
                         row_pos -= 1
 
     def print_tile(self,): # printing the tile
+        graph=""
         for row in self.tile:
-            print(" ".join(row))
-        print("\n")
-
+            graph += " ".join(row) + "\n"
+        return graph
     """
     POSITIONAL FUNCTIONS: RETURN DATA FROM THE TABLE
     """
