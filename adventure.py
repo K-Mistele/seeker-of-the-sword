@@ -1,3 +1,4 @@
+#====== Imports ======
 from os import system, listdir
 from tile_classes import world_tile
 # from local_resources.keyboard_master import keyboard # event listeners for keyboard
@@ -8,18 +9,28 @@ from math import ceil, floor
 from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow, chest
 from inventory_classes import potion, melee_weapon, consumable
 from local_resources import ascii_resources  # ascii art resources
-from local_resources.ascii_credits import run_color_credits, run_plain_credits
+from local_resources.ascii_credits import run_credits
 import platform
 from check_high_scores import check_high_scores, print_high_scores # csv high scores system
-from Screen import Screen
 
+#Refactored Classes added
+from local_resources.Screen import Screen
+from local_resources.Splash import Splash
+from local_resources.GenerateSettings import GenerateSettings
 
+#============================== Seeker of the Sword ==================================
 if __name__ == "__main__":
 
-    #Setup game screen
+    #==== Screen Setup =====
     gameScreen = Screen()
+    #   gameScreen.clearScreen() to clear the screen in any case...
 
+    #==== Game Settings =====
+    gameSettings = GenerateSettings(lightspeed=False)
+    if gameSettings.with_colors:
+        colorama.init()
 
+    #==== System Notice ======
     if platform.system() == "Darwin":  # determining whether system is a mac for compatible modules
         is_mac = True
         print("We have detected you are using a Mac terminal. You may wish to change your background color to black"
@@ -28,164 +39,26 @@ if __name__ == "__main__":
         is_mac = False
         from local_resources.keyboard_master import keyboard
 
-    if platform.system() != "Windows":  # determining whether to use system("cls") or system("clear") to clear screen
-        clear_command = "clear"
-    else:
-        clear_command = "cls"
-
-    clear_command = ""
-
-    while True:
-        with_colors = input("Initiate with colors?\n")
-        if "y" in with_colors.lower():
-            with_colors = True
-            break
-        elif "n" in with_colors.lower():
-            with_colors = False
-            break
-        else:
-            print("Invalid input!")
-            continue
-    if with_colors:
-        colorama.init()
-
-    player_character = colorama.Fore.WHITE + "+" if with_colors else "+" # defining player character
-
+    #===== Misc. Initilizations ====
+    player_character = colorama.Fore.WHITE + "+" if gameSettings.with_colors else "+"  # defining player character
     play_again = True
     game_iteration = 0
+
+    #================ Main Game Loop =====================
     while play_again: # game replay loop
-        #system(clear_command)
-        # display splash screen in color or plain
-        if with_colors == True:
-            #colorama.init()
-            print(colorama.Fore.MAGENTA + ascii_resources.color_splash_screen[0] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[1] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[2] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[3] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[4] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[5] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[6] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[7] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[8] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[9] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[10] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[11] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[12] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[13] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[14] +
-                  colorama.Fore.BLUE + ascii_resources.color_splash_screen[15] +
-                  colorama.Fore.RED + ascii_resources.color_splash_screen[16] +
-                  colorama.Fore.GREEN + ascii_resources.color_splash_screen[17] +
-                  colorama.Fore.WHITE)
-            #colorama.deinit()
-            #(3)
-            if game_iteration == 0:
-                run_color_credits(timeDuration=0)
-        else:
-            print(ascii_resources.plain_splash_screen)
-            #sleep(3)
-            if game_iteration == 0:
-                run_plain_credits(timeDuration=0)
+        #===== Title Sequence =======
+        Splash(with_color=gameSettings.with_colors)
+        if game_iteration ==0: #
+            run_credits(with_color=gameSettings.with_colors,timeDuration=0) #TIME duration specifies time between prints... 0 for lightspeed
 
-        if with_colors:
-            name = input(colorama.Fore.WHITE+"Please enter your name:\n")
-            if name.lower() == "hot dog":
-                print(colorama.Fore.GREEN + "\nWelcome, [ADMIN]\n")
-        else:
-            name = input("Please enter your name:\n")
-            if "[admin]" in name.lower():
-                print("\nWelcome, [ADMIN]\n")
+        #===== Init Player =========
+        player = character(*gameSettings.difficulty_config[1:7])# takes the last 6 items (the first is difficulty string) note the spread operator *
+        difficulty = gameSettings.difficulty_config[0]
 
-        """Difficulty"""
-        difficulty = ""
-        while True:
-            if with_colors:
-                select_difficulty = input(colorama.Fore.WHITE+"Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
-            else:
-                select_difficulty = input("Please select difficulty: Normal, Heroic, or True Seeker:\n").lower()
-            if select_difficulty in "normal":
-                difficulty = "normal"
-                player = character(name, 20, 2, 2, 1, 3)  # basic difficulty
-                break
-            elif select_difficulty in "heroic":
-                difficulty = "heroic"
-                player = character(name, 20, 2, 2, 1, 2)  # more mobs will spawn
-                break
-            elif select_difficulty in "true seeker":
-                difficulty = "seeker"
-                player = character(name, 15, 4, 4, 1, 1)  # lower health, higher damage; more mobs will spawn
-                break
-            else:
-                continue
-
-        while True:  # sanitized getting user input about custom maps
-            if with_colors:
-                with_custom = input(colorama.Fore.WHITE+"Generate map or use custom?\n").lower()
-            else:
-                with_custom = input("Generate map or use custom?\n").lower()  # asking user to either generate or use custom map
-            if with_custom in "generate" or "generate" in with_custom:
-                while True:  # sanitized getting dim
-                    if with_colors:
-                        dim = input(colorama.Fore.WHITE+"Tile dimension?(minimum 16)\n")
-                    else:
-                        dim = input("Tile dimension?(minimum 16)\n")  # getting world dimensions from user
-                    try:
-                        dim = int(dim)
-                        if dim < 16:
-                            if with_colors:
-                                print(colorama.Fore.WHITE+"Tile size too small.")
-                            else:
-                                print("Tile size too small.")
-                            continue
-                        break
-                    except:
-                        if with_colors:
-                            print(colorama.Fore.WHITE+"Invalid input!")
-                        else:
-                            print("Invalid input!")
-                        continue
-                world = world_tile(dim, "world", with_colors, False,"")  # creating "world" object in "table" class with user input
-                #system(clear_command)  # clearing screen to prepare for game
-                break
-            elif with_custom in "custom" or "custom" in with_custom:
-                dim = 5
-                available_files = listdir("custom_maps")  # getting all files in directory that stores maps
-                available_maps = []
-                for file in available_files:  # only preparing files to display to user that are text files
-                    if ".txt" in file:
-                        available_maps.append(file[:-4])
-                if with_colors:
-                    print(colorama.Fore.WHITE+"\nAvailable maps:")
-                else:
-                    print("\nAvailable maps:")
-                for map in available_maps:  # printing maps that the user can choose from
-                    if with_colors:
-                        print(colorama.Fore.WHITE+map)
-                    else:
-                        print(map)
-                while True:
-                    if with_colors:
-                        filename = input(colorama.Fore.WHITE+"\nInput name of file to be imported:\n")
-                    else:
-                        filename = input("\nInput name of file to be imported:\n")
-                    if filename in available_maps:
-                        world = world_tile(dim, "world", with_colors, True, filename+".txt")
-                        #system(clear_command)
-                        break
-                    else:
-                        if with_colors:
-                            print(colorama.Fore.WHITE+"Invalid file name!")
-                        else:
-                            print("Invalid file name!")
-                        continue
-                break
-            else:
-                if with_colors:
-                    print(colorama.Fore.WHITE+"Invalid Input!")
-                else:
-                    print("Invalid input!")
-                continue
-        dim = world.tile_dim
+        #===== Init World ==========
+        world = world_tile(*gameSettings.world_settings) # note the spread operator
+        if not gameSettings.world_do_generate: #If the world is not generated its dimension is predefined... update the settings for future use
+            gameSettings.dim = world.tile_dim
 
         """Creating effect functions for inventory items"""
         # inventory system
@@ -297,11 +170,11 @@ if __name__ == "__main__":
 
         """Creating Inventory Items"""
 
-        speed_potion = potion("Speed Potion", int(ceil(dim / 2)), "100", speed_potion_effect, "Speed x2")
+        speed_potion = potion("Speed Potion", int(ceil(gameSettings.dim / 2)), "100", speed_potion_effect, "Speed x2")
         lesser_health_potion = potion("Lesser Health Potion", "instant", "101", lesser_health_effect, "Restores 5 health")
         greater_health_potion = potion("Greater Health Potion", "instant", "102", greater_health_effect, "Restores 10 health")
         invisibility_potion = potion("Invisibility Potion", 10, "103", invisibility_effect, "Become invisible for a short time")
-        strength_potion = potion("Strength Potion", int(ceil(dim/3)), "104", strength_effect, "Double your strength for a short time!")
+        strength_potion = potion("Strength Potion", int(ceil(gameSettings.dim/3)), "104", strength_effect, "Double your strength for a short time!")
         tnt = consumable("TNT", "201", tnt_effect, "Clears a small area around you. Boom!")
         cataclysm = consumable("The Cataclysm", "202", cataclysm_effect, "WARNING: Kills all life in this world tile. ")
         # global-scope variables
@@ -328,42 +201,42 @@ if __name__ == "__main__":
         def spawn_mobs(difficulty):
             #world = world_tile(dim, "world", with_colors)  # creating "world" object in "table" class with user input
             if difficulty == "normal":
-                world.monsters.append(wraith(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
+                world.monsters.append(wraith(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 5))):  world.monsters.append(goblin(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 6))):  world.monsters.append(wyvern(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 10))): world.monsters.append(cyclops(world, gameSettings.dim, with_colors))
             elif difficulty == "heroic":
-                world.monsters.append(wraith(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 5))): world.monsters.append(wyvern(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 8))): world.monsters.append(cyclops(world, dim, with_colors))
+                world.monsters.append(wraith(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 4))): world.monsters.append(goblin(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 5))): world.monsters.append(wyvern(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 8))): world.monsters.append(cyclops(world, gameSettings.dim, with_colors))
             elif difficulty == "seeker":
-                world.monsters.append(wraith(world, dim, with_colors))
-                world.monsters.append(wraith(world, dim, with_colors))
-                for i in range(0, int(ceil(dim / 4))): world.monsters.append(goblin(world, dim, with_colors))
-                for i in range(0, int(ceil(dim / 4))): world.monsters.append(wyvern(world, dim, with_colors))
-                for i in range(0, int(ceil(dim / 5))): world.monsters.append(cyclops(world, dim, with_colors))
+                world.monsters.append(wraith(world, gameSettings.dim, with_colors))
+                world.monsters.append(wraith(world, gameSettings.dim, with_colors))
+                for i in range(0, int(ceil(gameSettings.dim / 4))): world.monsters.append(goblin(world, gameSettings.dim, with_colors))
+                for i in range(0, int(ceil(gameSettings.dim / 4))): world.monsters.append(wyvern(world, gameSettings.dim, with_colors))
+                for i in range(0, int(ceil(gameSettings.dim / 5))): world.monsters.append(cyclops(world, gameSettings.dim, with_colors))
             else:
-                world.monsters.append(wraith(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 5))):  world.monsters.append(goblin(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 6))):  world.monsters.append(wyvern(world, dim, with_colors))
-                for i in range(0, int(floor(dim / 10))): world.monsters.append(cyclops(world, dim, with_colors))
-            if name == "mob test":
-                world.monsters.append(wizard(world, dim, with_colors))
-                world.monsters.append(necromancer(world, dim, with_colors))
+                world.monsters.append(wraith(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 5))):  world.monsters.append(goblin(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 6))):  world.monsters.append(wyvern(world, gameSettings.dim, with_colors))
+                for i in range(0, int(floor(gameSettings.dim / 10))): world.monsters.append(cyclops(world, gameSettings.dim, with_colors))
+            if gameSettings.name == "mob test":
+                world.monsters.append(wizard(world, gameSettings.dim, with_colors))
+                world.monsters.append(necromancer(world, gameSettings.dim, with_colors))
             if world.is_custom == True: # if world is generated --> a dungeon
                 for i in range(0, int(ceil(world.tile_dim/16))): # scale number of necromancers and wizards spawned to world
-                    world.monsters.append(necromancer(world, dim, with_colors))
-                    world.monsters.append(wizard(world, dim, with_colors))
+                    world.monsters.append(necromancer(world, gameSettings.dim, with_colors))
+                    world.monsters.append(wizard(world, gameSettings.dim, with_colors))
 
         spawn_mobs(difficulty)
         #system(clear_command)  # clearing screen to prepare for game
 
         def new_round(difficulty):
             #system(clear_command)
-            print(colorama.Fore.BLUE + ascii_resources.new_round if with_colors else ascii_resources.new_round)
+            print(colorama.Fore.BLUE + ascii_resources.new_round if gameSettings.with_colors else ascii_resources.new_round)
             #(0.2)
-            print(colorama.Fore.MAGENTA + ascii_resources.plus_200_points if with_colors else ascii_resources.plus_200_points)
+            print(colorama.Fore.MAGENTA + ascii_resources.plus_200_points if gameSettings.with_colors else ascii_resources.plus_200_points)
            # sleep(1.2)
             spawn_mobs(difficulty)
             return_player_to_origin()

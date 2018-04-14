@@ -52,7 +52,7 @@ class Screen:
         self._inventoryGraph = inventoryString
 
     #============ Meta Functions ========================
-    def _clearScreen(self):
+    def clearScreen(self):
         # description: Clear all text on the screen
         system(self._clear_command)
     def _buildStatusBlock(self):
@@ -93,7 +93,7 @@ class Screen:
     def render(self):
         # description: Prints the composed graph to the screen
         self._buildGraph()
-        self._clearScreen()
+        self.clearScreen()
         print(self._composedGraph)
 
 #Testing
