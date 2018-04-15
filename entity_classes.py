@@ -3,6 +3,9 @@ from random import randint
 from local_resources.colorama_master import colorama
 from math import ceil, floor
 
+#Not used ... replaced by Player.py class Player ... this is kept as a comment
+# as some of the details in Player class are different concerning admin
+'''
 class character:
     score = 0
     def __init__(self, name, health, base_damage, damage, speed, lives):
@@ -19,6 +22,7 @@ class character:
         self.stored_tile = ["O"]
         self.lives = lives
         self.invisible = False
+'''
 
 class chest:
 

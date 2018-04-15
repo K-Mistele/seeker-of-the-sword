@@ -6,7 +6,7 @@ from local_resources.colorama_master import colorama  # color library
 from time import sleep
 from random import randint
 from math import ceil, floor
-from entity_classes import character, wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow, chest
+from entity_classes import wraith, wyvern, goblin, cyclops, wizard, necromancer, cursed_shadow, chest #class character was reemoved
 from inventory_classes import potion, melee_weapon, consumable
 from local_resources import ascii_resources  # ascii art resources
 from local_resources.ascii_credits import run_credits
@@ -17,18 +17,54 @@ from check_high_scores import check_high_scores, print_high_scores # csv high sc
 from local_resources.Screen import Screen
 from local_resources.Splash import Splash
 from local_resources.GenerateSettings import GenerateSettings
+from local_resources.SpawnMobs import SpawnMobs
+from local_resources.CollisionDetector import CollisionDetector
+from local_resources.Player import Player
+
+'''
+
+# Foreward
++ The code present before the refactor works and is great however maintaining the project is/will
+  get increasingly harder given none of the code is split among classes and files, and that it is not using
+  quite an object oriented approach...
+  Inventory classes will need to be done after the refactor...
+  
+
+# Issues to refactoring
++ The mob collision detection updates the world... tempory hack in place to allow refactoring...
++ The function player_move is 300 + lines long... and very repetitive besides the code to accomadate
+  refactoring the code incrementally---> support legacy code
++ The player's origin was previously set and reset multiple times before the  game even renders for the first time
+  consolidate this as one single update to the players location... currently the players origin is set in the class
+  for player... This needs to be reconciled with the other calls
+
+# Refactoring that needs to be done
++ see github issue manager for this branch for extensive list
+
+
+# Other Notes:
++ The new refactored code makes heavy use of (informally) the python spread operator for function calls
++ If in the context of a coridinate it is always assumed that the 0th item is x, the next y
+
+
+'''
+
 
 #============================== Seeker of the Sword ==================================
 if __name__ == "__main__":
 
-    #==== Screen Setup =====
+    #==== Screen Setup ==wwwwwwwws===
     gameScreen = Screen()
     #   gameScreen.clearScreen() to clear the screen in any case...
 
     #==== Game Settings =====
-    gameSettings = GenerateSettings(lightspeed=False)
+    gameSettings = GenerateSettings(lightspeed=True)
     if gameSettings.with_colors:
         colorama.init()
+
+    #FOR MIGRATION TO REFACTOR PURPOSES ONLY refactor these uses also
+    with_colors = gameSettings.with_colors
+    difficulty = gameSettings.difficulty_config[0]
 
     #==== System Notice ======
     if platform.system() == "Darwin":  # determining whether system is a mac for compatible modules
@@ -40,7 +76,6 @@ if __name__ == "__main__":
         from local_resources.keyboard_master import keyboard
 
     #===== Misc. Initilizations ====
-    player_character = colorama.Fore.WHITE + "+" if gameSettings.with_colors else "+"  # defining player character
     play_again = True
     game_iteration = 0
 
@@ -52,13 +87,25 @@ if __name__ == "__main__":
             run_credits(with_color=gameSettings.with_colors,timeDuration=0) #TIME duration specifies time between prints... 0 for lightspeed
 
         #===== Init Player =========
-        player = character(*gameSettings.difficulty_config[1:7])# takes the last 6 items (the first is difficulty string) note the spread operator *
-        difficulty = gameSettings.difficulty_config[0]
+        playerSettings = gameSettings.difficulty_config[1:7]
+        playerSettings.append({"x":1,"y":2}) #Add the players starting origin to the config
+        player = Player(*playerSettings)
+        player.setupColor(gameSettings.with_colors,colorama.Fore.WHITE)#manages setting up color for the player
+
+        ## replaces this
+
+        ### FINDING PLAYER SPAWN POINT ###
+        player_pos = [1, 2]  # creating player coordinate storage
+        x = 0  # easy access to player position indices
+        y = 1
 
         #===== Init World ==========
         world = world_tile(*gameSettings.world_settings) # note the spread operator
         if not gameSettings.world_do_generate: #If the world is not generated its dimension is predefined... update the settings for future use
             gameSettings.dim = world.tile_dim
+
+        #==== Collision Detection Methods ====
+        collisionDetector = CollisionDetector()
 
         """Creating effect functions for inventory items"""
         # inventory system
@@ -228,9 +275,9 @@ if __name__ == "__main__":
                 for i in range(0, int(ceil(world.tile_dim/16))): # scale number of necromancers and wizards spawned to world
                     world.monsters.append(necromancer(world, gameSettings.dim, with_colors))
                     world.monsters.append(wizard(world, gameSettings.dim, with_colors))
-
-        spawn_mobs(difficulty)
-        #system(clear_command)  # clearing screen to prepare for game
+        #=== Spawn Mobs
+        #WARNING: make sure world is passed by reference
+        SpawnMobs(world,gameSettings.difficulty_config[0],gameSettings.dim,gameSettings.with_colors,gameSettings.name)
 
         def new_round(difficulty):
             #system(clear_command)
@@ -244,26 +291,23 @@ if __name__ == "__main__":
 
 
 
-        ### FINDING PLAYER SPAWN POINT ###
-        player_pos = [1, 2]  # creating player coordinate storage
-        x = 0  # easy access to player position indices
-        y = 1
+
 
         iter_row = 2
         found = False
-        while iter_row <= dim - 1:
+        while iter_row <= gameSettings.dim - 1:
             spawn_row = world.row(iter_row)
-            iter_character = int(ceil(dim / 3))
+            iter_character = int(ceil(gameSettings.dim / 3))
             index_counter = iter_character - 1
             for item in spawn_row:
-                if iter_character - index_counter < int(ceil(dim / 3)):
+                if iter_character - index_counter < int(ceil(gameSettings.dim / 3)):
                     iter_character += 1
                     continue
                 elif item == " ":
                     player_pos[x] = iter_character - index_counter
                     found = True
                     break
-                elif index_counter < dim - 1:
+                elif index_counter < gameSettings.dim - 1:
                     iter_character += 1
                 else:
                     break
@@ -272,7 +316,7 @@ if __name__ == "__main__":
             iter_row += 1
             player_pos[y] = iter_row
 
-        world.mod_char(player_pos[x], iter_row, player_character)  # marking origin on map
+        world.mod_char(*player.exportPlayer())  # markding origin on map
         origin_point = [player_pos[x], iter_row]
         gameScreen.updateWorld(world.print_tile())  # printing the world for the first time
         gameScreen.render()
@@ -280,132 +324,39 @@ if __name__ == "__main__":
         """
         functions for motion
         """
-        stored_tile = [colorama.Fore.WHITE + "O" if with_colors else "O"]  # stores the tile the player is currently on
+        stored_tile = [colorama.Fore.WHITE + "O" if gameSettings.with_colors else "O"]  # stores the tile the player is currently on
         # initial value marks origin
 
         def reset_pos():  # resets after motion the tile that the player was on
-            world.mod_char(player_pos[x], player_pos[y], stored_tile[0])
+            resetPosSetting = player.exportPosition()
+            resetPosSetting.append(stored_tile[0])
+            world.mod_char(*resetPosSetting)
 
-        def detect_collision(coordinate, direction):
-            collision_output = []
-            if coordinate == "x":
-                for dict_element in world.all_elements:
-                    if world.char(player_pos[x] + direction, player_pos[y]) == dict_element["character"] and dict_element[
-                        "is_viable"] == False:  # collision
-                        collision_output.append(True)
-                        collision_output.append(dict_element["name"])
-                        collision_output.append(20)
-                        return collision_output
-                    elif world.char(player_pos[x] + direction, player_pos[y]) == dict_element["character"] and dict_element[
-                        "directional"] == True:  # ridges
-                        if direction == -1 and dict_element["direction"] == "right":
-                            collision_output.append(True)
-                            collision_output.append(dict_element["name"])
-                            collision_output.append(20)
-                            return collision_output
-                        elif direction == 1 and dict_element["direction"] == "left":
-                            collision_output.append(True)
-                            collision_output.append(dict_element["name"])
-                            collision_output.append(20)
-                            return collision_output
-                    elif world.char(player_pos[x] + direction, player_pos[y]) == dict_element["character"] and dict_element[
-                        "is_gateway"] == True:  # teleporters
-                        collision_output.append(False)
-                        collision_output.append(dict_element["name"])
-                        collision_output.append(dict_element["gate_id"])
-                        return collision_output
 
-                collision_output.append(False)  # no collision
-                collision_output.append(None)
-                collision_output.append(None)
-                return collision_output
-                # return False
-            elif coordinate == "y":
-                for dict_element in world.all_elements:
-                    if world.char(player_pos[x], player_pos[y] + direction) == dict_element["character"] and dict_element[
-                        "is_viable"] == False:  # collision
-                        collision_output.append(True)
-                        collision_output.append(dict_element["name"])
-                        collision_output.append(20)
-                        return collision_output
-                    elif world.char(player_pos[x], player_pos[y] + direction) == dict_element["character"] and dict_element[
-                        "directional"] == True:  # ridges
-                        if direction == -1 and dict_element["direction"] == "up":
-                            collision_output.append(True)
-                            collision_output.append(dict_element["name"])
-                            collision_output.append(20)
-                            return collision_output
-                        elif direction == 1 and dict_element["direction"] == "down":
-                            collision_output.append(True)
-                            collision_output.append(dict_element["name"])
-                            collision_output.append(20)
-                            return collision_output
-                    elif world.char(player_pos[x], player_pos[y] + direction) == dict_element["character"] and dict_element[
-                        "is_gateway"] == True:  # teleporters
-                        collision_output.append(False)
-                        collision_output.append(dict_element["name"])
-                        collision_output.append(dict_element["gate_id"])
-                        return collision_output
-
-                collision_output.append(False)  # no collision
-                collision_output.append(None)
-                collision_output.append(None)
-                return collision_output
-
-        def detect_mob_collision(coordinate, direction):
-            mob_collision_output = []
-            if coordinate == "x":
-                for mob in list(world.monsters):  # iterate over a copy of monsters list
-                    # if world.char(player_pos[x]+direction,player_pos[y]) == mob.symbol:
-                    if (mob.x_index == player_pos[x] + direction and
-                            mob.y_index == player_pos[y]):
-
-                        mob_collision_output.append(True)
-                        name = mob.name
-                        mob_collision_output.append(name)
-                        mob.health -= player.damage
-                        health = mob.health
-                        mob_collision_output.append(health)
-                        player.score += mob.points
-                        if mob.health <= 0:
-                            world.mod_char(mob.x_index, mob.y_index, mob.stored_char)  # reset where mob was
-                            world.monsters.remove(mob)  # remove mob from original list
-                        return mob_collision_output
-                        # return True
-
-                mob_collision_output.append(False)
-                return mob_collision_output
-                # return False
-            elif coordinate == "y":
-                for mob in list(world.monsters):  # iterate over a copy of monsters list
-                    # if world.char(player_pos[x],player_pos[y]+direction) == mob.symbol:
-                    if (mob.x_index == player_pos[x] and  # check based on mob locations not character at that location
-                            mob.y_index == player_pos[y] + direction):
-
-                        mob_collision_output.append(True)
-                        name = mob.name
-                        mob_collision_output.append(name)
-                        mob.health -= player.damage
-                        health = mob.health
-                        mob_collision_output.append(health)
-                        player.score += mob.points
-                        if mob.health <= 0:
-                            world.mod_char(mob.x_index, mob.y_index, mob.stored_char)  # reset where mob was
-                            world.monsters.remove(mob)  # remove mob from original list
-                        return mob_collision_output
-                        # return True
-
-                mob_collision_output.append(False)
-                return mob_collision_output
 
         action_string = ""
         accepted_motions = ["w", "a", "s", "d"]
+
+
+        #dis is a monster function... idk If it can even be refactored
         def player_move(motion):
+
+            #hacky
             global number_of_player_moves
             global moves_until_effect_expires
             global action_string
+
+            #especially hacky
+            global player
+            global world
+
+            print(player.exportPosition())
+
             action_string = ""
             number_of_player_moves += 1  # upping the count of player moves by one
+
+
+
 
             # making speed timer count down
             if player.speed > 1:
@@ -426,11 +377,29 @@ if __name__ == "__main__":
                     action_string += "Strength Potion wore off!\n"
                 else:
                     moves_until_effect_expires["strength"] -= 1
+
+            #For legacy code support refactor this below!!!!
+            player_pos = player.exportPosition()  # ONLY GETS THE POSTION
+            x=0
+            y=1
+
+            ## REFACTOR: All of these if statements are nearly identical and repetitive
+            # consider creating a curried function that generates each case off of an archtype
+            # the only thing that changes is the addition or subtraction of the number 1 .... make
+            # that a variable and have the code in the if block the main code and the if conditionals change that
+            # one number between + and -
+
             if motion == "w":
-                collision_output = detect_collision("y", 1)
-                mob_collision_w = detect_mob_collision("y", 1)
+                collision_output = collisionDetector.detect_collision("y", 1,world,player)
+                collisionUpdates = collisionDetector.detect_mob_collision("y", 1,world,player)
+
+                ### THIS IS A HORRIBLY HACKY way to fix the fact that detect_mob_collisions updates the world.... it does not just detect collisions
+                world = collisionUpdates[2]
+                player = collisionUpdates[1]
+                mob_collision_w =collisionUpdates[0]
+
                 for i in range(0, player.speed):
-                    if player_pos[y] + 1 > dim - 1 or player_pos[y] + 1 < 2:
+                    if player_pos[y] + 1 > gameSettings.dim - 1 or player_pos[y] + 1 < 2:
                         if with_colors:
                             gameScreen.console(colorama.Fore.WHITE+"You cannot leave the map!")
                         else:
@@ -449,9 +418,14 @@ if __name__ == "__main__":
                                 # then move the player to the second cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+
+                                #Update player Position
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_2][x],world.gateway_cords[collision_output[2]][cord_2][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -463,9 +437,12 @@ if __name__ == "__main__":
                                 # then move the player to the first cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                                #stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_1][x],world.gateway_cords[collision_output[2]][cord_1][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -488,14 +465,21 @@ if __name__ == "__main__":
                     else:
                         reset_pos()  # clears character position and replaces with previous tile
                         del stored_tile[0]
-                        player_pos[y] += 1  # moves character location on virtual map
-                        stored_tile.append(
-                            world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
+
+                        oldPlayerPosition = player.exportPosition()
+                        player.updatePosition(oldPlayerPosition[0],oldPlayerPosition[1]+1) # moves the player +1 in the y direction
+                        stored_tile.append(world.char(*player.exportPosition()))  # stores tile that is about to be moved onto
+
+                        #player_pos[y] += 1  # moves character location on virtual map
+                        #stored_tile.append(world.char(player_pos[x], player_pos[y]))  # stores tile that is about to be moved onto
             elif motion == "s":
-                collision_output = detect_collision("y", -1)
-                mob_collision_s = detect_mob_collision("y", -1)
+                collision_output = collisionDetector.detect_collision("y", -1,world,player)
+                collisionUpdates = collisionDetector.detect_mob_collision("y", -1,world,player)
+                mob_collision_s = collisionUpdates[0]
+                world = collisionUpdates[2]
+                player = collisionUpdates[1]
                 for i in range(0, player.speed):
-                    if player_pos[y] - 1 > dim - 1 or player_pos[y] - 1 < 2:
+                    if player_pos[y] - 1 > gameSettings.dim - 1 or player_pos[y] - 1 < 2:
                         if with_colors:
                             gameScreen.console(colorama.Fore.WHITE+"You cannot leave the map!")
                         else:
@@ -514,9 +498,12 @@ if __name__ == "__main__":
                                 # then move the player to the second cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_2][x],world.gateway_cords[collision_output[2]][cord_2][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+                                #stored_tile.append(world.char(player_pos[x], player_pos[y]))
+
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -528,9 +515,12 @@ if __name__ == "__main__":
                                 # then move the player to the first cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_1][x],world.gateway_cords[collision_output[2]][cord_1][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                                #stored_tile.append(world.char(player_pos[x], player_pos[y]))
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -553,13 +543,20 @@ if __name__ == "__main__":
                     else:
                         reset_pos()
                         del stored_tile[0]
-                        player_pos[y] -= 1
-                        stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                        oldPlayerPosition = player.exportPosition()
+                        player.updatePosition(oldPlayerPosition[0],oldPlayerPosition[1] -1)
+                        stored_tile.append(world.char(*player.exportPosition()))
+                        #player_pos[y] -= 1
+                        #stored_tile.append(world.char(player_pos[x], player_pos[y]))
             elif motion == "a":
-                collision_output = detect_collision("x", -1)
-                mob_collision_a = detect_mob_collision("x", -1)
+                collision_output = collisionDetector.detect_collision("x", -1,world,player)
+                collisionUpdates = collisionDetector.detect_mob_collision("x", -1,world,player)
+                mob_collision_a = collisionUpdates[0]
+                player = collisionUpdates[1]
+                world = collisionUpdates[2]
+
                 for i in range(0, player.speed):
-                    if player_pos[x] - 1 > dim - 1 or player_pos[x] - 1 < 2:
+                    if player_pos[x] - 1 > gameSettings.dim - 1 or player_pos[x] - 1 < 2:
                         if with_colors:
                             gameScreen.console(colorama.Fore.WHITE+"You cannot leave the map!")
                         else:
@@ -578,9 +575,13 @@ if __name__ == "__main__":
                                 # then move the player to the second cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_2][x],world.gateway_cords[collision_output[2]][cord_2][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+                                #stored_tile.append(world.char(player_pos[x], player_pos[y]))
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -592,9 +593,12 @@ if __name__ == "__main__":
                                 # then move the player to the first cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_1][x],world.gateway_cords[collision_output[2]][cord_1][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                                #stored_tile.append(world.char(player_pos[x], player_pos[y]))
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -617,13 +621,20 @@ if __name__ == "__main__":
                     else:
                         reset_pos()
                         del stored_tile[0]
-                        player_pos[x] -= 1
-                        stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                        oldPlayerPosition = player.exportPosition()
+                        player.updatePosition(oldPlayerPosition[0]-1,oldPlayerPosition[1])
+                        stored_tile.append(world.char(*player.exportPosition()))
+                        #player_pos[x] -= 1
+                        #stored_tile.append(world.char(player_pos[x], player_pos[y]))
             elif motion == "d":
-                collision_output = detect_collision("x", 1)
-                mob_collision_d = detect_mob_collision("x", 1)
+                collision_output = collisionDetector.detect_collision("x", 1,world,player)
+                collisionUpdates = collisionDetector.detect_mob_collision("x", 1,world,player)
+                mob_collision_d = collisionUpdates[0]
+                player = collisionUpdates[1]
+                world = collisionUpdates[2]
+
                 for i in range(0, player.speed):
-                    if player_pos[x] + 1 > dim - 1 or player_pos[x] + 1 < 2:
+                    if player_pos[x] + 1 > gameSettings.dim - 1 or player_pos[x] + 1 < 2:
                         if with_colors:
                             gameScreen.console(colorama.Fore.WHITE+"You cannot leave the map!")
                         else:
@@ -642,9 +653,11 @@ if __name__ == "__main__":
                                 # then move the player to the second cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_2][x],world.gateway_cords[collision_output[2]][cord_2][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_2][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_2][y]
+                                #stored_tile.append(world.char(player_pos[x], player_pos[y]))
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -656,9 +669,12 @@ if __name__ == "__main__":
                                 # then move the player to the first cord pair
                                 reset_pos()
                                 del stored_tile[0]
-                                player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
-                                player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
-                                stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                                player.updatePosition(world.gateway_cords[collision_output[2]][cord_1][x],world.gateway_cords[collision_output[2]][cord_1][y])
+                                stored_tile.append(world.char(*player.exportPosition()))
+
+                                #player_pos[x] = world.gateway_cords[collision_output[2]][cord_1][x]
+                                #player_pos[y] = world.gateway_cords[collision_output[2]][cord_1][y]
+                                #stored_tile.append(world.char(player_pos[x], player_pos[y]))
                                 if with_colors:
                                     gameScreen.console(colorama.Fore.CYAN + "A mysterious gateway transports you elsewhere!"+colorama.Fore.WHITE)
                                 else:
@@ -681,51 +697,42 @@ if __name__ == "__main__":
                     else:
                         reset_pos()
                         del stored_tile[0]
-                        player_pos[x] += 1
-                        stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                        oldPlayerPosition = player.exportPosition()
+                        player.updatePosition(oldPlayerPosition[0] + 1, oldPlayerPosition[1])
+                        stored_tile.append(world.char(*player.exportPosition()))
+                        #player_pos[x] += 1
+                        #stored_tile.append(world.char(player_pos[x], player_pos[y]))
 
         def randomly_locate_player():
             while True:
-                new_x = randint(2, dim - 1)
-                new_y = randint(2, dim - 1)
+                new_x = randint(2, gameSettings.dim - 1)
+                new_y = randint(2, gameSettings.dim - 1)
                 new_location = world.char(new_x, new_y)
                 if new_location == " " or new_location == world.tile_elements[2]["character"]:
                     reset_pos()
                     del stored_tile[0]
-                    player_pos[x] = new_x
-                    player_pos[y] = new_y
-                    stored_tile.append(world.char(player_pos[x], player_pos[y]))
-                    world.mod_char(player_pos[x], player_pos[y], player_character)
+                    player.updatePosition(new_x,new_y)
+                    stored_tile.append(world.char(*player.exportPosition())) #maybe not computationally efficient.. just put new_x and y
+                    #player_pos[x] = new_x
+                    #player_pos[y] = new_y
+                    #stored_tile.append(world.char(player_pos[x], player_pos[y]))
+                    world.mod_char(*player.exportPlayer())
                     break
 
         def return_player_to_origin(): # origin parameter should be list of [x,y] coordinates for player origin
             reset_pos()
             del stored_tile[0]
-            player_pos[x] = origin_point[x]
-            player_pos[y] = origin_point[y]
-            stored_tile.append(world.char(player_pos[x], player_pos[y]))
-            world.mod_char(player_pos[x], player_pos[y], player_character)
+            #player_pos[x] = origin_point[x]
+            #player_pos[y] = origin_point[y]
 
-        def print_health():
-            if "[admin]" not in player.name.lower():
-                global with_colors
-                healthString = ""
-                if with_colors:
-                    heartString = colorama.Fore.RED + "O" + colorama.Fore.WHITE
-                else:
-                    heartString = "O"
-                for i in range(0, player.health):
-                    if i == 10:
-                        healthString = healthString + "\n        {}".format(
-                            heartString)  # start a second, aligned row of "hearts" if more than ten health
-                    else:
-                        healthString = healthString + "{}".format(heartString)
-                if with_colors:
-                    gameScreen.updateStatus(colorama.Fore.WHITE + "Health: " + "{}".format(healthString))
-                else:
-                    gameScreen.updateStatus("Health: {}".format(healthString))
-            else:
-                return
+            player.updatePosition(origin_point[x],origin_point[y])
+            stored_tile.append(world.char(*player.exportPosition()))
+            world.mod_char(*player.exportPlayer())
+
+
+
+#This section is also repetitive.... besides the legacy support code while refactoring is being done
+#This will need to be refactored more deeply
 
         while player.lives > 0:
             open_chest = True
@@ -777,7 +784,7 @@ if __name__ == "__main__":
                     #system(clear_command)
                 else:
                     gameScreen.console("Invalid key input!")
-                world.mod_char(player_pos[x], player_pos[y],player_character)  # stores character location to virtual map
+                world.mod_char(*player.exportPlayer())  # stores character location to virtual map
                 #system(clear_command)  # clears existing map
                 gameScreen.updateWorld(world.print_tile())  # prints world (and new character location)
                 gameScreen.render()
@@ -789,7 +796,7 @@ if __name__ == "__main__":
                         if element["name"] == "spikes":
                             damage_dealt_by_spikes = True
                             break
-                print_health()
+                gameScreen.updateStatus(player.getHealthString())
 
                 gameScreen.console(action_string)
                 if damage_dealt_by_spikes == True:
@@ -798,6 +805,9 @@ if __name__ == "__main__":
                     else:
                         gameScreen.console("Spikes underfoot draw blood!")
                 if stored_tile[0] == world.dungeon_elements[8]["character"]:
+                    player_pos = player.exportPosition() #use for now to support legacy code... refactor into it later...
+                    x=0
+                    y=1
                     for sign_data in world.sign_info:
                         if [player_pos[x], player_pos[y]] in sign_data:
                             gameScreen.console(colorama.Fore.CYAN + "\nA posted sign reads:" if with_colors else "\nA posted sign reads:")
@@ -806,13 +816,16 @@ if __name__ == "__main__":
                 sleep(0.2)
                 for mob in world.monsters:
                     if not player.invisible:
+                        player_pos = player.exportPosition()  # use for now to support legacy code... refactor into it later...
+                        x = 0
+                        y = 1
                         mob.move(player_pos, player)
                         world.mod_char(mob.x_index, mob.y_index, mob.symbol)
                 sleep(0.1)
                 #system(clear_command)
                 gameScreen.updateWorld(world.print_tile())
                 gameScreen.render()
-                print_health()
+                gameScreen.updateStatus(player.getHealthString())
                 gameScreen.console(action_string)
                 if damage_dealt_by_spikes == True:
                     if with_colors == True:
@@ -822,6 +835,9 @@ if __name__ == "__main__":
                 # if player is standing on a sign
                 if stored_tile[0] == world.dungeon_elements[8]["character"]:
                     for sign_data in world.sign_info:
+                        player_pos = player.exportPosition()  # use for now to support legacy code... refactor into it later...
+                        x = 0
+                        y = 1
                         if [player_pos[x], player_pos[y]] in sign_data:
                             gameScreen.console(colorama.Fore.CYAN + "\nA posted sign reads:" if with_colors else "\nA posted sign reads:")
                             gameScreen.console(colorama.Fore.WHITE + sign_data[world.sign_text] if with_colors else sign_data[world.sign_text])
@@ -832,6 +848,9 @@ if __name__ == "__main__":
                     #system(clear_command)
                     gameScreen.console(colorama.Fore.WHITE + "Chest Inventory:\n" if with_colors else "Chest Inventory:\n")
                     for chest in world.chests:
+                        player_pos = player.exportPosition()  # use for now to support legacy code... refactor into it later...
+                        x = 0
+                        y = 1
                         if chest.x_index == player_pos[x] and chest.y_index == player_pos[y]:
                             for item in chest.inventory:
                                 print("    {}:".format(item[0].name))
