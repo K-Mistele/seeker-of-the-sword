@@ -1,5 +1,42 @@
-class potion:
+class inventory:
+    def __init__(self, size_limit=None, override_items=None):
+        #TODO: randomly generate contents
+        #TODO: functions for transfer to and from
+        #TODO: function for delete contents
+        #NOTE: inventory should be format of [[item1, quantitiy], [item2, quantity], ....]
 
+        # storing items
+        if override_items == None:
+            self.items = []
+        else:
+            self.items = override_items
+
+        #size limit
+        self.size_limit = size_limit
+
+    # class methods
+    def import_items(self, source, import_all_items=True, items_to_import=None):
+        #NOTE: items_to_import should be list of namesof inventory items to import
+        if hasattr(source, "inventory"):
+            if import_all_items == True: # if importing all items and target has inventory attr
+                #TODO: check for if item already exists so you can update quantity
+                if len(self.items) == 0: # if own inventory is empty
+                    self.items.extend(source.inventory.items)
+                else: # if own inventory is not empty
+                    # create shallow copies of source and target inventories
+                    source_inventory_items = source.inventory.items[:]
+                    own_inventory_items = self.items[:]
+                    
+
+
+
+
+            #else:
+            #TODO: write code for only importing some inventory items
+
+
+
+class potion:
     #TODO: update so quantity is not intrinsic to item
     def __init__(self, name, duration, item_id, effect, effect_readable):
         self.name = name

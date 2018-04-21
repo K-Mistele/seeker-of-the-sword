@@ -2,7 +2,7 @@ from tile_classes import world_tile
 from random import randint
 from local_resources.colorama_master import colorama
 from math import ceil, floor
-
+from inventory_classes import inventory
 #Not used ... replaced by Player.py class Player ... this is kept as a comment
 # as some of the details in Player class are different concerning admin
 '''
@@ -50,7 +50,7 @@ class chest:
                     break  # mob has been spawned
                 else:
                     continue # keep trying until you get a valid x/y combo
-        self.inventory = []
+        self.inventory = inventory()
         self.possible_items = possible_items
 
         self.generate_items = generate_items
@@ -65,25 +65,25 @@ class chest:
             for i in range(0, inventory_size):
                 poss_items = self.possible_items
                 index = randint(0, len(poss_items)-1) # select a random item from possible items
-                self.inventory.append([poss_items[index],  # and add it to the chest's inventory
+                self.inventory.items.append([poss_items[index],  # and add it to the chest's inventory
                                        randint(1, max_number_of_items)]) # along with a random quantity from one to three
                 self.possible_items.remove(poss_items[index])
         else:
-            self.inventory.extend(self.inventory_override)
+            self.inventory.items.extend(self.inventory_override)
     # transfers way too many copies to player inventory
     # won't let you delete contents of chest once transferred to inventory
-    def transfer_contents(self, player_inventory):
-        to_remove=[]
-
-        for i in range(0, len(self.inventory)):
-            for item in player_inventory:
-                if self.inventory[i][0].name == item[0].name: # if name of item in chest matches item in inventory
-                    item[1] += self.inventory[i][1] # increase quantity of item in inventory
-                    to_remove.append(self.inventory[i]) # prepare to remove this item from chest inventory
-        for item in to_remove:
-            self.inventory.remove(item) # remove items whose quantities have been added to inventory
-        for item in self.inventory: # append items to player inventory that aren't already there
-            player_inventory.append(item)
+    # def transfer_contents(self, player_inventory):
+    #     to_remove=[]
+    #
+    #     for i in range(0, len(self.inventory)):
+    #         for item in player_inventory:
+    #             if self.inventory[i][0].name == item[0].name: # if name of item in chest matches item in inventory
+    #                 item[1] += self.inventory[i][1] # increase quantity of item in inventory
+    #                 to_remove.append(self.inventory[i]) # prepare to remove this item from chest inventory
+    #     for item in to_remove:
+    #         self.inventory.remove(item) # remove items whose quantities have been added to inventory
+    #     for item in self.inventory: # append items to player inventory that aren't already there
+    #         player_inventory.append(item)
 
 
 
