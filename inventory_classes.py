@@ -15,6 +15,9 @@ class inventory:
         self.size_limit = size_limit
 
     # class methods
+    def empty_inventory(self):
+        self.items = []
+
     def import_items(self, source_inventory, import_all_items=True, items_to_import=None):
         #NOTE: items_to_import should be list of namesof inventory items to import
         if isinstance(source_inventory, inventory):
@@ -27,21 +30,32 @@ class inventory:
                     source_inventory_items = source_inventory.items[:]
                     own_inventory_items = self.items[:]
 
-                    for source_item in source_inventory_items:
-                        if source_item in own_inventory_items:
-                            #TODO: code to update quantity
-                            index = own_inventory_items.index(source_item)
-                            self.items[index][1] += source_item[1]
-                        else:
-                            # add item and quantity to inventory
-                            self.items.append(source_item)
+                    #Separate inventory item from its quantity in a new list
+                    source_objects_only = []
+                    for item in source_inventory_items:
+                        source_objects_only.append(item[0])
 
+                    #separate inventory quantity from its item in a new list
+                    source_quants_only = []
+                    for item in source_inventory_items:
+                        source_quants_only.append(item[1])
 
+                    #separate own inventory item form its quantity in a new list
+                    own_objects_only = []
+                    for item in own_inventory_items:
+                        own_objects_only.append(item[0])
 
+                    #for each item in source inventory
+                    for source_object_only in source_objects_only:
+                        if source_object_only in own_objects_only: # if source item is already in own inventory
+                            index1 = own_objects_only.index(source_object_only) # get index of item
+                            index2 = source_objects_only.index(source_object_only) # get index for its proper quantitiy in source_quants_only
+                            self.items[index1][1] += source_quants_only[index2] # add quantities together
+                        else: # add item and proper quantity to inventory
+                            self.items.append([source_object_only, source_quants_only[source_objects_only.index(source_object_only)]])
+            #else: TODO: write code for only transferring some items
+            source_inventory.empty_inventory()
 
-
-            #else:
-            #TODO: write code for only importing some inventory items
 
 
 

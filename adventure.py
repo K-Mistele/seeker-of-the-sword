@@ -860,7 +860,7 @@ if __name__ == "__main__":
                             while True:
                                 c_input = input("Transfer Items to inventory?\n")
                                 if c_input in "yes":
-                                    player.inventory.import_items(chest)
+                                    player.inventory.import_items(chest.inventory)
                                     print("Items transferred to your inventory!")
                                     sleep(1)
                                     break
