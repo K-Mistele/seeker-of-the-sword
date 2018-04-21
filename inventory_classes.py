@@ -15,18 +15,27 @@ class inventory:
         self.size_limit = size_limit
 
     # class methods
-    def import_items(self, source, import_all_items=True, items_to_import=None):
+    def import_items(self, source_inventory, import_all_items=True, items_to_import=None):
         #NOTE: items_to_import should be list of namesof inventory items to import
-        if hasattr(source, "inventory"):
+        if isinstance(source_inventory, inventory):
             if import_all_items == True: # if importing all items and target has inventory attr
                 #TODO: check for if item already exists so you can update quantity
                 if len(self.items) == 0: # if own inventory is empty
-                    self.items.extend(source.inventory.items)
+                    self.items.extend(source_inventory.items)
                 else: # if own inventory is not empty
                     # create shallow copies of source and target inventories
-                    source_inventory_items = source.inventory.items[:]
+                    source_inventory_items = source_inventory.items[:]
                     own_inventory_items = self.items[:]
-                    
+
+                    for source_item in source_inventory_items:
+                        if source_item in own_inventory_items:
+                            #TODO: code to update quantity
+                            index = own_inventory_items.index(source_item)
+                            self.items[index][1] += source_item[1]
+                        else:
+                            # add item and quantity to inventory
+                            self.items.append(source_item)
+
 
 
 
