@@ -33,7 +33,7 @@ class chest:
         self.viable_tiles = [" "]
         self.symbol = colorama.Fore.CYAN + "H" if self.world.with_colors else "H"
 
-        # locating chesty
+        # locating chest
         self.location_override = location_override
         if self.location_override:
             # hard-code chest location
@@ -50,9 +50,14 @@ class chest:
                     break  # mob has been spawned
                 else:
                     continue # keep trying until you get a valid x/y combo
-        self.inventory = inventory()
-        self.possible_items = possible_items
 
+        #creating chest inventory as instance of inventory class
+        self.inventory = inventory()
+
+        # NOTE: this code will be replaced by code in inventory class to do same function more efficiently
+        # NOTE: make sure to take a second look at parameters for this class once the update is completed
+        # NOTE: some of the parameters may instead be passed to the inventory class
+        self.possible_items = possible_items
         self.generate_items = generate_items
         if inventory_override == None:
             self.inventory_override = []
@@ -70,23 +75,7 @@ class chest:
                 self.possible_items.remove(poss_items[index])
         else:
             self.inventory.items.extend(self.inventory_override)
-    # transfers way too many copies to player inventory
-    # won't let you delete contents of chest once transferred to inventory
-    # def transfer_contents(self, player_inventory):
-    #     to_remove=[]
-    #
-    #     for i in range(0, len(self.inventory)):
-    #         for item in player_inventory:
-    #             if self.inventory[i][0].name == item[0].name: # if name of item in chest matches item in inventory
-    #                 item[1] += self.inventory[i][1] # increase quantity of item in inventory
-    #                 to_remove.append(self.inventory[i]) # prepare to remove this item from chest inventory
-    #     for item in to_remove:
-    #         self.inventory.remove(item) # remove items whose quantities have been added to inventory
-    #     for item in self.inventory: # append items to player inventory that aren't already there
-    #         player_inventory.append(item)
-
-
-
+        # NOTE: end code to be deprecated
 
 class monster: # for other monsters to inherit
 

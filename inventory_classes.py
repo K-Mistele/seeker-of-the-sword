@@ -56,6 +56,10 @@ class inventory:
             #else: TODO: write code for only transferring some items
             source_inventory.empty_inventory()
 
+    def randomly_fill_inventory(self):
+        #TODO: code to rendomly generate inventory contents
+        return
+
 
 
 
