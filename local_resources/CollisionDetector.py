@@ -102,8 +102,7 @@ class CollisionDetector:
                     mob_collision_output.append(health)
                     player_instance.score += mob.points
                     if mob.health <= 0:
-                        world_instance.mod_char(mob.x_index, mob.y_index, mob.stored_char)  # reset where mob was
-                        world_instance.monsters.remove(mob)  # remove mob from original list
+                        mob.die()
                     return [mob_collision_output,player_instance,world_instance]
                     # return True
 
@@ -124,8 +123,7 @@ class CollisionDetector:
                     mob_collision_output.append(health)
                     player_instance.score += mob.points
                     if mob.health <= 0:
-                        world_instance.mod_char(mob.x_index, mob.y_index, mob.stored_char)  # reset where mob was
-                        world_instance.monsters.remove(mob)  # remove mob from original list
+                        mob.die()
                     return [mob_collision_output, player_instance, world_instance]
                     # return True
 

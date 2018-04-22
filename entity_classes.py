@@ -295,7 +295,9 @@ class monster: # for other monsters to inherit
                     self.reset_monster_pos()
                     self.y_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-
+    def die(self):
+        self.occupied_tile.mod_char(self.x_index, self.y_index, self.stored_char)
+        self.occupied_tile.monsters.remove(self)
 """
 Wraith Class
 """
