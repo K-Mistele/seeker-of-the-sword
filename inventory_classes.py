@@ -1,18 +1,35 @@
-class inventory:
-    def __init__(self, size_limit=None, override_items=None):
-        #TODO: randomly generate contents
-        #TODO: functions for transfer to and from
-        #TODO: function for delete contents
-        #NOTE: inventory should be format of [[item1, quantitiy], [item2, quantity], ....]
+from random import randint
 
-        # storing items
-        if override_items == None:
-            self.items = []
-        else:
-            self.items = override_items
+class inventory:
+    def __init__(self, size_limit=None, override_items=None, generate_items=False, possible_items=None):
+        #TODO: randomly generate contents
+
+        #NOTE: inventory should be format of [[item1, quantitiy], [item2, quantity], ....]
 
         #size limit
         self.size_limit = size_limit
+
+        self.generate_items=generate_items # Bool for if items are generated
+
+        #if generating items but no size limit, set to default
+        if self.generate_items == True and self.size_limit == None:
+            self.size_limit = 5 # default size for generating items
+
+       #Determine contents of chest
+        if self.generate_items == True and override_items == None: # if generating items
+            self.possible_items = possible_items
+            for i in range(0, self.size_limit):
+                poss_items = self.possible_items[:]
+                index = randint(0, len(poss_items)-1)
+                self.items.append([poss_items[index],
+                                   randint(1, 3)])
+                self.possible_items.remove(poss_items[index])
+
+        elif self.generate_items == False and override_items != None: # if overriding items
+            self.items = override_items
+
+        else: # if no items
+            self.items = []
 
     # class methods
     def empty_inventory(self):
@@ -56,9 +73,7 @@ class inventory:
             #else: TODO: write code for only transferring some items
             source_inventory.empty_inventory()
 
-    def randomly_fill_inventory(self):
-        #TODO: code to rendomly generate inventory contents
-        return
+
 
 
 

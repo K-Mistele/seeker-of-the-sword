@@ -52,30 +52,7 @@ class chest:
                     continue # keep trying until you get a valid x/y combo
 
         #creating chest inventory as instance of inventory class
-        self.inventory = inventory()
-
-        # NOTE: this code will be replaced by code in inventory class to do same function more efficiently
-        # NOTE: make sure to take a second look at parameters for this class once the update is completed
-        # NOTE: some of the parameters may instead be passed to the inventory class
-        self.possible_items = possible_items
-        self.generate_items = generate_items
-        if inventory_override == None:
-            self.inventory_override = []
-        else:
-            self.inventory_override = inventory_override
-        self.inventory_size = int(inventory_size)
-
-        # determine items in chest inventory
-        if self.generate_items == True:
-            for i in range(0, inventory_size):
-                poss_items = self.possible_items
-                index = randint(0, len(poss_items)-1) # select a random item from possible items
-                self.inventory.items.append([poss_items[index],  # and add it to the chest's inventory
-                                       randint(1, max_number_of_items)]) # along with a random quantity from one to three
-                self.possible_items.remove(poss_items[index])
-        else:
-            self.inventory.items.extend(self.inventory_override)
-        # NOTE: end code to be deprecated
+        self.inventory = inventory(size_limit=inventory_size, generate_items=generate_items, override_items=inventory_override, possible_items = possible_items)
 
 class monster: # for other monsters to inherit
 
