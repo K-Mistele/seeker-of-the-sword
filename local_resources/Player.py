@@ -1,7 +1,7 @@
 from tile_classes import world_tile
 from random import randint
 from local_resources.colorama_master import colorama
-
+from inventory_classes import inventory
 #This class is to replace the character class for player
 # This is a more object oriented apprach...
 
@@ -29,7 +29,8 @@ class Player:
         self.render_priority=1#Render Priority Depth
 
         #Player Inventory
-        self.inventory = []
+        #self.inventory = []
+        self.inventory = inventory()
     def setupColor(self,with_colors,colorString):
         if with_colors:
             self.colorString = colorString
@@ -37,9 +38,9 @@ class Player:
         else:
             self.colorString=""
 
-    def addToInventory(self,itemInstance):
-        #add a potion or item to players inventory
-        self.inventory.append(itemInstance)
+    # def addToInventory(self,itemInstance):
+    #     #     #add a potion or item to players inventory
+    #     #     self.inventory.append(itemInstance)
 
     def updatePosition(self,newX,newY):
         #This assumes the new position is a valid move

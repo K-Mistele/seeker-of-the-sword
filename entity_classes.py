@@ -2,7 +2,7 @@ from tile_classes import world_tile
 from random import randint
 from local_resources.colorama_master import colorama
 from math import ceil, floor
-
+from inventory_classes import inventory
 #Not used ... replaced by Player.py class Player ... this is kept as a comment
 # as some of the details in Player class are different concerning admin
 '''
@@ -33,7 +33,7 @@ class chest:
         self.viable_tiles = [" "]
         self.symbol = colorama.Fore.CYAN + "H" if self.world.with_colors else "H"
 
-        # locating chesty
+        # locating chest
         self.location_override = location_override
         if self.location_override:
             # hard-code chest location
@@ -50,43 +50,9 @@ class chest:
                     break  # mob has been spawned
                 else:
                     continue # keep trying until you get a valid x/y combo
-        self.inventory = []
-        self.possible_items = possible_items
 
-        self.generate_items = generate_items
-        if inventory_override == None:
-            self.inventory_override = []
-        else:
-            self.inventory_override = inventory_override
-        self.inventory_size = int(inventory_size)
-
-        # determine items in chest inventory
-        if self.generate_items == True:
-            for i in range(0, inventory_size):
-                poss_items = self.possible_items
-                index = randint(0, len(poss_items)-1) # select a random item from possible items
-                self.inventory.append([poss_items[index],  # and add it to the chest's inventory
-                                       randint(1, max_number_of_items)]) # along with a random quantity from one to three
-                self.possible_items.remove(poss_items[index])
-        else:
-            self.inventory.extend(self.inventory_override)
-    # transfers way too many copies to player inventory
-    # won't let you delete contents of chest once transferred to inventory
-    def transfer_contents(self, player_inventory):
-        to_remove=[]
-
-        for i in range(0, len(self.inventory)):
-            for item in player_inventory:
-                if self.inventory[i][0].name == item[0].name: # if name of item in chest matches item in inventory
-                    item[1] += self.inventory[i][1] # increase quantity of item in inventory
-                    to_remove.append(self.inventory[i]) # prepare to remove this item from chest inventory
-        for item in to_remove:
-            self.inventory.remove(item) # remove items whose quantities have been added to inventory
-        for item in self.inventory: # append items to player inventory that aren't already there
-            player_inventory.append(item)
-
-
-
+        #creating chest inventory as instance of inventory class
+        self.inventory = inventory(size_limit=inventory_size, generate_items=generate_items, override_items=inventory_override, possible_items = possible_items)
 
 class monster: # for other monsters to inherit
 
@@ -306,7 +272,9 @@ class monster: # for other monsters to inherit
                     self.reset_monster_pos()
                     self.y_index -= 1
                     self.stored_char = self.occupied_tile.char(self.x_index, self.y_index)
-
+    def die(self):
+        self.occupied_tile.mod_char(self.x_index, self.y_index, self.stored_char)
+        self.occupied_tile.monsters.remove(self)
 """
 Wraith Class
 """

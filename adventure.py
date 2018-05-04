@@ -227,11 +227,11 @@ if __name__ == "__main__":
         # global-scope variables
         game_break = False  # creating end condition for game screen loop
 
-        player_inventory = [[lesser_health_potion, 1],
+        player.inventory.items.extend([[lesser_health_potion, 1],
                             [greater_health_potion, 1],
-                            [tnt, 2]]  # hard-coding a speed potion into the inventory for now
+                            [tnt, 2]])  # hard-coding a speed potion into the inventory for now
         if "[admin]" in player.name:
-            player_inventory.append([cataclysm, 1])
+            player.inventory.items.append([cataclysm, 1])
         # speed = 1 # for speed potion; DO NOT SET TO ZERO FOR ANY REASON
         number_of_player_moves = 0  # count of player moves for effect duration
         moves_until_effect_expires = {
@@ -759,7 +759,7 @@ if __name__ == "__main__":
                         print(colorama.Fore.WHITE+"Inventory: \n")
                     else:
                         print("Inventory: \n")
-                    for item in player_inventory:  # display inventory
+                    for item in player.inventory.items:  # display inventory
                         # quantity = item[1]
                         if item[1] > 0:
                             print("   {}: ".format(item[0].name))
@@ -770,8 +770,8 @@ if __name__ == "__main__":
                         e_input = input("Enter inventory command: ('e' to exit)\n")
                         if e_input == "e":
                             break
-                        elif any(item[0].name == e_input for item in player_inventory):  # if there is an item object in player inventory with name input by user
-                            for item in player_inventory:  # iterate through and find it
+                        elif any(item[0].name == e_input for item in player.inventory.items):  # if there is an item object in player inventory with name input by user
+                            for item in player.inventory.items:  # iterate through and find it
                                 if e_input == item[0].name:
                                     if item[1] == 0:  # if no more of this item in inventory
                                         print("You are out of this item. ")
@@ -852,7 +852,7 @@ if __name__ == "__main__":
                         x = 0
                         y = 1
                         if chest.x_index == player_pos[x] and chest.y_index == player_pos[y]:
-                            for item in chest.inventory:
+                            for item in chest.inventory.items:
                                 print("    {}:".format(item[0].name))
                                 print("      Effect: {}\n      Duration: {}\n      Quantity: {}\n".format(
                                         item[0].effect_readable,
@@ -860,7 +860,7 @@ if __name__ == "__main__":
                             while True:
                                 c_input = input("Transfer Items to inventory?\n")
                                 if c_input in "yes":
-                                    chest.transfer_contents(player_inventory)
+                                    player.inventory.import_items(chest.inventory)
                                     print("Items transferred to your inventory!")
                                     sleep(1)
                                     break
